@@ -1,0 +1,24 @@
+﻿<Window x:Class="Random_Item_Giver_Updater.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Random_Item_Giver_Updater"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="900" Width="1400">
+	<Grid x:Name="grdWorkspace">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="260" />
+			<ColumnDefinition/>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="93"/>
+			<RowDefinition/>
+		</Grid.RowDefinitions>
+		<StackPanel x:Name="stpSidebar" Background="Gray" Grid.RowSpan="2" Grid.ColumnSpan="2">
+			<Button x:Name="btnLoadDatapack" Margin="-1150, 110, 0, 0" Content="Load Datapack" Height="25" Width="212" Click="btnLoadDatapack_Click"/>
+		</StackPanel>
+		<StackPanel x:Name="stpHeader" Background="DimGray" Grid.ColumnSpan="2" Height="94" VerticalAlignment="Center"/>
+
+	</Grid>
+</Window>
