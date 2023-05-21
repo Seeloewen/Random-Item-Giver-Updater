@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Random_Item_Giver_Updater"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="1400">
+        Title="Random Item Giver Updater
+" Height="900" Width="1400">
 	<Grid x:Name="grdWorkspace">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="260" />
@@ -15,10 +16,15 @@
 			<RowDefinition Height="93"/>
 			<RowDefinition/>
 		</Grid.RowDefinitions>
-		<StackPanel x:Name="stpSidebar" Background="Gray" Grid.RowSpan="2" Grid.ColumnSpan="2">
-			<Button x:Name="btnLoadDatapack" Margin="-1150, 110, 0, 0" Content="Load Datapack" Height="25" Width="212" Click="btnLoadDatapack_Click"/>
+		<StackPanel x:Name="stpSidebar" Background="#FF323232" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
+		<StackPanel x:Name="stpHeader" Background="#FF212121" Grid.ColumnSpan="2" Height="94" VerticalAlignment="Center">
+			<Canvas Height="100">
+				<TextBlock x:Name="tblHeader" Text="Random Item Giver Updater" Width="787" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="25" FontWeight="SemiBold" Canvas.Left="20" Canvas.Top="10" Foreground="White"/>
+				<TextBox x:Name="tbDatapack" Canvas.Left="772" Canvas.Top="19" Width="431" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="15"/>
+				<Button x:Name="btnBrowseDatapack" Canvas.Left="1211" Canvas.Top="19" RenderTransformOrigin="0.631,0.127" HorizontalAlignment="Left" VerticalAlignment="Center" Height="22" Width="94" Content="Browse" Click="btnBrowseDatapack_Click"/>
+				<Button x:Name="btnLoad" Content="Load" Canvas.Left="1314" Canvas.Top="19" Height="22" Width="64" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnLoad_Click"/>
+			</Canvas>
 		</StackPanel>
-		<StackPanel x:Name="stpHeader" Background="DimGray" Grid.ColumnSpan="2" Height="94" VerticalAlignment="Center"/>
 
 	</Grid>
 </Window>
