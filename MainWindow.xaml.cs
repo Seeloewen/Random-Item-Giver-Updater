@@ -86,25 +86,58 @@ namespace Random_Item_Giver_Updater
             {
                 //Get list of content in file, remove all non-item lines so only items remain
                 var loadedItems = File.ReadLines(path);
+
                 items.Clear();
-                foreach (var item in loadedItems)
+                foreach (string item in loadedItems)
                 {
-                    if (!item.Contains("{") && !item.Contains("}") && !item.Contains("[") && !item.Contains("]") && !item.Contains("rolls") && !item.Contains("\"minecraft:item\"") && item.Contains("\""))
+                    if (item.Contains("tag") || (!item.Contains("{") && !item.Contains("}") && !item.Contains("[") && !item.Contains("]") && !item.Contains("\"rolls\"") && !item.Contains("\"type\"") && !item.Contains("\"function\"") && item.Contains("\"") && !item.Contains("\"weight\"") && !item.Contains("\"count\"") && !item.Contains("\"min\": 1") && !item.Contains("\"max\": 64") && !item.Contains("\"out\"") && !item.Contains("\"score\"")))
                     {
                         string itemFiltered;
                         itemFiltered = item.Replace("\"", "");
                         itemFiltered = itemFiltered.Replace("name:", "");
                         itemFiltered = itemFiltered.Replace(" ", "");
+                        itemFiltered = itemFiltered.Replace("tag:", "");
+                        itemFiltered = itemFiltered.Replace(",", "");
                         items.Add(itemFiltered);
                     }
+                }
 
+                List<string> finalItemList = new List<string>();
+                //Check for each item if it has NBT and add it to the string
+                for (int i = 0; i < items.Count; i++)
+                {
+                    if (!items[i].Contains("{"))
+                    {
+                        if (i < items.Count - 1)
+                        {
+
+                            if (items[i + 1].Contains("{"))
+                            {
+                                finalItemList.Add(string.Format("{0};{1}", items[i], items[i + 1]));
+                            }
+
+                            if (!items[i + 1].Contains("{"))
+                            {
+                                finalItemList.Add(string.Format("{0};none", items[i]));
+                            }
+                        }
+                        else
+                        {
+                            {
+                                finalItemList.Add(string.Format("{0};none", items[i]));
+                            }
+                        }
+                    }
                 }
 
                 itemList.Clear();
+                int index = 0;
                 //Add an entry for all items
-                for (int i = 0; i < items.Count; i++)
+                foreach (string item in finalItemList)
                 {
-                    itemList.Add(new itemEntry(i));
+                    string[] splitItem = item.Split(';');
+                    itemList.Add(new itemEntry(splitItem[0], splitItem[1], index));
+                    index++;
                 }
 
                 //Add all item entrys to workspace
@@ -136,7 +169,6 @@ namespace Random_Item_Giver_Updater
             string[] categories = Directory.GetDirectories(String.Format("{0}/data/randomitemgiver/loot_tables/", path));
             for (int i = 0; i < categories.Length; i++)
             {
-                MessageBox.Show(categories[i]);
                 lootTableCategoryList.Add(new lootTableCategory(categories[i].Replace(String.Format("{0}/data/randomitemgiver/loot_tables/", path), ""), categories[i]));
             }
 
@@ -184,12 +216,24 @@ namespace Random_Item_Giver_Updater
         //Attributes of an item slot
         public Border itemBorder = new Border();
         public Canvas itemCanvas = new Canvas();
-        public TextBlock itemTextblock = new TextBlock();
+        public TextBlock itemTextblockName = new TextBlock();
+        public TextBlock itemTextblockNBT = new TextBlock();
 
-        public itemEntry(int slotNumber)
+        //Item attributes
+        public string itemName;
+        public string itemNBT;
+        public int itemIndex;
+
+        public itemEntry(string name, string nbt, int index)
         {
+
+            //Map variables
+            itemName = name;
+            itemNBT = nbt;
+            itemIndex = index;
+
             //Set backcolor
-            if (slotNumber % 2 == 0)
+            if (index % 2 == 0)
             {
                 itemCanvas.Background = new SolidColorBrush(Color.FromArgb(100, 70, 70, 70));
             }
@@ -205,13 +249,22 @@ namespace Random_Item_Giver_Updater
             itemBorder.HorizontalAlignment = HorizontalAlignment.Stretch;
             itemBorder.VerticalAlignment = VerticalAlignment.Top;
 
-            //Create text
-            itemTextblock.Margin = new Thickness(10, 10, 0, 0);
-            itemTextblock.Text = MainWindow.items[slotNumber];
-            itemTextblock.FontSize = 20;
-            itemTextblock.Foreground = new SolidColorBrush(Colors.White);
-            itemCanvas.Children.Add(itemTextblock);
+            //Create item name text
+            itemTextblockName.Margin = new Thickness(10, 10, 0, 0);
+            itemTextblockName.Text = itemName;
+            itemTextblockName.FontSize = 20;
+            itemTextblockName.Foreground = new SolidColorBrush(Colors.White);
+            itemCanvas.Children.Add(itemTextblockName);
 
+            //Create item NBT text
+            if (itemNBT != "none")
+            {
+                itemTextblockNBT.Margin = new Thickness(500, 10, 0, 0);
+                itemTextblockNBT.Text = string.Format("NBT: {0}", itemNBT);
+                itemTextblockNBT.FontSize = 20;
+                itemTextblockNBT.Foreground = new SolidColorBrush(Colors.White);
+                itemCanvas.Children.Add(itemTextblockNBT);
+            }
         }
 
     }
