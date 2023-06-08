@@ -67,6 +67,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="itemEntry.cs" />
+    <Compile Include="lootTable.cs" />
+    <Compile Include="lootTableCategory.cs" />
     <Compile Include="wndMain.xaml.cs">
       <DependentUpon>wndMain.xaml</DependentUpon>
       <SubType>Code</SubType>
