@@ -13,15 +13,15 @@ namespace Random_Item_Giver_Updater
     public class itemEntry
     {
         //Controls
-        public Border itemBorder = new Border();
-        public Canvas itemCanvas = new Canvas();
-        public TextBlock itemTextblockName = new TextBlock();
-        public TextBlock itemTextblockNBT = new TextBlock();
-        public Button deleteButton = new Button();
-        public TextBox itemNameTextBox = new TextBox();
-        public Button itemNameSaveButton = new Button();
-        public TextBox itemNBTTextBox = new TextBox();
-        public Button itemNBTSaveButton = new Button();
+        public Border bdrItem = new Border();
+        public Canvas cvsItem = new Canvas();
+        public TextBlock tblItemName = new TextBlock();
+        public TextBlock tblItemNBT = new TextBlock();
+        public Button btnDelete = new Button();
+        public TextBox tbItemName = new TextBox();
+        public Button btnSaveItemName = new Button();
+        public TextBox tbItemNBT = new TextBox();
+        public Button btnSaveItemNBT = new Button();
 
         //Item attributes
         public string itemName;
@@ -50,79 +50,79 @@ namespace Random_Item_Giver_Updater
             //Set backcolor
             if (index % 2 == 0)
             {
-                itemCanvas.Background = new SolidColorBrush(Color.FromArgb(100, 70, 70, 70));
+                cvsItem.Background = new SolidColorBrush(Color.FromArgb(100, 70, 70, 70));
             }
             else
             {
-                itemCanvas.Background = new SolidColorBrush(Color.FromArgb(100, 90, 90, 90));
+                cvsItem.Background = new SolidColorBrush(Color.FromArgb(100, 90, 90, 90));
             }
-            itemCanvas.Height = 50;
+            cvsItem.Height = 50;
 
             //Create itemborder
-            itemBorder.Margin = new Thickness(0, 0, 0, 0);
-            itemBorder.Child = itemCanvas;
-            itemBorder.HorizontalAlignment = HorizontalAlignment.Stretch;
-            itemBorder.VerticalAlignment = VerticalAlignment.Top;
+            bdrItem.Margin = new Thickness(0, 0, 0, 0);
+            bdrItem.Child = cvsItem;
+            bdrItem.HorizontalAlignment = HorizontalAlignment.Stretch;
+            bdrItem.VerticalAlignment = VerticalAlignment.Top;
 
             //Create item name text
-            itemTextblockName.Margin = new Thickness(10, 10, 0, 0);
-            itemTextblockName.Text = itemName;
-            itemTextblockName.FontSize = 20;
-            itemTextblockName.Foreground = new SolidColorBrush(Colors.White);
-            itemCanvas.Children.Add(itemTextblockName);
-            itemTextblockName.MouseDown += new MouseButtonEventHandler(itemTextBlockName_MouseDown);
+            tblItemName.Margin = new Thickness(10, 10, 0, 0);
+            tblItemName.Text = itemName;
+            tblItemName.FontSize = 20;
+            tblItemName.Foreground = new SolidColorBrush(Colors.White);
+            cvsItem.Children.Add(tblItemName);
+            tblItemName.MouseDown += new MouseButtonEventHandler(tblItemName_MouseDown);
 
             //Create delete button
-            deleteButton.Height = 25;
-            deleteButton.Width = 100;
-            deleteButton.Content = "Delete";
-            deleteButton.Margin = new Thickness(wndMain.ActualWidth - 420, 10, 0, 0);
-            deleteButton.Click += new RoutedEventHandler(btnDelete_Click);
-            itemCanvas.Children.Add(deleteButton);
+            btnDelete.Height = 25;
+            btnDelete.Width = 100;
+            btnDelete.Content = "Delete";
+            btnDelete.Margin = new Thickness(wndMain.ActualWidth - 420, 10, 0, 0);
+            btnDelete.Click += new RoutedEventHandler(btnDelete_Click);
+            cvsItem.Children.Add(btnDelete);
 
             //Create item name save button
-            itemNameSaveButton.Height = 25;
-            itemNameSaveButton.Width = 100;
-            itemNameSaveButton.Content = "Confirm";
-            itemNameSaveButton.Margin = new Thickness(370, 10, 0, 0);
-            itemNameSaveButton.Click += new RoutedEventHandler(btnSaveItemName_Click);
-            itemCanvas.Children.Add(itemNameSaveButton);
-            itemNameSaveButton.Visibility = Visibility.Hidden;
+            btnSaveItemName.Height = 25;
+            btnSaveItemName.Width = 100;
+            btnSaveItemName.Content = "Confirm";
+            btnSaveItemName.Margin = new Thickness(370, 10, 0, 0);
+            btnSaveItemName.Click += new RoutedEventHandler(btnSaveItemName_Click);
+            cvsItem.Children.Add(btnSaveItemName);
+            btnSaveItemName.Visibility = Visibility.Hidden;
 
             //Create item name textbox
-            itemNameTextBox.Width = 350;
-            itemNameTextBox.Height = 25;
-            itemNameTextBox.FontSize = 18;
-            itemNameTextBox.Margin = new Thickness(10, 10, 0, 0);
-            itemNameTextBox.Visibility = Visibility.Hidden;
-            itemCanvas.Children.Add(itemNameTextBox);
+            tbItemName.Width = 350;
+            tbItemName.Height = 25;
+            tbItemName.FontSize = 18;
+            tbItemName.Margin = new Thickness(10, 10, 0, 0);
+            tbItemName.Visibility = Visibility.Hidden;
+            cvsItem.Children.Add(tbItemName);
 
             //Create item NBT save button
-            itemNBTSaveButton.Height = 25;
-            itemNBTSaveButton.Width = 100;
-            itemNBTSaveButton.Content = "Confirm";
-            itemNBTSaveButton.Margin = new Thickness(859, 10, 0, 0);
-            itemNBTSaveButton.Click += new RoutedEventHandler(btnSaveItemNBT_Click);
-            itemCanvas.Children.Add(itemNBTSaveButton);
-            itemNBTSaveButton.Visibility = Visibility.Hidden;
+            btnSaveItemNBT.Height = 25;
+            btnSaveItemNBT.Width = 100;
+            btnSaveItemNBT.Content = "Confirm";
+            btnSaveItemNBT.Margin = new Thickness(859, 10, 0, 0);
+            btnSaveItemNBT.Click += new RoutedEventHandler(btnSaveItemNBT_Click);
+            cvsItem.Children.Add(btnSaveItemNBT);
+            btnSaveItemNBT.Visibility = Visibility.Hidden;
 
             //Create item NBT textbox
-            itemNBTTextBox.Width = 350;
-            itemNBTTextBox.Height = 25;
-            itemNBTTextBox.FontSize = 18;
-            itemNBTTextBox.Margin = new Thickness(500, 10, 0, 0);
-            itemNBTTextBox.Visibility = Visibility.Hidden;
-            itemCanvas.Children.Add(itemNBTTextBox);
+            tbItemNBT.Width = 350;
+            tbItemNBT.Height = 25;
+            tbItemNBT.FontSize = 18;
+            tbItemNBT.Margin = new Thickness(500, 10, 0, 0);
+            tbItemNBT.Visibility = Visibility.Hidden;
+            cvsItem.Children.Add(tbItemNBT);
 
             //Create item NBT text
             if (itemNBT != "none")
             {
-                itemTextblockNBT.Margin = new Thickness(500, 10, 0, 0);
-                itemTextblockNBT.Text = string.Format("NBT: {0}", itemNBT);
-                itemTextblockNBT.FontSize = 20;
-                itemTextblockNBT.Foreground = new SolidColorBrush(Colors.White);
-                itemCanvas.Children.Add(itemTextblockNBT);
-                itemTextblockNBT.MouseDown += new MouseButtonEventHandler(itemTextblockNBT_MouseDown);
+                tblItemNBT.Margin = new Thickness(500, 10, 0, 0);
+                tblItemNBT.Text = string.Format("NBT: {0}", itemNBT);
+                tblItemNBT.FontSize = 20;
+                tblItemNBT.Foreground = new SolidColorBrush(Colors.White);
+                cvsItem.Children.Add(tblItemNBT);
+                tblItemNBT.MouseDown += new MouseButtonEventHandler(tblItemNBT_MouseDown);
             }
         }
 
@@ -134,7 +134,7 @@ namespace Random_Item_Giver_Updater
             {
                 isModified = true;
                 isDeleted = true;
-                deleteButton.Content = "Undo deletion";
+                btnDelete.Content = "Undo deletion";
             }
             else if (isDeleted == true) //If the item has been deleted, set state to undeleted
             {
@@ -144,7 +144,7 @@ namespace Random_Item_Giver_Updater
                     isModified = false;
                 }
                 isDeleted = false;
-                deleteButton.Content = "Delete";
+                btnDelete.Content = "Delete";
             }
 
         }
@@ -152,11 +152,11 @@ namespace Random_Item_Giver_Updater
         private void btnSaveItemName_Click(object sender, RoutedEventArgs e)
         {
             //Hide the controls for editing and show the item name
-            itemNameTextBox.Visibility = Visibility.Hidden;
-            itemNameSaveButton.Visibility = Visibility.Hidden;
-            itemTextblockName.Visibility = Visibility.Visible;
-            newName = itemNameTextBox.Text;
-            itemTextblockName.Text = newName;
+            tbItemName.Visibility = Visibility.Hidden;
+            btnSaveItemName.Visibility = Visibility.Hidden;
+            tblItemName.Visibility = Visibility.Visible;
+            newName = tbItemName.Text;
+            tblItemName.Text = newName;
 
             //Check if the item name has been changed and change modified state
             if (newName != itemName)
@@ -168,11 +168,11 @@ namespace Random_Item_Giver_Updater
         private void btnSaveItemNBT_Click(object sender, RoutedEventArgs e)
         {
             //Hide the controls for editing and show the item NBT
-            itemNBTTextBox.Visibility = Visibility.Hidden;
-            itemNBTSaveButton.Visibility = Visibility.Hidden;
-            itemTextblockNBT.Visibility = Visibility.Visible;
-            newNBT = itemNBTTextBox.Text;
-            itemTextblockNBT.Text = string.Format("NBT: {0}", newNBT);
+            tbItemNBT.Visibility = Visibility.Hidden;
+            btnSaveItemNBT.Visibility = Visibility.Hidden;
+            tblItemNBT.Visibility = Visibility.Visible;
+            newNBT = tbItemNBT.Text;
+            tblItemNBT.Text = string.Format("NBT: {0}", newNBT);
 
             //Check if the item name has been changed and change modified state
             if (newNBT != itemNBT)
@@ -181,22 +181,22 @@ namespace Random_Item_Giver_Updater
             }
         }
 
-        private void itemTextBlockName_MouseDown(object sender, MouseEventArgs e)
+        private void tblItemName_MouseDown(object sender, MouseEventArgs e)
         {
             //Show the controls for editing and hide the original name
-            itemNameTextBox.Visibility = Visibility.Visible;
-            itemNameSaveButton.Visibility = Visibility.Visible;
-            itemTextblockName.Visibility = Visibility.Hidden;
-            itemNameTextBox.Text = itemTextblockName.Text;
+            tbItemName.Visibility = Visibility.Visible;
+            btnSaveItemName.Visibility = Visibility.Visible;
+            tblItemName.Visibility = Visibility.Hidden;
+            tbItemName.Text = tblItemName.Text;
         }
 
-        private void itemTextblockNBT_MouseDown(object sender, MouseEventArgs e)
+        private void tblItemNBT_MouseDown(object sender, MouseEventArgs e)
         {
             //Show the controls for editing and hide the original NBT
-            itemNBTTextBox.Visibility = Visibility.Visible;
-            itemNBTSaveButton.Visibility = Visibility.Visible;
-            itemTextblockNBT.Visibility = Visibility.Hidden;
-            itemNBTTextBox.Text = itemTextblockNBT.Text.Replace("NBT: ", "");
+            tbItemNBT.Visibility = Visibility.Visible;
+            btnSaveItemNBT.Visibility = Visibility.Visible;
+            tblItemNBT.Visibility = Visibility.Hidden;
+            tbItemNBT.Text = tblItemNBT.Text.Replace("NBT: ", "");
         }
     }
 }

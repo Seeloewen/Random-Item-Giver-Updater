@@ -13,8 +13,8 @@ namespace Random_Item_Giver_Updater
     public class lootTable
     {
         //Controls
-        public Canvas lootTableCanvas = new Canvas();
-        public TextBlock lootTableTextBlock = new TextBlock();
+        public Canvas cvsLootTable = new Canvas();
+        public TextBlock tblLootTable = new TextBlock();
 
         //Attributes
         public string lootTableName;
@@ -27,16 +27,16 @@ namespace Random_Item_Giver_Updater
         public lootTable(string name, string type, string path)
         {
             //Create canvas
-            lootTableCanvas.Height = 35;
-            lootTableCanvas.Background = new SolidColorBrush(Color.FromArgb(100, 65, 65, 65));
+            cvsLootTable.Height = 35;
+            cvsLootTable.Background = new SolidColorBrush(Color.FromArgb(100, 65, 65, 65));
 
             //Create text			
-            lootTableTextBlock.Text = name.Replace("\\", "");
-            lootTableTextBlock.FontSize = 15;
-            lootTableTextBlock.Foreground = new SolidColorBrush(Colors.White);
-            lootTableTextBlock.FontSize = 15;
-            lootTableTextBlock.Margin = new Thickness(25, 10, 0, 0);
-            lootTableCanvas.Children.Add(lootTableTextBlock);
+            tblLootTable.Text = name.Replace("\\", "");
+            tblLootTable.FontSize = 15;
+            tblLootTable.Foreground = new SolidColorBrush(Colors.White);
+            tblLootTable.FontSize = 15;
+            tblLootTable.Margin = new Thickness(25, 10, 0, 0);
+            cvsLootTable.Children.Add(tblLootTable);
 
             //Set some final attributes
             lootTableName = name.Replace("\\", "");
@@ -44,13 +44,13 @@ namespace Random_Item_Giver_Updater
             lootTablePath = path;
 
             //Add mouse down event to load the loot table
-            lootTableCanvas.MouseDown += new MouseButtonEventHandler(lootTableCanvas_MouseDown);
+            cvsLootTable.MouseDown += new MouseButtonEventHandler(cvsLootTable_MouseDown);
         }
 
 
         //-- Event Handlers --//
 
-        private void lootTableCanvas_MouseDown(object sender, MouseEventArgs e)
+        private void cvsLootTable_MouseDown(object sender, MouseEventArgs e)
         {
             if (MainWindow.currentLootTable != "none")
             {

@@ -160,7 +160,7 @@ namespace Random_Item_Giver_Updater
                 stpWorkspace.Children.Clear();
                 foreach (itemEntry entry in itemList)
                 {
-                    stpWorkspace.Children.Add(entry.itemBorder);
+                    stpWorkspace.Children.Add(entry.bdrItem);
                 }
             }
         }
@@ -190,7 +190,7 @@ namespace Random_Item_Giver_Updater
             //Move delete button when window is resized
             foreach (itemEntry item in itemList)
             {
-                item.deleteButton.Margin = new Thickness(ActualWidth - 420, 10, 0, 0);
+                item.btnDelete.Margin = new Thickness(ActualWidth - 420, 10, 0, 0);
             }
         }
 
@@ -252,7 +252,7 @@ namespace Random_Item_Giver_Updater
                 {
                     //lootTable.lootTableCanvas.Visibility = Visibility.Hidden;
                 }
-                stpLootTables.Children.Add(category.categoryStackPanel);
+                stpLootTables.Children.Add(category.stpCategory);
             }
         }
 

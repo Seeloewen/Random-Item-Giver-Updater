@@ -14,9 +14,9 @@ namespace Random_Item_Giver_Updater
     {
 
         //Controls
-        public StackPanel categoryStackPanel = new StackPanel();
-        public Canvas categoryHeaderCanvas = new Canvas();
-        public TextBlock categoryHeader = new TextBlock();
+        public StackPanel stpCategory = new StackPanel();
+        public Canvas cvsCategoryHeader = new Canvas();
+        public TextBlock tblCategoryHeader = new TextBlock();
 
         //Attributes
         public string categoryName;
@@ -33,35 +33,33 @@ namespace Random_Item_Giver_Updater
             categoryPath = path;
 
             //Create category canvas
-            categoryStackPanel.Children.Add(categoryHeaderCanvas);
+            stpCategory.Children.Add(cvsCategoryHeader);
 
             //Create category header canvas
-            categoryHeaderCanvas.Height = 35;
-            categoryHeaderCanvas.MouseDown += new MouseButtonEventHandler(categoryHeaderCanvas_MouseDown);
-
-            //categoryHeaderCanvas.HorizontalAlignment = HorizontalAlignment.Right;
-            categoryHeaderCanvas.Background = new SolidColorBrush(Color.FromArgb(100, 16, 28, 28));
-            categoryHeaderCanvas.Children.Add(categoryHeader);
+            cvsCategoryHeader.Height = 35;
+            cvsCategoryHeader.MouseDown += new MouseButtonEventHandler(cvsCategoryHeader_MouseDown);
+            cvsCategoryHeader.Background = new SolidColorBrush(Color.FromArgb(100, 16, 28, 28));
+            cvsCategoryHeader.Children.Add(tblCategoryHeader);
 
             //Create category header
-            categoryHeader.Text = categoryName;
-            categoryHeader.FontSize = 15;
-            categoryHeader.FontWeight = FontWeights.SemiBold;
-            categoryHeader.Foreground = new SolidColorBrush(Colors.White);
-            categoryHeader.Margin = new Thickness(10, 10, 0, 0);
+            tblCategoryHeader.Text = categoryName;
+            tblCategoryHeader.FontSize = 15;
+            tblCategoryHeader.FontWeight = FontWeights.SemiBold;
+            tblCategoryHeader.Foreground = new SolidColorBrush(Colors.White);
+            tblCategoryHeader.Margin = new Thickness(10, 10, 0, 0);
         }
 
         //-- Event Handlers --//
 
-        private void categoryHeaderCanvas_MouseDown(object sender, MouseEventArgs e)
+        private void cvsCategoryHeader_MouseDown(object sender, MouseEventArgs e)
         {
             if (isCollapsed == true)
             {
                 //Show all the loot tables
                 foreach (lootTable lootTable in lootTableList)
                 {
-                    lootTable.lootTableCanvas.Visibility = Visibility.Visible;
-                    categoryStackPanel.Children.Add(lootTable.lootTableCanvas);
+                    lootTable.cvsLootTable.Visibility = Visibility.Visible;
+                    stpCategory.Children.Add(lootTable.cvsLootTable);
                 }
 
                 //Change the collapse state variable
@@ -70,10 +68,10 @@ namespace Random_Item_Giver_Updater
             else if (isCollapsed == false)
             {
                 //Hide the loot tables and collapse the categories
-                categoryStackPanel.Children.Clear();
+                stpCategory.Children.Clear();
 
                 //Readd the header
-                categoryStackPanel.Children.Add(categoryHeaderCanvas);
+                stpCategory.Children.Add(cvsCategoryHeader);
 
                 //Change the collapse state variable
                 isCollapsed = true;
