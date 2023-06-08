@@ -20,21 +20,26 @@ namespace Random_Item_Giver_Updater
 
     public partial class MainWindow : Window
     {
-        public static string versionNumber = string.Format("Dev{0}", ((Convert.ToString(DateTime.Now).Replace(" ", "")).Replace(":", ""))).Replace(".", "");
-        public ScrollViewer svWorkspace = new ScrollViewer();
-        public static StackPanel stpWorkspace = new StackPanel();
-        public ScrollViewer svLootTables = new ScrollViewer();
-        public static StackPanel stpLootTables = new StackPanel();
+        //Lists for items and loot tables
         public static List<itemEntry> itemList = new List<itemEntry>();
         public static List<string> items = new List<string>();
         public static List<string> lootTables = new List<string>();
         public static List<lootTableCategory> lootTableCategoryList = new List<lootTableCategory>();
-        public List<lootTable> lootTableList = new List<lootTable>();
+        public static List<lootTable> lootTableList = new List<lootTable>();
+
+        //Controls
+        public ScrollViewer svWorkspace = new ScrollViewer();
+        public static StackPanel stpWorkspace = new StackPanel();
+        public ScrollViewer svLootTables = new ScrollViewer();
+        public static StackPanel stpLootTables = new StackPanel();
         System.Windows.Forms.FolderBrowserDialog fbdDatapack = new System.Windows.Forms.FolderBrowserDialog();
 
-        //I really gotta sort these variables
+        //General variables for the software
+        public static string versionNumber = string.Format("Dev{0}", ((Convert.ToString(DateTime.Now).Replace(" ", "")).Replace(":", ""))).Replace(".", "");
         public static string currentLootTable = "none";
 
+
+        //-- Constructor --//
 
         public MainWindow()
         {
@@ -81,6 +86,8 @@ namespace Random_Item_Giver_Updater
             //Set version number in header
             tblHeader.Text = String.Format("Random Item Giver Updater {0}", versionNumber);
         }
+
+        //-- Event Handlers --//
 
         public static void LoadLootTable(string path)
         {
@@ -171,6 +178,47 @@ namespace Random_Item_Giver_Updater
             tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.20 Dev";
             GetLootTables(tbDatapack.Text);
         }
+
+        private void btnSaveLootTable_Click(object sender, RoutedEventArgs e)
+        {
+            //Save the current loot table
+            SaveCurrentLootTable();
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            //Move delete button when window is resized
+            foreach (itemEntry item in itemList)
+            {
+                item.deleteButton.Margin = new Thickness(ActualWidth - 420, 10, 0, 0);
+            }
+        }
+
+        private void wndMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (MainWindow.currentLootTable != "none")
+            {
+                if (MainWindow.lootTableModified() == true)
+                {
+                    //Show warning if there are unsaved changes to the loot table
+                    MessageBoxResult result = MessageBox.Show("You still have unsaved modifications in the current loot table.\nDo you want to save the changes before quitting?", "Save changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+
+                    switch (result)
+                    {
+                        case MessageBoxResult.Yes:
+                            //Save the current loot table
+                            MainWindow.SaveCurrentLootTable();
+                            break;
+                        case MessageBoxResult.Cancel:
+                            //Stop the quitting
+                            e.Cancel = true;
+                            break;
+                    }
+                }
+            }
+        }
+
+        //-- Custom Methods --//
 
         private void GetLootTables(string path)
         {
@@ -489,20 +537,7 @@ namespace Random_Item_Giver_Updater
 
         }
 
-        private void btnSaveLootTable_Click(object sender, RoutedEventArgs e)
-        {
-            SaveCurrentLootTable();
-        }
-
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            //Move delete button when window is resized
-            foreach (itemEntry item in itemList)
-            {
-                item.deleteButton.Margin = new Thickness(ActualWidth - 420, 10, 0, 0);
-            }
-        }
-
+       
         public static bool lootTableModified()
         {
             bool isModified = false;
@@ -519,31 +554,7 @@ namespace Random_Item_Giver_Updater
             }
 
             return isModified;
-        }
-
-        private void wndMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (MainWindow.currentLootTable != "none")
-            {
-                if (MainWindow.lootTableModified() == true)
-                {
-                    //Show warning if there are unsaved changes to the loot table
-                    MessageBoxResult result = MessageBox.Show("You still have unsaved modifications in the current loot table.\nDo you want to save the changes before quitting?", "Save changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-
-                    switch (result)
-                    {
-                        case MessageBoxResult.Yes:
-                            //Save the current loot table
-                            MainWindow.SaveCurrentLootTable();
-                            break;
-                        case MessageBoxResult.Cancel:
-                            //Stop the quitting
-                            e.Cancel = true;
-                            break;
-                    }
-                }
-            }
-        }
+        }    
     }
 }
 

@@ -12,7 +12,7 @@ namespace Random_Item_Giver_Updater
 {
     public class itemEntry
     {
-        //Objects of an item slot
+        //Controls
         public Border itemBorder = new Border();
         public Canvas itemCanvas = new Canvas();
         public TextBlock itemTextblockName = new TextBlock();
@@ -26,16 +26,16 @@ namespace Random_Item_Giver_Updater
         //Item attributes
         public string itemName;
         public string itemNBT;
-        public int itemIndex;
-
-        //Item editing
-        public bool isModified = false;
-        public bool isDeleted = false;
         public string newName;
         public string newNBT;
+        public int itemIndex;
+        public bool isModified = false;
+        public bool isDeleted = false;
 
         //Reference to main window
         MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
+
+        //-- Constructor --//
 
         public itemEntry(string name, string nbt, int index)
         {
@@ -125,6 +125,8 @@ namespace Random_Item_Giver_Updater
                 itemTextblockNBT.MouseDown += new MouseButtonEventHandler(itemTextblockNBT_MouseDown);
             }
         }
+
+        //-- Event Handlers --//
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {

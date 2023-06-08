@@ -12,13 +12,19 @@ namespace Random_Item_Giver_Updater
 {
     public class lootTableCategory
     {
+
+        //Controls
+        public StackPanel categoryStackPanel = new StackPanel();
+        public Canvas categoryHeaderCanvas = new Canvas();
+        public TextBlock categoryHeader = new TextBlock();
+
+        //Attributes
         public string categoryName;
         public string categoryPath;
         public bool isCollapsed = true;
         public List<lootTable> lootTableList = new List<lootTable>();
-        public StackPanel categoryStackPanel = new StackPanel();
-        public Canvas categoryHeaderCanvas = new Canvas();
-        public TextBlock categoryHeader = new TextBlock();
+
+        //-- Constructor --//
 
         public lootTableCategory(string name, string path)
         {
@@ -44,6 +50,8 @@ namespace Random_Item_Giver_Updater
             categoryHeader.Foreground = new SolidColorBrush(Colors.White);
             categoryHeader.Margin = new Thickness(10, 10, 0, 0);
         }
+
+        //-- Event Handlers --//
 
         private void categoryHeaderCanvas_MouseDown(object sender, MouseEventArgs e)
         {

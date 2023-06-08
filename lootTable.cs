@@ -12,11 +12,17 @@ namespace Random_Item_Giver_Updater
 {
     public class lootTable
     {
+        //Controls
         public Canvas lootTableCanvas = new Canvas();
         public TextBlock lootTableTextBlock = new TextBlock();
+
+        //Attributes
         public string lootTableName;
         public string lootTableType;
         public string lootTablePath;
+
+
+        //-- Constructor --//
 
         public lootTable(string name, string type, string path)
         {
@@ -40,6 +46,9 @@ namespace Random_Item_Giver_Updater
             //Add mouse down event to load the loot table
             lootTableCanvas.MouseDown += new MouseButtonEventHandler(lootTableCanvas_MouseDown);
         }
+
+
+        //-- Event Handlers --//
 
         private void lootTableCanvas_MouseDown(object sender, MouseEventArgs e)
         {
