@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using System.Security.Policy;
+using System.Diagnostics.Eventing.Reader;
 
 namespace Random_Item_Giver_Updater
 {
@@ -22,8 +23,6 @@ namespace Random_Item_Giver_Updater
     {
         //Lists for items and loot tables
         public static List<itemEntry> itemList = new List<itemEntry>();
-        public static List<string> items = new List<string>();
-        public static List<string> lootTables = new List<string>();
         public static List<lootTableCategory> lootTableCategoryList = new List<lootTableCategory>();
         public static List<lootTable> lootTableList = new List<lootTable>();
 
@@ -38,6 +37,8 @@ namespace Random_Item_Giver_Updater
         public static string versionNumber = string.Format("Dev{0}", ((Convert.ToString(DateTime.Now).Replace(" ", "")).Replace(":", ""))).Replace(".", "");
         public static string currentLootTable = "none";
 
+        //Windows
+        wndAddItem wndAddItem;
 
         //-- Constructor --//
 
@@ -94,6 +95,7 @@ namespace Random_Item_Giver_Updater
             {
                 //Get list of content in file, remove all non-item lines so only items remain
                 string[] loadedItems = File.ReadAllLines(currentLootTable);
+                List<string> items = new List<string>();
 
                 items.Clear();
                 foreach (string item in loadedItems)
@@ -521,11 +523,21 @@ namespace Random_Item_Giver_Updater
             }
 
             //Append text to file
+            int index4 = 0;
             foreach (string line in loadedItems)
             {
                 using (var writer = new StreamWriter(currentLootTable, true))
                 {
-                    writer.WriteLine(line);
+                    //This is done to avoid empty lines at the beginning or end
+                    if (index4 == 0)
+                    {
+                        writer.Write(line);
+                    }
+                    else
+                    {
+                        writer.Write("\n" + line);
+                    }
+                    index4++;
                 }
             }
 
@@ -554,7 +566,18 @@ namespace Random_Item_Giver_Updater
             }
 
             return isModified;
-        }    
+        }
+
+        private void btnAddItem_Click(object sender, RoutedEventArgs e)
+        {
+            //Open add item window
+            wndAddItem = new wndAddItem() { Owner = this };
+            wndAddItem.Owner = Application.Current.MainWindow;
+            if (wndAddItem.isOpen == false)
+            {
+                wndAddItem.Show();
+            }
+        }
     }
 }
 

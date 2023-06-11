@@ -24,6 +24,7 @@
                 <Button x:Name="btnBrowseDatapack" Canvas.Left="1211" Canvas.Top="19" RenderTransformOrigin="0.631,0.127" HorizontalAlignment="Right" Height="22" Width="94" Content="Browse" Click="btnBrowseDatapack_Click" VerticalAlignment="Top"/>
                 <Button x:Name="btnLoad" Content="Load" Canvas.Left="1314" Canvas.Top="19" Height="22" Width="64" HorizontalAlignment="Right" VerticalAlignment="Top" Click="btnLoad_Click"/>
                 <Button x:Name="btnSaveLootTable" Content="Save" Width="65" Height="30" Canvas.Left="1314" Canvas.Top="50" HorizontalAlignment="Center" VerticalAlignment="Top" Click="btnSaveLootTable_Click"/>
+                <Button x:Name="btnAddItem" Content="Add Item" Width="240" Height="30" Canvas.Left="460" Canvas.Top="50" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnAddItem_Click"/>
             </Canvas>
         </StackPanel>
 

@@ -59,10 +59,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="wndAddItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="wndMain.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="addItemEntry.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -70,6 +75,9 @@
     <Compile Include="itemEntry.cs" />
     <Compile Include="lootTable.cs" />
     <Compile Include="lootTableCategory.cs" />
+    <Compile Include="wndAddItem.xaml.cs">
+      <DependentUpon>wndAddItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="wndMain.xaml.cs">
       <DependentUpon>wndMain.xaml</DependentUpon>
       <SubType>Code</SubType>
