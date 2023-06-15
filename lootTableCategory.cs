@@ -42,7 +42,7 @@ namespace Random_Item_Giver_Updater
             cvsCategoryHeader.Children.Add(tblCategoryHeader);
 
             //Create category header
-            tblCategoryHeader.Text = categoryName;
+            tblCategoryHeader.Text = string.Format("▼ {0}", categoryName);
             tblCategoryHeader.FontSize = 15;
             tblCategoryHeader.FontWeight = FontWeights.SemiBold;
             tblCategoryHeader.Foreground = new SolidColorBrush(Colors.White);
@@ -64,6 +64,9 @@ namespace Random_Item_Giver_Updater
 
                 //Change the collapse state variable
                 isCollapsed = false;
+
+                //Change the arrow symbol
+                tblCategoryHeader.Text = string.Format("▲ {0}", categoryName);
             }
             else if (isCollapsed == false)
             {
@@ -75,6 +78,9 @@ namespace Random_Item_Giver_Updater
 
                 //Change the collapse state variable
                 isCollapsed = true;
+
+                //Change the arrow symbol
+                tblCategoryHeader.Text = string.Format("▼ {0}", categoryName);
             }
         }
     }
