@@ -22,6 +22,7 @@ namespace Random_Item_Giver_Updater
         public Button btnSaveItemName = new Button();
         public TextBox tbItemNBT = new TextBox();
         public Button btnSaveItemNBT = new Button();
+        public TextBlock tblEntryIndex = new TextBlock();
 
         //Item attributes
         public string itemName;
@@ -76,7 +77,7 @@ namespace Random_Item_Giver_Updater
             btnDelete.Height = 25;
             btnDelete.Width = 100;
             btnDelete.Content = "Delete";
-            btnDelete.Margin = new Thickness(wndMain.ActualWidth - 420, 10, 0, 0);
+            btnDelete.Margin = new Thickness(wndMain.ActualWidth - 460, 10, 0, 0);
             btnDelete.Click += new RoutedEventHandler(btnDelete_Click);
             cvsItem.Children.Add(btnDelete);
 
@@ -124,6 +125,15 @@ namespace Random_Item_Giver_Updater
                 cvsItem.Children.Add(tblItemNBT);
                 tblItemNBT.MouseDown += new MouseButtonEventHandler(tblItemNBT_MouseDown);
             }
+
+            //Create entry index
+            tblEntryIndex.Margin = new Thickness(wndMain.ActualWidth - 345, 10, 0, 0);
+            tblEntryIndex.Text = (itemIndex + 1).ToString();
+            tblEntryIndex.TextAlignment = TextAlignment.Center;
+            tblEntryIndex.FontSize = 20;
+            tblEntryIndex.FontWeight = FontWeights.DemiBold;
+            tblEntryIndex.Foreground = new SolidColorBrush(Colors.White);
+            cvsItem.Children.Add(tblEntryIndex);
         }
 
         //-- Event Handlers --//
