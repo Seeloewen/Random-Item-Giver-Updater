@@ -13,6 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.IO;
 using System.Diagnostics.Eventing.Reader;
+using System.Drawing;
+using System.Reflection;
+using System.ComponentModel;
 
 namespace Random_Item_Giver_Updater
 {
@@ -20,10 +23,17 @@ namespace Random_Item_Giver_Updater
     {
         //General attributes
         public bool isOpen;
-        List<addItemEntry> itemEntries = new List<addItemEntry>();
+        public int currentPage = 1;
+        public static List<addItemEntry> itemEntries = new List<addItemEntry>();
+        double addItemsWorkerProgress;
+        int addItemsWorkerAddedItems;
+        int addItemsWorkerAddedItemsLootTables;
 
         //Reference to main window
         MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
+
+        //Controls
+        BackgroundWorker bgwAddItems = new BackgroundWorker();
 
         //-- Constructor --//
 
@@ -39,6 +49,58 @@ namespace Random_Item_Giver_Updater
             //Change open state to true
             isOpen = true;
             svItems.Content = stpItems;
+
+            //Show the first page
+            currentPage = 1;
+            gbStep1.Visibility = Visibility.Visible;
+            gbStep2.Visibility = Visibility.Hidden;
+            gbStep3.Visibility = Visibility.Hidden;
+            gbStep4.Visibility = Visibility.Hidden;
+            gbStep5.Visibility = Visibility.Hidden;
+            gbStep6.Visibility = Visibility.Hidden;
+            btnBack.Content = "Close";
+            tblCurrentlySelectedDatapack.Text = string.Format("Currently selected Datapack: {0}\nPack format: {1} (Version {2})", MainWindow.currentDatapack, MainWindow.GetDatapackVersionNumber(MainWindow.currentDatapack), MainWindow.GetDatapackMCVersion(MainWindow.currentDatapack));
+
+            //Setup backgroundworker
+            bgwAddItems.WorkerReportsProgress = true;
+            bgwAddItems.DoWork += delegate (object s, DoWorkEventArgs args)
+            {
+                //Reset previous progress
+                addItemsWorkerProgress = 0;
+                addItemsWorkerAddedItems = 0;
+                addItemsWorkerAddedItemsLootTables = 0;
+                //Go through each loot table and add the items
+                foreach (lootTable lootTable in MainWindow.lootTableList)
+                {
+                    AddItems(string.Format("{0}/{1}", lootTable.lootTablePath, lootTable.lootTableName));
+                addItemsWorkerAddedItemsLootTables++;
+                    addItemsWorkerAddedItems = 0;
+                }
+
+            };
+
+            bgwAddItems.RunWorkerCompleted += delegate (object s, RunWorkerCompletedEventArgs args)
+            {
+                //Go to the next page
+                currentPage++;
+                gbStep1.Visibility = Visibility.Hidden;
+                gbStep2.Visibility = Visibility.Hidden;
+                gbStep3.Visibility = Visibility.Hidden;
+                gbStep4.Visibility = Visibility.Hidden;
+                gbStep5.Visibility = Visibility.Hidden;
+                gbStep6.Visibility = Visibility.Visible;
+                btnContinue.Content = "Finish";
+                btnContinue.IsEnabled = true;
+            };
+
+            bgwAddItems.ProgressChanged += delegate (object s, ProgressChangedEventArgs progress)
+            {
+                //Report worker progress to progress bar
+                pbAddingItems.Value = Convert.ToDouble(progress.UserState);
+
+                //Report added items
+                tblAddingItems.Text = string.Format("Adding items... (Item {0}/{1} - Loot Table {2}/{3})", progress.ProgressPercentage, itemEntries.Count, addItemsWorkerAddedItemsLootTables, MainWindow.lootTableList.Count);
+            };
         }
 
         private void Window_Unloaded(object sender, RoutedEventArgs e)
@@ -47,22 +109,229 @@ namespace Random_Item_Giver_Updater
             isOpen = false;
         }
 
-        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        private void btnContinue_Click(object sender, RoutedEventArgs e)
         {
-            //Go through each loot table and add the items
-            foreach (lootTable lootTable in MainWindow.lootTableList)
+            if (currentPage == 1)
             {
-                AddItems(string.Format("{0}/{1}", lootTable.lootTablePath, lootTable.lootTableName));                       
+
+                //Show the corresponding next page
+                gbStep1.Visibility = Visibility.Hidden;
+                gbStep2.Visibility = Visibility.Visible;
+                gbStep3.Visibility = Visibility.Hidden;
+                gbStep4.Visibility = Visibility.Hidden;
+                gbStep5.Visibility = Visibility.Hidden;
+                gbStep6.Visibility = Visibility.Hidden;
+                btnBack.Content = "Back";
+
             }
 
-            //WIP -REMOVE
-            MessageBox.Show("Successfully added the items!");
+            else if (currentPage == 2)
+            {
+                if (!string.IsNullOrEmpty(tbItemName.Text))
+                {
+                    //Show the corresponding next page
+                    gbStep1.Visibility = Visibility.Hidden;
+                    gbStep2.Visibility = Visibility.Hidden;
+                    gbStep3.Visibility = Visibility.Visible;
+                    gbStep4.Visibility = Visibility.Hidden;
+                    gbStep5.Visibility = Visibility.Hidden;
+                    gbStep6.Visibility = Visibility.Hidden;
+
+                    //Get all items into an array
+                    string[] items = tbItemName.Text.Split('\n');
+
+                    //Create an entry for every item
+                    itemEntries.Clear();
+                    int index = 0;
+                    if (cbIncludesPrefixes.IsChecked == true)
+                    {
+                        //Split the item into prefix and item name if checkbox for prefixes is checked
+                        foreach (string item in items)
+                        {
+                            string[] line = item.Split(':');
+                            if (line.Length != 2)
+                            {
+                                //If the line actually doesn't contain a prefix, add the item normally with default prefix
+                                itemEntries.Add(new addItemEntry("minecraft", line[0], index));
+                                index++;
+                            }
+                            else
+                            {
+                                //Add the item with prefix and name
+                                itemEntries.Add(new addItemEntry(line[0], line[1], index));
+                                index++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //Add the line as an item name if checkbox for prefixes is not checked
+                        foreach (string item in items)
+                        {
+                            itemEntries.Add(new addItemEntry("minecraft", item, index));
+                            index++;
+                        }
+                    }
+
+                    //Show all items
+                    UpdateItemDisplay();
+                }
+                else
+                {
+                    //Don't go to the next page and throw error
+                    currentPage--;
+                    MessageBox.Show("Please enter some items that you want to add!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+            }
+            else if (currentPage == 3)
+            {
+                //Show the corresponding next page
+                gbStep1.Visibility = Visibility.Hidden;
+                gbStep2.Visibility = Visibility.Hidden;
+                gbStep3.Visibility = Visibility.Hidden;
+                gbStep4.Visibility = Visibility.Visible;
+                gbStep5.Visibility = Visibility.Hidden;
+                gbStep6.Visibility = Visibility.Hidden;
+
+                //Update the items based on the settings from the last page
+                foreach (addItemEntry entry in itemEntries)
+                {
+                    entry.itemName = entry.tbItemName.Text;
+                    entry.itemPrefix = entry.tbItemPrefix.Text;
+                    entry.itemNBT = entry.tbItemNBT.Text;
+                }
+
+                //Add a loot table entry to every item
+                foreach (addItemEntry entry in itemEntries)
+                {
+                    entry.lootTableEntry = new addToLootTableEntry(string.Format("{0}:{1}", entry.tbItemPrefix.Text, entry.tbItemName.Text), entry.itemIndex);
+                }
+
+                //Display all loot tables
+                stpLootTableItems.Children.Clear();
+                foreach (addItemEntry entry in itemEntries)
+                {
+                    stpLootTableItems.Children.Add(entry.lootTableEntry.bdrItem);
+                }
+            }
+            else if (currentPage == 4)
+            {
+                //Show the corresponding next page
+                gbStep1.Visibility = Visibility.Hidden;
+                gbStep2.Visibility = Visibility.Hidden;
+                gbStep3.Visibility = Visibility.Hidden;
+                gbStep4.Visibility = Visibility.Hidden;
+                gbStep5.Visibility = Visibility.Visible;
+                gbStep6.Visibility = Visibility.Hidden;
+                btnBack.IsEnabled = false;
+                btnContinue.IsEnabled = false;
+
+                //Add the items
+                bgwAddItems.RunWorkerAsync();
+            }
+            else if (currentPage == 6)
+            {
+                //Exit the window
+                Close();
+            }
+
+            //Increase the page number
+            currentPage++;
+        }
+
+        private void btnBack_Click(object sender, RoutedEventArgs e)
+        {
+            if (currentPage == 1)
+            {
+                //Exit the window
+                Close();
+
+            }
+            if (currentPage == 2)
+            {
+                //Show the corresponding last page
+                gbStep1.Visibility = Visibility.Visible;
+                gbStep2.Visibility = Visibility.Hidden;
+                gbStep3.Visibility = Visibility.Hidden;
+                gbStep4.Visibility = Visibility.Hidden;
+                gbStep5.Visibility = Visibility.Hidden;
+                gbStep6.Visibility = Visibility.Hidden;
+                btnBack.Content = "Close";
+            }
+            else if (currentPage == 3)
+            {
+                //Show warning if there are items in the list as they could be modified
+                MessageBoxResult result = MessageBox.Show("Warning: You will loose any modifications to your items. Do you really want to go back?", "Go back", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        //Show the corresponding last page
+                        gbStep1.Visibility = Visibility.Hidden;
+                        gbStep2.Visibility = Visibility.Visible;
+                        gbStep3.Visibility = Visibility.Hidden;
+                        gbStep4.Visibility = Visibility.Hidden;
+                        gbStep5.Visibility = Visibility.Hidden;
+                        gbStep6.Visibility = Visibility.Hidden;
+                        break;
+                    case MessageBoxResult.No:
+                        //Increase the page number by one as it will be decreased later anyway
+                        currentPage++;
+                        break;
+                }
+
+            }
+            if (currentPage == 4)
+            {
+                //Show warning if there are items in the list as they could be modified
+                MessageBoxResult result = MessageBox.Show("Warning: You will loose any loot table selections. Do you really want to go back?", "Go back", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        //Show the corresponding last page
+                        gbStep1.Visibility = Visibility.Hidden;
+                        gbStep2.Visibility = Visibility.Hidden;
+                        gbStep3.Visibility = Visibility.Visible;
+                        gbStep4.Visibility = Visibility.Hidden;
+                        gbStep5.Visibility = Visibility.Hidden;
+                        gbStep6.Visibility = Visibility.Hidden;
+                        break;
+                    case MessageBoxResult.No:
+                        //Increase the page number by one as it will be decreased later anyway
+                        currentPage++;
+                        break;
+                }
+            }
+
+            //Decrease the page number
+            currentPage--;
+        }
+
+        private void btnAddAdditionalItem_Click(object sender, RoutedEventArgs e)
+        {
+            //Add a new empty item
+            itemEntries.Add(new addItemEntry("minecraft", "", itemEntries.Count));
+
+            //Display all items
+            UpdateItemDisplay();
         }
 
         //-- Custom Methods --//
 
-        public void AddItems(string lootTable)
+        public void UpdateItemDisplay()
         {
+            //Display all items
+            stpItems.Children.Clear();
+            foreach (addItemEntry entry in itemEntries)
+            {
+                stpItems.Children.Add(entry.bdrItem);
+            }
+        }
+
+        public void AddItems(string lootTable)
+        {           
             //Load the file
             string[] lootTableFile = File.ReadAllLines(lootTable);
             List<string> fileEnd = new List<string>();
@@ -101,13 +370,13 @@ namespace Random_Item_Giver_Updater
                     //If it contains the item name, replace
                     if (lootTableFile[lootTableFile.Length - index - 1].Contains("\"name\"") && lootTableFile[lootTableFile.Length - index - 2].Contains("item\""))
                     {
-                        lootTableFile[lootTableFile.Length - index - 1] = lootTableFile[lootTableFile.Length - index - 1].Replace(GetItemName(lootTableFile[lootTableFile.Length - index - 1]), "!REPLACE_NAME!");
+                        lootTableFile[lootTableFile.Length - index - 1] = lootTableFile[lootTableFile.Length - index - 1].Replace(GetItemName(lootTableFile[lootTableFile.Length - index - 1]), "{!REPLACE_NAME!}");
                     }
                     //If it contains the item NBT, replace
                     else if (lootTableFile[lootTableFile.Length - index - 1].Contains("\"tag\""))
                     {
                         hasNbtEntry = true;
-                        lootTableFile[lootTableFile.Length - index - 1] = lootTableFile[lootTableFile.Length - index - 1].Replace(GetItemNBT(lootTableFile[lootTableFile.Length - index - 1]), "!REPLACE_NBT!");
+                        lootTableFile[lootTableFile.Length - index - 1] = lootTableFile[lootTableFile.Length - index - 1].Replace(GetItemNBT(lootTableFile[lootTableFile.Length - index - 1]), "{!REPLACE_NBT!}");
                     }
 
                     //Add line to item construct and continue
@@ -121,13 +390,13 @@ namespace Random_Item_Giver_Updater
                         //If it contains the item name, replace
                         if (lootTableFile[lootTableFile.Length - index - 1].Contains("\"name\"") && lootTableFile[lootTableFile.Length - index - 2].Contains("item\""))
                         {
-                            lootTableFile[lootTableFile.Length - index - 1] = lootTableFile[lootTableFile.Length - index - 1].Replace(GetItemName(lootTableFile[lootTableFile.Length - index - 1]), "!REPLACE_NAME!");
+                            lootTableFile[lootTableFile.Length - index - 1] = lootTableFile[lootTableFile.Length - index - 1].Replace(GetItemName(lootTableFile[lootTableFile.Length - index - 1]), "{!REPLACE_NAME!}");
                         }
                         //If it contains the item NBT, replace
                         else if (lootTableFile[lootTableFile.Length - index - 1].Contains("\"tag\""))
                         {
                             hasNbtEntry = true;
-                            lootTableFile[lootTableFile.Length - index - 1] = lootTableFile[lootTableFile.Length - index - 1].Replace(GetItemNBT(lootTableFile[lootTableFile.Length - index - 1]), "!REPLACE_NBT!");
+                            lootTableFile[lootTableFile.Length - index - 1] = lootTableFile[lootTableFile.Length - index - 1].Replace(GetItemNBT(lootTableFile[lootTableFile.Length - index - 1]), "{!REPLACE_NBT!}");
                         }
 
                         //If it has reached a bracket with comma, but not one that indicates another item, add line continue
@@ -147,52 +416,118 @@ namespace Random_Item_Giver_Updater
             //Add all the items to the loot table
             foreach (addItemEntry item in itemEntries)
             {
-                List<string> temporaryConstruct = new List<string>();
-                foreach (string line in itemConstruct)
+                
+                //Only add the item to the loot table if selected
+                if (item.lootTableEntry.allLootTablesChecked == true)
                 {
-                    //Replace the name placeholder with the actual prefix and name and add to a temporary construct
-                    if (line.Contains("!REPLACE_NAME!"))
+                    if (lootTable.Contains("main") || lootTable.Contains("special"))
                     {
-                        temporaryConstruct.Add(line.Replace("!REPLACE_NAME!", string.Format("{0}{1}", item.tbItemPrefix.Text, item.tbItemName.Text)));
-                    }
-                    //Just add to the temporary construct
-                    else
-                    {
-                        temporaryConstruct.Add(line);
-                    }
-                }
-
-                //If an NBT tag is given
-                List<string> temporaryFinalConstruct = new List<string>();
-                if (!string.IsNullOrEmpty(item.tbItemNBT.Text))
-                {
-                    //Add nbt entry to construct if a NBT tag is given
-                    if (hasNbtEntry == false)
-                    {
-                        temporaryConstruct = AddNbtEntry(temporaryConstruct);
-                    }
-
-                    foreach(string line in temporaryConstruct)
-                    {
-                        //Replace the NBT placeholder with the actual NBT tag and add to a temporary construct
-                        if (line.Contains("!REPLACE_NBT!"))
+                        List<string> temporaryConstruct = new List<string>();
+                        foreach (string line in itemConstruct)
                         {
-                            temporaryFinalConstruct.Add(line.Replace("!REPLACE_NBT!", item.tbItemNBT.Text));
+                            //Replace the name placeholder with the actual prefix and name and add to a temporary construct
+                            if (line.Contains("{!REPLACE_NAME!}"))
+                            {
+                                temporaryConstruct.Add(line.Replace("{!REPLACE_NAME!}", string.Format("{0}:{1}", item.itemPrefix, item.itemName)));
+                            }
+                            //Just add to the temporary construct
+                            else
+                            {
+                                temporaryConstruct.Add(line);
+                            }
+                        }
+
+                        //If an NBT tag is given
+                        List<string> temporaryFinalConstruct = new List<string>();
+                        if (!string.IsNullOrEmpty(item.itemNBT))
+                        {
+                            //Add nbt entry to construct if a NBT tag is given
+                            if (hasNbtEntry == false)
+                            {
+                                temporaryConstruct = AddNbtEntry(temporaryConstruct);
+                            }
+
+                            foreach (string line in temporaryConstruct)
+                            {
+                                //Replace the NBT placeholder with the actual NBT tag and add to a temporary construct
+                                if (line.Contains("{!REPLACE_NBT!}"))
+                                {
+                                    temporaryFinalConstruct.Add(line.Replace("{!REPLACE_NBT!}", item.itemNBT));
+                                }
+                                else
+                                {
+                                    temporaryFinalConstruct.Add(line);
+                                }
+                            }
                         }
                         else
                         {
-                            temporaryFinalConstruct.Add(line);
+                            //Continue without NBT
+                            temporaryFinalConstruct = temporaryConstruct;
                         }
+                        //Write the construct with the item prefix, name and nbt to the file
+                        File.AppendAllText(lootTable, string.Join(Environment.NewLine, temporaryFinalConstruct) + "\n");
+
+                        
                     }
                 }
-                else
+                else if (item.lootTableEntry.allLootTablesChecked == false && item.lootTableEntry.lootTableWhiteList.Contains(lootTable))
                 {
-                    //Continue without NBT
-                    temporaryFinalConstruct = temporaryConstruct;
+                    List<string> temporaryConstruct = new List<string>();
+                    foreach (string line in itemConstruct)
+                    {
+                        //Replace the name placeholder with the actual prefix and name and add to a temporary construct
+                        if (line.Contains("{!REPLACE_NAME!}"))
+                        {
+                            temporaryConstruct.Add(line.Replace("{!REPLACE_NAME!}", string.Format("{0}:{1}", item.itemPrefix, item.itemName)));
+                        }
+                        //Just add to the temporary construct
+                        else
+                        {
+                            temporaryConstruct.Add(line);
+                        }
+                    }
+
+                    //If an NBT tag is given
+                    List<string> temporaryFinalConstruct = new List<string>();
+                    if (!string.IsNullOrEmpty(item.itemNBT))
+                    {
+                        //Add nbt entry to construct if a NBT tag is given
+                        if (hasNbtEntry == false)
+                        {
+                            temporaryConstruct = AddNbtEntry(temporaryConstruct);
+                        }
+
+                        foreach (string line in temporaryConstruct)
+                        {
+                            //Replace the NBT placeholder with the actual NBT tag and add to a temporary construct
+                            if (line.Contains("{!REPLACE_NBT!}"))
+                            {
+                                temporaryFinalConstruct.Add(line.Replace("{!REPLACE_NBT!}", item.itemNBT));
+                            }
+                            else
+                            {
+                                temporaryFinalConstruct.Add(line);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //Continue without NBT
+                        temporaryFinalConstruct = temporaryConstruct;
+                    }
+
+                    //Write the construct with the item prefix, name and nbt to the file
+                    File.AppendAllText(lootTable, string.Join(Environment.NewLine, temporaryFinalConstruct) + "\n");
+
                 }
 
-                //Write the construct with the item prefix, name and nbt to the file
-                File.AppendAllText(lootTable, string.Join(Environment.NewLine, temporaryFinalConstruct) + "\n");
+                //Report worker progress
+                addItemsWorkerProgress = addItemsWorkerProgress + (100 / (Convert.ToDouble(itemEntries.Count * MainWindow.lootTableList.Count) ));
+                //MessageBox.Show(addItemsWorkerProgress.ToString());
+                addItemsWorkerAddedItems++;
+                bgwAddItems.ReportProgress(addItemsWorkerAddedItems, addItemsWorkerProgress);
+
             }
             //Remove the comma at the end to avoid corruption
             lootTableFile = File.ReadAllLines(lootTable);
@@ -257,26 +592,6 @@ namespace Random_Item_Giver_Updater
             }
 
 
-        }
-
-        private void btnContinue_Click(object sender, RoutedEventArgs e)
-        {
-            //Get all items into an array
-            string[] items = tbItemName.Text.Split('\n');
-
-            //Create an entry for every item
-            int index = 0;
-            foreach (string item in items)
-            {
-                itemEntries.Add(new addItemEntry(item, index));
-                index++;
-            }
-
-            //Display all items
-            foreach (addItemEntry entry in itemEntries)
-            {
-                stpItems.Children.Add(entry.bdrItem);
-            }
         }
     }
 }

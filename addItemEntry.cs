@@ -10,7 +10,7 @@ using System.Windows;
 
 namespace Random_Item_Giver_Updater
 {
-    internal class addItemEntry
+    public class addItemEntry
     {
         //Controls
         public Border bdrItem = new Border();
@@ -18,11 +18,23 @@ namespace Random_Item_Giver_Updater
         public TextBox tbItemName = new TextBox();
         public TextBox tbItemNBT = new TextBox();
         public TextBox tbItemPrefix = new TextBox();
+        public Button btnRemove = new Button();
+
+        //Attributes
+        public string itemName;
+        public int itemIndex;
+        public string itemNBT;
+        public string itemPrefix;
+        public addToLootTableEntry lootTableEntry;
 
         //-- Constructor --//
 
-        public addItemEntry(string name, int index)
+        public addItemEntry(string prefix, string name, int index)
         {
+            //Set variables
+            itemName = name.TrimEnd('\r', '\n');
+            itemIndex = index;
+            itemPrefix = prefix;
 
             //Set backcolor
             if (index % 2 == 0)
@@ -31,7 +43,7 @@ namespace Random_Item_Giver_Updater
             }
             else
             {
-                cvsItem.Background = new SolidColorBrush(Color.FromArgb(100, 90, 90, 90));
+                cvsItem.Background = new SolidColorBrush(Color.FromArgb(100, 50, 50, 50));
             }
             cvsItem.Height = 40;
 
@@ -42,27 +54,51 @@ namespace Random_Item_Giver_Updater
             bdrItem.VerticalAlignment = VerticalAlignment.Top;
 
             //Create item name textbox
-            tbItemName.Width = 220;
-            tbItemName.Height = 20;
-            tbItemName.FontSize = 12;
-            tbItemName.Margin = new Thickness(160, 5, 0, 0);
-            tbItemName.Text = name.TrimEnd('\r', '\n');
+            tbItemName.Width = 255;
+            tbItemName.Height = 24;
+            tbItemName.FontSize = 15;
+            tbItemName.Background = new SolidColorBrush(Color.FromArgb(100, 164, 164, 164));
+            tbItemName.Foreground = new SolidColorBrush(Colors.White);
+            tbItemName.Margin = new Thickness(205, 6, 0, 0);
+            tbItemName.Text = itemName;
             cvsItem.Children.Add(tbItemName);
 
             //Create item NBT textbox
-            tbItemNBT.Width = 100;
-            tbItemNBT.Height = 20;
-            tbItemNBT.FontSize = 12;
-            tbItemNBT.Margin = new Thickness(400, 5, 0, 0);
+            tbItemNBT.Width = 200;
+            tbItemNBT.Height = 24;
+            tbItemNBT.FontSize = 15;
+            tbItemNBT.Background = new SolidColorBrush(Color.FromArgb(100, 164, 164, 164));
+            tbItemNBT.Foreground = new SolidColorBrush(Colors.White);
+            tbItemNBT.Margin = new Thickness(475, 6, 0, 0);
             cvsItem.Children.Add(tbItemNBT);
 
             //Create item Prefix textbox
-            tbItemPrefix.Width = 130;
-            tbItemPrefix.Height = 20;
-            tbItemPrefix.FontSize = 12;
-            tbItemPrefix.Margin = new Thickness(5, 5, 0, 0);
-            tbItemPrefix.Text = "minecraft:";
+            tbItemPrefix.Width = 175;
+            tbItemPrefix.Height = 24;
+            tbItemPrefix.FontSize = 15;
+            tbItemPrefix.Background = new SolidColorBrush(Color.FromArgb(100, 164, 164, 164));
+            tbItemPrefix.Foreground = new SolidColorBrush(Colors.White);
+            tbItemPrefix.Margin = new Thickness(15, 6, 0, 0);
+            tbItemPrefix.Text = prefix;
             cvsItem.Children.Add(tbItemPrefix);
+
+            //Create Remove button
+            btnRemove.Height = 24;
+            btnRemove.Width = 20;
+            btnRemove.Content = "X";
+            btnRemove.FontSize = 15;
+            btnRemove.Margin = new Thickness(685, 6, 0, 0);
+            btnRemove.Click += new RoutedEventHandler(btnRemove_Click);
+            cvsItem.Children.Add(btnRemove);
+        }
+
+        private void btnRemove_Click(object sender, RoutedEventArgs e)
+        {
+            //Remove the current item from the list
+            wndAddItem.itemEntries.Remove(this);
+
+            //Display all items
+            MainWindow.wndAddItem.UpdateItemDisplay();
         }
     }
 }

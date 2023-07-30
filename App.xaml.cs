@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace Random_Item_Giver_Updater
 {
@@ -13,5 +14,10 @@ namespace Random_Item_Giver_Updater
 	/// </summary>
 	public partial class App : Application
 	{
-	}
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.Default;
+        }
+    }
 }

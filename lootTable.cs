@@ -15,17 +15,26 @@ namespace Random_Item_Giver_Updater
         //Controls
         public Canvas cvsLootTable = new Canvas();
         public TextBlock tblLootTable = new TextBlock();
+        public CheckBox cbAddToLootTable = new CheckBox();
 
         //Attributes
         public string lootTableName;
         public string lootTableType;
         public string lootTablePath;
+        public string fullLootTablePath;
+        public bool isSelectedForAdding = true;
 
 
         //-- Constructor --//
 
         public lootTable(string name, string type, string path)
         {
+            //Set attributes
+            lootTableName = name.Replace("\\", "");
+            lootTableType = type;
+            lootTablePath = path;
+            fullLootTablePath = string.Format("{0}/{1}", lootTablePath, lootTableName);
+
             //Create canvas
             cvsLootTable.Height = 35;
             cvsLootTable.Background = new SolidColorBrush(Color.FromArgb(100, 65, 65, 65));
@@ -38,10 +47,12 @@ namespace Random_Item_Giver_Updater
             tblLootTable.Margin = new Thickness(25, 10, 0, 0);
             cvsLootTable.Children.Add(tblLootTable);
 
-            //Set some final attributes
-            lootTableName = name.Replace("\\", "");
-            lootTableType = type;
-            lootTablePath = path;
+            //Create checkbox for adding items window
+            cbAddToLootTable.Content = fullLootTablePath.Replace(string.Format("{0}/data/randomitemgiver/loot_tables/", MainWindow.currentDatapack), "").Replace(".json", "");
+            cbAddToLootTable.Foreground = new SolidColorBrush(Colors.White);
+            cbAddToLootTable.Margin = new Thickness(20, 15, 0, 0);
+            cbAddToLootTable.FontSize = 15;
+            cbAddToLootTable.IsChecked = true;
 
             //Add mouse down event to load the loot table
             cvsLootTable.MouseDown += new MouseButtonEventHandler(cvsLootTable_MouseDown);
