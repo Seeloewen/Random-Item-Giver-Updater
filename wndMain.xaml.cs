@@ -15,6 +15,8 @@ using System.Windows.Shapes;
 using System.IO;
 using System.Security.Policy;
 using System.Diagnostics.Eventing.Reader;
+using System.Windows.Threading;
+using System.ComponentModel;
 
 namespace Random_Item_Giver_Updater
 {
@@ -36,9 +38,24 @@ namespace Random_Item_Giver_Updater
         //General variables for the software
         public static string versionNumber = string.Format("Dev{0}", ((Convert.ToString(DateTime.Now).Replace(" ", "")).Replace(":", ""))).Replace(".", "");
         public static string currentLootTable = "none";
+        public static string currentDatapack = "none";
 
         //Windows
-        wndAddItem wndAddItem;
+        public static wndAddItem wndAddItem;
+
+        //Buttons
+        public Canvas cvsBtnAddItems = new Canvas();
+        public Image imgBtnAddItems = new Image();
+        public TextBlock tblBtnAddItems = new TextBlock();
+        public Canvas cvsBtnDuplicateFinder = new Canvas();
+        public Image imgBtnDuplicateFinder = new Image();
+        public TextBlock tblBtnDuplicateFinder = new TextBlock();
+        public Canvas cvsBtnSave = new Canvas();
+        public Image imgBtnSave = new Image();
+        public TextBlock tblBtnSave = new TextBlock();
+        public Canvas cvsBtnAbout = new Canvas();
+        public Image imgBtnAbout = new Image();
+        public TextBlock tblBtnAbout = new TextBlock();
 
         //-- Constructor --//
 
@@ -80,89 +97,33 @@ namespace Random_Item_Giver_Updater
             Grid.SetRow(svLootTables, 1);
             grdWorkspace.Children.Add(svLootTables);
 
-
             //Setup folder browser for datapack
             fbdDatapack.Description = "Select the datapack that you want to edit.";
 
             //Set version number in header
-            tblHeader.Text = String.Format("Random Item Giver Updater {0}", versionNumber);
+            tblHeader.Text = String.Format("Random Item Giver Updater\nVersion {0}", versionNumber);
+
+            //Setup buttons to make them look right
+            SetupButtons();
         }
 
         //-- Event Handlers --//
 
-        public static void LoadLootTable(string path)
+        private void btnAddItem_Click(object sender, RoutedEventArgs e)
         {
+            //Open add item window
+            wndAddItem = new wndAddItem() { Owner = this };
+            wndAddItem.Owner = Application.Current.MainWindow;
+            if (wndAddItem.isOpen == false)
             {
-                //Get list of content in file, remove all non-item lines so only items remain
-                string[] loadedItems = File.ReadAllLines(currentLootTable);
-                List<string> items = new List<string>();
-
-                items.Clear();
-                foreach (string item in loadedItems)
+                //Check if the datapack path exists before opening the window
+                if (Directory.Exists(currentDatapack))
                 {
-                    if (item.Contains("\"tag\""))
-                    {
-                        string itemFiltered;
-                        itemFiltered = item.Replace(" ", "");
-                        itemFiltered = itemFiltered.Replace("\"tag\":", "");
-                        itemFiltered = itemFiltered.Substring(1, itemFiltered.Length - 2);
-                        items.Add(itemFiltered);
-                    }
-                    else if (!item.Contains("\"tag\"") && !item.Contains("{") && !item.Contains("}") && !item.Contains("[") && !item.Contains("]") && !item.Contains("\"rolls\"") && !item.Contains("\"type\"") && !item.Contains("\"function\"") && item.Contains("\"") && !item.Contains("\"weight\"") && !item.Contains("\"count\"") && !item.Contains("\"min\": 1") && !item.Contains("\"max\": 64") && !item.Contains("\"out\"") && !item.Contains("\"score\""))
-                    {
-                        string itemFiltered;
-                        itemFiltered = item.Replace("\"", "");
-                        itemFiltered = itemFiltered.Replace("name:", "");
-                        itemFiltered = itemFiltered.Replace(" ", "");
-                        itemFiltered = itemFiltered.Replace("tag:", "");
-                        itemFiltered = itemFiltered.Replace(",", "");
-                        items.Add(itemFiltered);
-                    }
+                    wndAddItem.ShowDialog();
                 }
-
-                List<string> finalItemList = new List<string>();
-                //Check for each item if it has NBT and add it to the string
-                for (int i = 0; i < items.Count; i++)
+                else
                 {
-                    if (!items[i].Contains("{"))
-                    {
-                        if (i < items.Count - 1)
-                        {
-
-                            if (items[i + 1].Contains("{"))
-                            {
-                                finalItemList.Add(string.Format("{0};{1}", items[i], items[i + 1]));
-                            }
-
-                            if (!items[i + 1].Contains("{"))
-                            {
-                                finalItemList.Add(string.Format("{0};none", items[i]));
-                            }
-                        }
-                        else
-                        {
-                            {
-                                finalItemList.Add(string.Format("{0};none", items[i]));
-                            }
-                        }
-                    }
-                }
-
-                itemList.Clear();
-                int index = 0;
-                //Add an entry for all items
-                foreach (string item in finalItemList)
-                {
-                    string[] splitItem = item.Split(';');
-                    itemList.Add(new itemEntry(splitItem[0], splitItem[1], index));
-                    index++;
-                }
-
-                //Add all item entrys to workspace
-                stpWorkspace.Children.Clear();
-                foreach (itemEntry entry in itemList)
-                {
-                    stpWorkspace.Children.Add(entry.bdrItem);
+                    MessageBox.Show("Error: Could not detect datapack. Please make sure the currently selected datapack exists and is valid.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -178,7 +139,8 @@ namespace Random_Item_Giver_Updater
         {
             //WIP
             tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.20 Dev";
-            GetLootTables(tbDatapack.Text);
+            currentDatapack = tbDatapack.Text;
+            GetLootTables(currentDatapack);
         }
 
         private void btnSaveLootTable_Click(object sender, RoutedEventArgs e)
@@ -192,7 +154,8 @@ namespace Random_Item_Giver_Updater
             //Move delete button when window is resized
             foreach (itemEntry item in itemList)
             {
-                item.btnDelete.Margin = new Thickness(ActualWidth - 420, 10, 0, 0);
+                item.btnDelete.Margin = new Thickness(ActualWidth - 460, 10, 0, 0);
+                item.tblEntryIndex.Margin = new Thickness(wndMain.ActualWidth - 345, 10, 0, 0);
             }
         }
 
@@ -221,6 +184,82 @@ namespace Random_Item_Giver_Updater
         }
 
         //-- Custom Methods --//
+
+        public static void LoadLootTable(string path)
+        {
+
+            //Get list of content in file, remove all non-item lines so only items remain
+            string[] loadedItems = File.ReadAllLines(currentLootTable);
+            List<string> items = new List<string>();
+
+            items.Clear();
+            foreach (string item in loadedItems)
+            {
+                if (item.Contains("\"tag\""))
+                {
+                    string itemFiltered;
+                    itemFiltered = item.Replace(" ", "");
+                    itemFiltered = itemFiltered.Replace("\"tag\":", "");
+                    itemFiltered = itemFiltered.Substring(1, itemFiltered.Length - 2);
+                    items.Add(itemFiltered);
+                }
+                else if (!item.Contains("\"tag\"") && !item.Contains("{") && !item.Contains("}") && !item.Contains("[") && !item.Contains("]") && !item.Contains("\"rolls\"") && !item.Contains("\"type\"") && !item.Contains("\"function\"") && item.Contains("\"") && !item.Contains("\"weight\"") && !item.Contains("\"count\"") && !item.Contains("\"min\": 1") && !item.Contains("\"max\": 64") && !item.Contains("\"out\"") && !item.Contains("\"score\""))
+                {
+                    string itemFiltered;
+                    itemFiltered = item.Replace("\"", "");
+                    itemFiltered = itemFiltered.Replace("name:", "");
+                    itemFiltered = itemFiltered.Replace(" ", "");
+                    itemFiltered = itemFiltered.Replace("tag:", "");
+                    itemFiltered = itemFiltered.Replace(",", "");
+                    items.Add(itemFiltered);
+                }
+            }
+
+            List<string> finalItemList = new List<string>();
+            //Check for each item if it has NBT and add it to the string
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (!items[i].Contains("{"))
+                {
+                    if (i < items.Count - 1)
+                    {
+
+                        if (items[i + 1].Contains("{"))
+                        {
+                            finalItemList.Add(string.Format("{0};{1}", items[i], items[i + 1]));
+                        }
+
+                        if (!items[i + 1].Contains("{"))
+                        {
+                            finalItemList.Add(string.Format("{0};none", items[i]));
+                        }
+                    }
+                    else
+                    {
+                        {
+                            finalItemList.Add(string.Format("{0};none", items[i]));
+                        }
+                    }
+                }
+            }
+
+            itemList.Clear();
+            int index = 0;
+            //Add an entry for all items
+            foreach (string item in finalItemList)
+            {
+                string[] splitItem = item.Split(';');
+                itemList.Add(new itemEntry(splitItem[0], splitItem[1], index));
+                index++;
+            }
+
+            //Add all item entrys to workspace
+            stpWorkspace.Children.Clear();
+            foreach (itemEntry entry in itemList)
+            {
+                stpWorkspace.Children.Add(entry.bdrItem);
+            }
+        }
 
         private void GetLootTables(string path)
         {
@@ -258,7 +297,7 @@ namespace Random_Item_Giver_Updater
             }
         }
 
-        private int GetDatapackVersionNumber(string path)
+        public static int GetDatapackVersionNumber(string path)
         {
             //Read line with pack version from pack.mcmeta file, replace unnecessary characters and return the raw version
             string[] loadedItems = File.ReadAllLines(String.Format("{0}/pack.mcmeta", path));
@@ -267,6 +306,79 @@ namespace Random_Item_Giver_Updater
             versionString = versionString.Replace(",", "");
             int version = int.Parse(versionString);
             return version;
+        }
+
+        public static string GetDatapackMCVersion(string path)
+        {
+            //Get datapack version
+            int datapackVersion = GetDatapackVersionNumber(path);
+
+            //Determine version based on datapack version
+            if (datapackVersion == 4)
+            {
+                //Version 1.13 - 1.14.4 (unsupported)
+                return "1.13 - 1.14.4 (unsupported)";
+            }
+            else if (datapackVersion == 5)
+            {
+                //Version 1.15 - 1.16.1 (unsupported)
+                return "1.15 - 1.16.1 (unsupported)";
+            }
+            else if (datapackVersion == 6)
+            {
+                //Version 1.16.2 - 1.16.5
+                return "1.16.2 - 1.16.5";
+            }
+            else if (datapackVersion == 7)
+            {
+                //Version 1.17 - 1.17.1
+                return "1.17 - 1.17.1";
+            }
+            else if (datapackVersion == 8)
+            {
+                //Version 1.18 - 1.18.1
+                return "1.18 - 1.18.1";
+            }
+            else if (datapackVersion == 9)
+            {
+                //Version 1.18.2
+                return "1.18.2";
+            }
+            else if (datapackVersion == 10)
+            {
+                //Version 1.19 - 1.19.3
+                return "1.19 - 1.19.3";
+            }
+            else if (datapackVersion == 11)
+            {
+                //Version 1.19.4-Snapshot
+                return "1.19.4-Snapshot";
+            }
+            else if (datapackVersion == 12)
+            {
+                //Version 1.19.4
+                return "1.19.4";
+            }
+            else if (datapackVersion == 13)
+            {
+                //Version 1.20-Snapshot
+                return "1.20-Snapshot";
+            }
+            else if (datapackVersion == 14)
+            {
+                //Version 1.20-Snapshot
+                return "1.20-Snapshot";
+            }
+            else if (datapackVersion == 15)
+            {
+                //Version 1.20
+                return "1.20";
+            }
+            else
+            {
+                //Unknown version
+                return "Unknown";
+            }
         }
 
         public static void SaveCurrentLootTable()
@@ -549,7 +661,7 @@ namespace Random_Item_Giver_Updater
 
         }
 
-       
+
         public static bool lootTableModified()
         {
             bool isModified = false;
@@ -568,15 +680,67 @@ namespace Random_Item_Giver_Updater
             return isModified;
         }
 
-        private void btnAddItem_Click(object sender, RoutedEventArgs e)
+        public void SetupButtons() //Adds Canvas with image and textblock to button
         {
-            //Open add item window
-            wndAddItem = new wndAddItem() { Owner = this };
-            wndAddItem.Owner = Application.Current.MainWindow;
-            if (wndAddItem.isOpen == false)
-            {
-                wndAddItem.Show();
-            }
+            //btnAbout
+            imgBtnAbout.Source = new BitmapImage(new Uri(@"/Random Item Giver Updater;component/Resources/imgAbout.png", UriKind.Relative));
+            imgBtnAbout.Margin = new Thickness(5, -10, 0, 0);
+            imgBtnAbout.Width = 20;
+            imgBtnAbout.Height = 20;
+            imgBtnAbout.Stretch = Stretch.UniformToFill;
+
+            tblBtnAbout.Text = "About";
+            tblBtnAbout.FontSize = 17;
+            tblBtnAbout.Margin = new Thickness(35, -12, 0, 0);
+
+            cvsBtnAbout.Children.Add(imgBtnAbout);
+            cvsBtnAbout.Children.Add(tblBtnAbout);
+            btnAbout.Content = cvsBtnAbout;
+
+            //btnSave
+            imgBtnSave.Source = new BitmapImage(new Uri(@"/Random Item Giver Updater;component/Resources/imgSave.png", UriKind.Relative));
+            imgBtnSave.Margin = new Thickness(5, -10, 0, 0);
+            imgBtnSave.Width = 20;
+            imgBtnSave.Height = 20;
+            imgBtnSave.Stretch = Stretch.UniformToFill;
+
+            tblBtnSave.Text = "Save Loot Table";
+            tblBtnSave.FontSize = 17;
+            tblBtnSave.Margin = new Thickness(35, -12, 0, 0);
+
+            cvsBtnSave.Children.Add(imgBtnSave);
+            cvsBtnSave.Children.Add(tblBtnSave);
+            btnSave.Content = cvsBtnSave;
+
+            //btnDuplicateFinder
+            imgBtnDuplicateFinder.Source = new BitmapImage(new Uri(@"/Random Item Giver Updater;component/Resources/imgDuplicateFinder.png", UriKind.Relative));
+            imgBtnDuplicateFinder.Margin = new Thickness(5, -10, 0, 0);
+            imgBtnDuplicateFinder.Width = 22;
+            imgBtnDuplicateFinder.Height = 22;
+            imgBtnDuplicateFinder.Stretch = Stretch.UniformToFill;
+
+            tblBtnDuplicateFinder.Text = "Duplicate Finder";
+            tblBtnDuplicateFinder.FontSize = 17;
+            tblBtnDuplicateFinder.Margin = new Thickness(35, -12, 0, 0);
+
+            cvsBtnDuplicateFinder.Children.Add(imgBtnDuplicateFinder);
+            cvsBtnDuplicateFinder.Children.Add(tblBtnDuplicateFinder);
+            btnDuplicateFinder.Content = cvsBtnDuplicateFinder;
+
+            //BtnAddItems
+            imgBtnAddItems.Source = new BitmapImage(new Uri(@"/Random Item Giver Updater;component/Resources/imgAddItems.png", UriKind.Relative));
+            imgBtnAddItems.Margin = new Thickness(5, -10, 0, 0);
+            imgBtnAddItems.Width = 20;
+            imgBtnAddItems.Height = 20;
+            imgBtnAddItems.Stretch = Stretch.UniformToFill;
+
+            tblBtnAddItems.Text = "Add Items";
+            tblBtnAddItems.FontSize = 17;
+            tblBtnAddItems.Margin = new Thickness(35, -12, 0, 0);
+
+            cvsBtnAddItems.Children.Add(imgBtnAddItems);
+            cvsBtnAddItems.Children.Add(tblBtnAddItems);
+            btnAddItems.Content = cvsBtnAddItems;
         }
     }
 }
