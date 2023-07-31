@@ -30,16 +30,18 @@ namespace Random_Item_Giver_Updater
         int addItemsWorkerAddedItemsLootTables;
 
         //Reference to main window
-        MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
+        public MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
 
         //Controls
-        BackgroundWorker bgwAddItems = new BackgroundWorker();
+        private BackgroundWorker bgwAddItems = new BackgroundWorker();
+        private TextBlock tblLoadingItems = new TextBlock();
 
         //-- Constructor --//
 
         public wndAddItem()
         {
             InitializeComponent();
+            SetupControls();
         }
 
         //-- Event Handlers --//
@@ -73,7 +75,7 @@ namespace Random_Item_Giver_Updater
                 foreach (lootTable lootTable in MainWindow.lootTableList)
                 {
                     AddItems(string.Format("{0}/{1}", lootTable.lootTablePath, lootTable.lootTableName));
-                addItemsWorkerAddedItemsLootTables++;
+                    addItemsWorkerAddedItemsLootTables++;
                     addItemsWorkerAddedItems = 0;
                 }
 
@@ -91,6 +93,11 @@ namespace Random_Item_Giver_Updater
                 gbStep6.Visibility = Visibility.Visible;
                 btnContinue.Content = "Finish";
                 btnContinue.IsEnabled = true;
+
+                foreach (addItemEntry item in itemEntries)
+                {
+                    tbAddedItemsList.AppendText(string.Format("{0}:{1}\n", item.itemPrefix, item.itemName));
+                }
             };
 
             bgwAddItems.ProgressChanged += delegate (object s, ProgressChangedEventArgs progress)
@@ -99,7 +106,7 @@ namespace Random_Item_Giver_Updater
                 pbAddingItems.Value = Convert.ToDouble(progress.UserState);
 
                 //Report added items
-                tblAddingItems.Text = string.Format("Adding items... (Item {0}/{1} - Loot Table {2}/{3})", progress.ProgressPercentage, itemEntries.Count, addItemsWorkerAddedItemsLootTables, MainWindow.lootTableList.Count);
+                tblAddingItemsProgress.Text = string.Format("Adding items... (Item {0}/{1} - Loot Table {2}/{3})", progress.ProgressPercentage, itemEntries.Count, addItemsWorkerAddedItemsLootTables, MainWindow.lootTableList.Count);
             };
         }
 
@@ -109,7 +116,7 @@ namespace Random_Item_Giver_Updater
             isOpen = false;
         }
 
-        private void btnContinue_Click(object sender, RoutedEventArgs e)
+        private async void btnContinue_Click(object sender, RoutedEventArgs e)
         {
             if (currentPage == 1)
             {
@@ -129,6 +136,8 @@ namespace Random_Item_Giver_Updater
             {
                 if (!string.IsNullOrEmpty(tbItemName.Text))
                 {
+
+
                     //Show the corresponding next page
                     gbStep1.Visibility = Visibility.Hidden;
                     gbStep2.Visibility = Visibility.Hidden;
@@ -136,6 +145,7 @@ namespace Random_Item_Giver_Updater
                     gbStep4.Visibility = Visibility.Hidden;
                     gbStep5.Visibility = Visibility.Hidden;
                     gbStep6.Visibility = Visibility.Hidden;
+                    await Task.Delay(5);
 
                     //Get all items into an array
                     string[] items = tbItemName.Text.Split('\n');
@@ -193,6 +203,12 @@ namespace Random_Item_Giver_Updater
                 gbStep4.Visibility = Visibility.Visible;
                 gbStep5.Visibility = Visibility.Hidden;
                 gbStep6.Visibility = Visibility.Hidden;
+                await Task.Delay(5);
+
+                //Show loading message
+                stpLootTableItems.Children.Add(tblLoadingItems);
+                tblLoadingItems.Margin = new Thickness(220, 180, 0, 0);
+                await Task.Delay(5);
 
                 //Update the items based on the settings from the last page
                 foreach (addItemEntry entry in itemEntries)
@@ -207,6 +223,7 @@ namespace Random_Item_Giver_Updater
                 {
                     entry.lootTableEntry = new addToLootTableEntry(string.Format("{0}:{1}", entry.tbItemPrefix.Text, entry.tbItemName.Text), entry.itemIndex);
                 }
+
 
                 //Display all loot tables
                 stpLootTableItems.Children.Clear();
@@ -274,6 +291,10 @@ namespace Random_Item_Giver_Updater
                         gbStep4.Visibility = Visibility.Hidden;
                         gbStep5.Visibility = Visibility.Hidden;
                         gbStep6.Visibility = Visibility.Hidden;
+
+                        //Clear content of current page
+                        stpItems.Children.Clear();
+
                         break;
                     case MessageBoxResult.No:
                         //Increase the page number by one as it will be decreased later anyway
@@ -297,6 +318,10 @@ namespace Random_Item_Giver_Updater
                         gbStep4.Visibility = Visibility.Hidden;
                         gbStep5.Visibility = Visibility.Hidden;
                         gbStep6.Visibility = Visibility.Hidden;
+
+                        //Clear content of current page
+                        stpLootTableItems.Children.Clear();
+
                         break;
                     case MessageBoxResult.No:
                         //Increase the page number by one as it will be decreased later anyway
@@ -320,8 +345,13 @@ namespace Random_Item_Giver_Updater
 
         //-- Custom Methods --//
 
-        public void UpdateItemDisplay()
+        public async void UpdateItemDisplay()
         {
+            //Show loading message
+            stpItems.Children.Add(tblLoadingItems);
+            tblLoadingItems.Margin = new Thickness(220, 180, 0, 0);
+            await Task.Delay(5);
+
             //Display all items
             stpItems.Children.Clear();
             foreach (addItemEntry entry in itemEntries)
@@ -331,7 +361,7 @@ namespace Random_Item_Giver_Updater
         }
 
         public void AddItems(string lootTable)
-        {           
+        {
             //Load the file
             string[] lootTableFile = File.ReadAllLines(lootTable);
             List<string> fileEnd = new List<string>();
@@ -416,7 +446,7 @@ namespace Random_Item_Giver_Updater
             //Add all the items to the loot table
             foreach (addItemEntry item in itemEntries)
             {
-                
+
                 //Only add the item to the loot table if selected
                 if (item.lootTableEntry.allLootTablesChecked == true)
                 {
@@ -468,7 +498,7 @@ namespace Random_Item_Giver_Updater
                         //Write the construct with the item prefix, name and nbt to the file
                         File.AppendAllText(lootTable, string.Join(Environment.NewLine, temporaryFinalConstruct) + "\n");
 
-                        
+
                     }
                 }
                 else if (item.lootTableEntry.allLootTablesChecked == false && item.lootTableEntry.lootTableWhiteList.Contains(lootTable))
@@ -523,8 +553,7 @@ namespace Random_Item_Giver_Updater
                 }
 
                 //Report worker progress
-                addItemsWorkerProgress = addItemsWorkerProgress + (100 / (Convert.ToDouble(itemEntries.Count * MainWindow.lootTableList.Count) ));
-                //MessageBox.Show(addItemsWorkerProgress.ToString());
+                addItemsWorkerProgress = addItemsWorkerProgress + (100 / (Convert.ToDouble(itemEntries.Count * MainWindow.lootTableList.Count)));
                 addItemsWorkerAddedItems++;
                 bgwAddItems.ReportProgress(addItemsWorkerAddedItems, addItemsWorkerProgress);
 
@@ -590,8 +619,14 @@ namespace Random_Item_Giver_Updater
                 construct.Insert(construct.Count - 1, "                    ]");
                 return construct;
             }
+        }
 
-
+        private void SetupControls()
+        {
+            //Create 'Loading' text for loading items
+            tblLoadingItems.Text = "Processing items, please wait...\nThis may take a few seconds!";
+            tblLoadingItems.Foreground = new SolidColorBrush(Colors.White);
+            tblLoadingItems.FontSize = 24;
         }
     }
 }

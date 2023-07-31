@@ -48,8 +48,6 @@
                 <TextBlock x:Name="tblAddingItems" Canvas.Left="20" TextWrapping="Wrap" Text="Congratulations! Your items are now being added to the datapack. You can view the progress down below." Canvas.Top="16" HorizontalAlignment="Left" VerticalAlignment="Center" Width="692"/>
                 <TextBlock x:Name="tblAddingItemsProgress" Canvas.Left="20" TextWrapping="Wrap" Text="Adding items... (0/0)" Canvas.Top="98"/>
                 <ProgressBar x:Name="pbAddingItems" Height="19" Canvas.Left="21" Canvas.Top="125" Width="687" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <TextBlock x:Name="tblLog" Canvas.Left="21" TextWrapping="Wrap" Text="Log:" Canvas.Top="180" FontWeight="DemiBold" FontSize="18"/>
-                <TextBox x:Name="tbLog" Canvas.Left="22" TextWrapping="Wrap" Canvas.Top="214" Width="685" Height="315" Foreground="White" Background="#FF636363" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             </Canvas>
         </GroupBox>
         <GroupBox x:Name="gbStep6" Header="Step 6: Finish" Margin="21,54,0,0" Width="742" Height="580" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" FontSize="16" UseLayoutRounding="True" Visibility="Hidden">

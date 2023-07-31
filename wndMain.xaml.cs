@@ -125,9 +125,9 @@ namespace Random_Item_Giver_Updater
 
         private void wndMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (MainWindow.currentLootTable != "none")
+            if (currentLootTable != "none")
             {
-                if (MainWindow.lootTableModified() == true)
+                if (lootTableModified() == true)
                 {
                     //Show warning if there are unsaved changes to the loot table
                     MessageBoxResult result = MessageBox.Show("You still have unsaved modifications in the current loot table.\nDo you want to save the changes before quitting?", "Save changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
@@ -136,7 +136,7 @@ namespace Random_Item_Giver_Updater
                     {
                         case MessageBoxResult.Yes:
                             //Save the current loot table
-                            wndMain.SaveCurrentLootTable();
+                            SaveCurrentLootTable();
                             break;
                         case MessageBoxResult.Cancel:
                             //Stop the quitting
