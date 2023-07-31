@@ -525,6 +525,7 @@ namespace Random_Item_Giver_Updater
             //Show 'loading' message
             stpWorkspace.Children.Clear();
             tblLoadingItems.Margin = new Thickness(svWorkspace.ActualWidth / 2 - 150, svWorkspace.ActualHeight / 2 - 75, 0, 0);
+            tblLoadingItems.Text = "Loading items, please wait...\nThis may take a few seconds!";
             stpWorkspace.Children.Add(tblLoadingItems);
             await Task.Delay(5); //Allows the UI to update and show the textblock
 
@@ -654,11 +655,18 @@ namespace Random_Item_Giver_Updater
             }
         }
 
-        public void SaveCurrentLootTable()
+        public async void SaveCurrentLootTable()
         {
             //Disable save button
             btnSave.IsEnabled = false;
             tblBtnSave.Text = "Saving...";
+
+            //Show 'loading' message
+            stpWorkspace.Children.Clear();
+            tblLoadingItems.Margin = new Thickness(svWorkspace.ActualWidth / 2 - 150, svWorkspace.ActualHeight / 2 - 75, 0, 0);
+            tblLoadingItems.Text = "Saving items, please wait...\nThis may take a few seconds!";
+            stpWorkspace.Children.Add(tblLoadingItems);
+            await Task.Delay(5); //Allows the UI to update and show the textblock
 
             //Save the loot table
             bgwEditLootTable.RunWorkerAsync();
