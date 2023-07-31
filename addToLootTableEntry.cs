@@ -111,7 +111,6 @@ namespace Random_Item_Giver_Updater
                 if(lootTable.cbAddToLootTable.IsChecked == true)
                 {
                     lootTableWhiteList = string.Format("{0}{1}", lootTableWhiteList, lootTable.fullLootTablePath);
-                    MessageBox.Show(lootTableWhiteList);
                 }
             }
 
