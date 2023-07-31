@@ -17,6 +17,7 @@ using System.Security.Policy;
 using System.Diagnostics.Eventing.Reader;
 using System.Windows.Threading;
 using System.ComponentModel;
+using System.Threading;
 
 namespace Random_Item_Giver_Updater
 {
@@ -37,6 +38,7 @@ namespace Random_Item_Giver_Updater
         private static TextBlock tblLoadingItems = new TextBlock();
         private static Canvas cvsLootTableStats = new Canvas();
         private static TextBlock tblLootTableStats = new TextBlock();
+        private BackgroundWorker bgwEditLootTable = new BackgroundWorker();
 
         //General variables for the software
         private static string versionNumber = string.Format("Dev{0}", ((Convert.ToString(DateTime.Now).Replace(" ", "")).Replace(":", ""))).Replace(".", "");
@@ -147,215 +149,8 @@ namespace Random_Item_Giver_Updater
             }
         }
 
-        //-- Custom Methods --//
-
-        public async static void LoadLootTable(string path)
+        private void bgwEditLootTable_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-
-            //Get list of content in file, remove all non-item lines so only items remain
-            string[] loadedItems = File.ReadAllLines(currentLootTable);
-            List<string> items = new List<string>();
-
-            items.Clear();
-            foreach (string item in loadedItems)
-            {
-                if (item.Contains("\"tag\""))
-                {
-                    string itemFiltered;
-                    itemFiltered = item.Replace(" ", "");
-                    itemFiltered = itemFiltered.Replace("\"tag\":", "");
-                    itemFiltered = itemFiltered.Substring(1, itemFiltered.Length - 2);
-                    items.Add(itemFiltered);
-                }
-                else if (!item.Contains("\"tag\"") && !item.Contains("{") && !item.Contains("}") && !item.Contains("[") && !item.Contains("]") && !item.Contains("\"rolls\"") && !item.Contains("\"type\"") && !item.Contains("\"function\"") && item.Contains("\"") && !item.Contains("\"weight\"") && !item.Contains("\"count\"") && !item.Contains("\"min\": 1") && !item.Contains("\"max\": 64") && !item.Contains("\"out\"") && !item.Contains("\"score\""))
-                {
-                    string itemFiltered;
-                    itemFiltered = item.Replace("\"", "");
-                    itemFiltered = itemFiltered.Replace("name:", "");
-                    itemFiltered = itemFiltered.Replace(" ", "");
-                    itemFiltered = itemFiltered.Replace("tag:", "");
-                    itemFiltered = itemFiltered.Replace(",", "");
-                    items.Add(itemFiltered);
-                }
-            }
-
-            List<string> finalItemList = new List<string>();
-            //Check for each item if it has NBT and add it to the string
-            for (int i = 0; i < items.Count; i++)
-            {
-                if (!items[i].Contains("{"))
-                {
-                    if (i < items.Count - 1)
-                    {
-
-                        if (items[i + 1].Contains("{"))
-                        {
-                            finalItemList.Add(string.Format("{0};{1}", items[i], items[i + 1]));
-                        }
-
-                        if (!items[i + 1].Contains("{"))
-                        {
-                            finalItemList.Add(string.Format("{0};none", items[i]));
-                        }
-                    }
-                    else
-                    {
-                        {
-                            finalItemList.Add(string.Format("{0};none", items[i]));
-                        }
-                    }
-                }
-            }
-
-            itemList.Clear();
-            int index = 0;
-            //Add an entry for all items
-            foreach (string item in finalItemList)
-            {
-                string[] splitItem = item.Split(';');
-                itemList.Add(new itemEntry(splitItem[0], splitItem[1], index));
-                index++;
-            }
-
-            //Show 'loading' message
-            stpWorkspace.Children.Clear();
-            tblLoadingItems.Margin = new Thickness(svWorkspace.ActualWidth / 2 - 150, svWorkspace.ActualHeight / 2 - 75, 0, 0);
-            stpWorkspace.Children.Add(tblLoadingItems);
-            await Task.Delay(1); //Allows the UI to update and show the textblock
-
-            //Add all item entrys to workspace
-            stpWorkspace.Children.Clear();
-            tblLootTableStats.Text = string.Format("Current Loot table: {0} - Total amount of items: {1}", currentLootTable.Replace(currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""), itemList.Count); 
-            stpWorkspace.Children.Add(cvsLootTableStats);
-            foreach (itemEntry entry in itemList)
-            {
-                stpWorkspace.Children.Add(entry.bdrItem);
-            }
-        }
-
-        private void GetLootTables(string path)
-        {
-            //Get all categories
-            string[] categories = Directory.GetDirectories(String.Format("{0}/data/randomitemgiver/loot_tables/", path));
-            for (int i = 0; i < categories.Length; i++)
-            {
-                lootTableCategoryList.Add(new lootTableCategory(categories[i].Replace(String.Format("{0}/data/randomitemgiver/loot_tables/", path), ""), categories[i]));
-            }
-
-            //Get each loot table
-            lootTableList.Clear();
-            foreach (lootTableCategory category in lootTableCategoryList)
-            {
-                string[] lootTables = Directory.GetFiles(category.categoryPath);
-                for (int i = 0; i < lootTables.Length; i++)
-                {
-                    //Add the loot table to the total loot table list
-                    lootTableList.Add(new lootTable(lootTables[i].Replace(category.categoryPath, ""), "loottable", category.categoryPath));
-
-                    //Add the loot table to the list of the category
-                    category.lootTableList.Add(lootTableList[lootTableList.Count - 1]);
-                }
-            }
-
-            //Add all loot tables to sidebar display
-            stpLootTables.Children.Clear();
-            foreach (lootTableCategory category in lootTableCategoryList)
-            {
-                stpLootTables.Children.Add(category.stpCategory);
-            }
-        }
-
-        public static int GetDatapackVersionNumber(string path)
-        {
-            //Read line with pack version from pack.mcmeta file, replace unnecessary characters and return the raw version
-            string[] loadedItems = File.ReadAllLines(String.Format("{0}/pack.mcmeta", path));
-            string versionString = loadedItems[2];
-            versionString = versionString.Replace("    \"pack_format\":", "");
-            versionString = versionString.Replace(",", "");
-            int version = int.Parse(versionString);
-            return version;
-        }
-
-        public static string GetDatapackMCVersion(string path)
-        {
-            //Get datapack version
-            int datapackVersion = GetDatapackVersionNumber(path);
-
-            //Determine version based on datapack version
-            if (datapackVersion == 4)
-            {
-                //Version 1.13 - 1.14.4 (unsupported)
-                return "1.13 - 1.14.4 (unsupported)";
-            }
-            else if (datapackVersion == 5)
-            {
-                //Version 1.15 - 1.16.1 (unsupported)
-                return "1.15 - 1.16.1 (unsupported)";
-            }
-            else if (datapackVersion == 6)
-            {
-                //Version 1.16.2 - 1.16.5
-                return "1.16.2 - 1.16.5";
-            }
-            else if (datapackVersion == 7)
-            {
-                //Version 1.17 - 1.17.1
-                return "1.17 - 1.17.1";
-            }
-            else if (datapackVersion == 8)
-            {
-                //Version 1.18 - 1.18.1
-                return "1.18 - 1.18.1";
-            }
-            else if (datapackVersion == 9)
-            {
-                //Version 1.18.2
-                return "1.18.2";
-            }
-            else if (datapackVersion == 10)
-            {
-                //Version 1.19 - 1.19.3
-                return "1.19 - 1.19.3";
-            }
-            else if (datapackVersion == 11)
-            {
-                //Version 1.19.4-Snapshot
-                return "1.19.4-Snapshot";
-            }
-            else if (datapackVersion == 12)
-            {
-                //Version 1.19.4
-                return "1.19.4";
-            }
-            else if (datapackVersion == 13)
-            {
-                //Version 1.20-Snapshot
-                return "1.20-Snapshot";
-            }
-            else if (datapackVersion == 14)
-            {
-                //Version 1.20-Snapshot
-                return "1.20-Snapshot";
-            }
-            else if (datapackVersion == 15)
-            {
-                //Version 1.20
-                return "1.20";
-            }
-            else
-            {
-                //Unknown version
-                return "Unknown";
-            }
-        }
-
-        public async void SaveCurrentLootTable()
-        {
-            //Disable save button
-            btnSave.IsEnabled = false;
-            tblBtnSave.Text = "Saving...";
-            await Task.Delay(5);
-
             //Load the file once again
             string[] loadedItems = File.ReadAllLines(currentLootTable);
 
@@ -381,8 +176,15 @@ namespace Random_Item_Giver_Updater
                         for (int i = 0; i < loadedItems.Count(); i++)
                         {
                             bool isAtEnd = false;
+                            bool is01item = false;
                             if (loadedItems[i].Contains(item.itemName))
                             {
+                                //Check if it's an item in a 01item loot table
+                                if (loadedItems[i - 3].Contains("},") && !loadedItems[i - 4].Contains("]"))
+                                {
+                                    is01item = true;
+                                }
+
                                 //Delete the item line
                                 loadedItems[i] = "";
 
@@ -409,6 +211,12 @@ namespace Random_Item_Giver_Updater
                                         //Stop if it's about to reach the file end, so it doesn't corrupt the loot table
                                         doLoop = false;
                                         isAtEnd = true;
+
+                                        if(is01item == false)
+                                        {
+                                            loadedItems[i + index] = "";
+                                            loadedItems[i + index + 1] = "";
+                                        }
 
                                     }
                                     else if (!(loadedItems[i + index].Contains("{") && loadedItems[i + index + 1].Contains("\"type\"") && !loadedItems[i + index].Contains("count") && !loadedItems[i + index].Contains("target")))
@@ -625,16 +433,235 @@ namespace Random_Item_Giver_Updater
                     index4++;
                 }
             }
+        }
 
+        private void bgwEditLootTable_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        {
+            
+        }
+
+        private void bgwEditLootTable_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
             //Reload loot table
             LoadLootTable(currentLootTable);
 
             //Show save confirmation
-            await Task.Delay(5);
             tblBtnSave.Text = "Saved!";
             MessageBox.Show("Successfully saved the current loot table!", "Save Loot Table", MessageBoxButton.OK, MessageBoxImage.Information);
             btnSave.IsEnabled = true;
             tblBtnSave.Text = "Save Loot Table";
+        }
+
+        //-- Custom Methods --//
+
+        public async static void LoadLootTable(string path)
+        {
+
+            //Get list of content in file, remove all non-item lines so only items remain
+            string[] loadedItems = File.ReadAllLines(currentLootTable);
+            List<string> items = new List<string>();
+
+            items.Clear();
+            foreach (string item in loadedItems)
+            {
+                if (item.Contains("\"tag\""))
+                {
+                    string itemFiltered;
+                    itemFiltered = item.Replace(" ", "");
+                    itemFiltered = itemFiltered.Replace("\"tag\":", "");
+                    itemFiltered = itemFiltered.Substring(1, itemFiltered.Length - 2);
+                    items.Add(itemFiltered);
+                }
+                else if (!item.Contains("\"tag\"") && !item.Contains("{") && !item.Contains("}") && !item.Contains("[") && !item.Contains("]") && !item.Contains("\"rolls\"") && !item.Contains("\"type\"") && !item.Contains("\"function\"") && item.Contains("\"") && !item.Contains("\"weight\"") && !item.Contains("\"count\"") && !item.Contains("\"min\": 1") && !item.Contains("\"max\": 64") && !item.Contains("\"out\"") && !item.Contains("\"score\""))
+                {
+                    string itemFiltered;
+                    itemFiltered = item.Replace("\"", "");
+                    itemFiltered = itemFiltered.Replace("name:", "");
+                    itemFiltered = itemFiltered.Replace(" ", "");
+                    itemFiltered = itemFiltered.Replace("tag:", "");
+                    itemFiltered = itemFiltered.Replace(",", "");
+                    items.Add(itemFiltered);
+                }
+            }
+
+            List<string> finalItemList = new List<string>();
+            //Check for each item if it has NBT and add it to the string
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (!items[i].Contains("{"))
+                {
+                    if (i < items.Count - 1)
+                    {
+
+                        if (items[i + 1].Contains("{"))
+                        {
+                            finalItemList.Add(string.Format("{0};{1}", items[i], items[i + 1]));
+                        }
+
+                        if (!items[i + 1].Contains("{"))
+                        {
+                            finalItemList.Add(string.Format("{0};none", items[i]));
+                        }
+                    }
+                    else
+                    {
+                        {
+                            finalItemList.Add(string.Format("{0};none", items[i]));
+                        }
+                    }
+                }
+            }
+
+            itemList.Clear();
+            int index = 0;
+            //Add an entry for all items
+            foreach (string item in finalItemList)
+            {
+                string[] splitItem = item.Split(';');
+                itemList.Add(new itemEntry(splitItem[0], splitItem[1], index));
+                index++;
+            }
+
+            //Show 'loading' message
+            stpWorkspace.Children.Clear();
+            tblLoadingItems.Margin = new Thickness(svWorkspace.ActualWidth / 2 - 150, svWorkspace.ActualHeight / 2 - 75, 0, 0);
+            stpWorkspace.Children.Add(tblLoadingItems);
+            await Task.Delay(5); //Allows the UI to update and show the textblock
+
+            //Add all item entrys to workspace
+            stpWorkspace.Children.Clear();
+            tblLootTableStats.Text = string.Format("Current Loot table: {0} - Total amount of items: {1}", currentLootTable.Replace(currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""), itemList.Count); 
+            stpWorkspace.Children.Add(cvsLootTableStats);
+            foreach (itemEntry entry in itemList)
+            {
+                stpWorkspace.Children.Add(entry.bdrItem);
+            }
+        }
+
+        private void GetLootTables(string path)
+        {
+            //Get all categories
+            string[] categories = Directory.GetDirectories(String.Format("{0}/data/randomitemgiver/loot_tables/", path));
+            for (int i = 0; i < categories.Length; i++)
+            {
+                lootTableCategoryList.Add(new lootTableCategory(categories[i].Replace(String.Format("{0}/data/randomitemgiver/loot_tables/", path), ""), categories[i]));
+            }
+
+            //Get each loot table
+            lootTableList.Clear();
+            foreach (lootTableCategory category in lootTableCategoryList)
+            {
+                string[] lootTables = Directory.GetFiles(category.categoryPath);
+                for (int i = 0; i < lootTables.Length; i++)
+                {
+                    //Add the loot table to the total loot table list
+                    lootTableList.Add(new lootTable(lootTables[i].Replace(category.categoryPath, ""), "loottable", category.categoryPath));
+
+                    //Add the loot table to the list of the category
+                    category.lootTableList.Add(lootTableList[lootTableList.Count - 1]);
+                }
+            }
+
+            //Add all loot tables to sidebar display
+            stpLootTables.Children.Clear();
+            foreach (lootTableCategory category in lootTableCategoryList)
+            {
+                stpLootTables.Children.Add(category.stpCategory);
+            }
+        }
+
+        public static int GetDatapackVersionNumber(string path)
+        {
+            //Read line with pack version from pack.mcmeta file, replace unnecessary characters and return the raw version
+            string[] loadedItems = File.ReadAllLines(String.Format("{0}/pack.mcmeta", path));
+            string versionString = loadedItems[2];
+            versionString = versionString.Replace("    \"pack_format\":", "");
+            versionString = versionString.Replace(",", "");
+            int version = int.Parse(versionString);
+            return version;
+        }
+
+        public static string GetDatapackMCVersion(string path)
+        {
+            //Get datapack version
+            int datapackVersion = GetDatapackVersionNumber(path);
+
+            //Determine version based on datapack version
+            if (datapackVersion == 4)
+            {
+                //Version 1.13 - 1.14.4 (unsupported)
+                return "1.13 - 1.14.4 (unsupported)";
+            }
+            else if (datapackVersion == 5)
+            {
+                //Version 1.15 - 1.16.1 (unsupported)
+                return "1.15 - 1.16.1 (unsupported)";
+            }
+            else if (datapackVersion == 6)
+            {
+                //Version 1.16.2 - 1.16.5
+                return "1.16.2 - 1.16.5";
+            }
+            else if (datapackVersion == 7)
+            {
+                //Version 1.17 - 1.17.1
+                return "1.17 - 1.17.1";
+            }
+            else if (datapackVersion == 8)
+            {
+                //Version 1.18 - 1.18.1
+                return "1.18 - 1.18.1";
+            }
+            else if (datapackVersion == 9)
+            {
+                //Version 1.18.2
+                return "1.18.2";
+            }
+            else if (datapackVersion == 10)
+            {
+                //Version 1.19 - 1.19.3
+                return "1.19 - 1.19.3";
+            }
+            else if (datapackVersion == 11)
+            {
+                //Version 1.19.4-Snapshot
+                return "1.19.4-Snapshot";
+            }
+            else if (datapackVersion == 12)
+            {
+                //Version 1.19.4
+                return "1.19.4";
+            }
+            else if (datapackVersion == 13)
+            {
+                //Version 1.20-Snapshot
+                return "1.20-Snapshot";
+            }
+            else if (datapackVersion == 14)
+            {
+                //Version 1.20-Snapshot
+                return "1.20-Snapshot";
+            }
+            else if (datapackVersion == 15)
+            {
+                //Version 1.20
+                return "1.20";
+            }
+            else
+            {
+                //Unknown version
+                return "Unknown";
+            }
+        }
+
+        public void SaveCurrentLootTable()
+        {
+            //Disable save button
+            btnSave.IsEnabled = false;
+            tblBtnSave.Text = "Saving...";
+
+            //Save the loot table
+            bgwEditLootTable.RunWorkerAsync();
         }
 
 
@@ -774,6 +801,12 @@ namespace Random_Item_Giver_Updater
             tblLootTableStats.FontWeight = FontWeights.DemiBold;
             tblLootTableStats.Margin = new Thickness(10, 10, 0, 0);
             cvsLootTableStats.Children.Add(tblLootTableStats);
+
+            //Create item editing backgroundworker
+            bgwEditLootTable.DoWork += bgwEditLootTable_DoWork;
+            bgwEditLootTable.ProgressChanged += bgwEditLootTable_ProgressChanged;
+            bgwEditLootTable.RunWorkerCompleted += bgwEditLootTable_RunWorkerCompleted;
+            bgwEditLootTable.WorkerReportsProgress = true;
         }
     }
 }
