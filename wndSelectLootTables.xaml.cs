@@ -21,6 +21,7 @@ namespace Random_Item_Giver_Updater
         //Attributes
         public static List<CheckBox> checkBoxList = new List<CheckBox>();
         public static List<lootTable> lootTableList = new List<lootTable>();
+        public bool lootTableSelected = false;
 
         //-- Constructor --//
         public wndSelectLootTables(List<lootTable> lootTableListArg)
@@ -41,17 +42,36 @@ namespace Random_Item_Giver_Updater
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            //Clear Stackpanel before quitting
-            stpLootTables.Children.Clear();
-
             //Close the window
             Close();
         }
 
         private void wndSelectLootTables1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            //Clear Stackpanel before quitting
-            stpLootTables.Children.Clear();
+            //Assume no loot table is selected
+            lootTableSelected = false;
+
+            //Check if a loot table is selected and change the attribute
+            foreach (CheckBox checkBox in stpLootTables.Children.OfType<CheckBox>())
+            {
+                if (checkBox.IsChecked == true)
+                {
+                    lootTableSelected = true;
+                    break;
+                }
+            }
+
+            if (lootTableSelected)
+            {
+                //Clear Stackpanel before quitting
+                stpLootTables.Children.Clear();
+            }
+            else
+            {
+                //Stop quitting and show error
+                e.Cancel = true;
+                MessageBox.Show("Please select at least one loot table!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void btnCheckAll_Click(object sender, RoutedEventArgs e)

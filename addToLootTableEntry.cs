@@ -22,7 +22,7 @@ namespace Random_Item_Giver_Updater
         public RadioButton rbtnCertainLootTables = new RadioButton();
         public Button btnEditCertainLootTables = new Button();
         public List<lootTable> lootTableCheckList = new List<lootTable>();
-        public string lootTableWhiteList;
+        public string lootTableWhiteList = "";
 
         //Windows
         wndSelectLootTables wndSelectLootTables;
@@ -111,6 +111,7 @@ namespace Random_Item_Giver_Updater
                 if(lootTable.cbAddToLootTable.IsChecked == true)
                 {
                     lootTableWhiteList = string.Format("{0}{1}", lootTableWhiteList, lootTable.fullLootTablePath);
+                    MessageBox.Show(lootTableWhiteList);
                 }
             }
 
