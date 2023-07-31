@@ -24,19 +24,22 @@ namespace Random_Item_Giver_Updater
     public partial class MainWindow : Window
     {
         //Lists for items and loot tables
-        public static List<itemEntry> itemList = new List<itemEntry>();
-        public static List<lootTableCategory> lootTableCategoryList = new List<lootTableCategory>();
+        private static List<itemEntry> itemList = new List<itemEntry>();
+        private static List<lootTableCategory> lootTableCategoryList = new List<lootTableCategory>();
         public static List<lootTable> lootTableList = new List<lootTable>();
 
         //Controls
-        public ScrollViewer svWorkspace = new ScrollViewer();
-        public static StackPanel stpWorkspace = new StackPanel();
-        public ScrollViewer svLootTables = new ScrollViewer();
-        public static StackPanel stpLootTables = new StackPanel();
-        System.Windows.Forms.FolderBrowserDialog fbdDatapack = new System.Windows.Forms.FolderBrowserDialog();
+        private static ScrollViewer svWorkspace = new ScrollViewer();
+        private static StackPanel stpWorkspace = new StackPanel();
+        private ScrollViewer svLootTables = new ScrollViewer();
+        private static StackPanel stpLootTables = new StackPanel();
+        private System.Windows.Forms.FolderBrowserDialog fbdDatapack = new System.Windows.Forms.FolderBrowserDialog();
+        private static TextBlock tblLoadingItems = new TextBlock();
+        private static Canvas cvsLootTableStats = new Canvas();
+        private static TextBlock tblLootTableStats = new TextBlock();
 
         //General variables for the software
-        public static string versionNumber = string.Format("Dev{0}", ((Convert.ToString(DateTime.Now).Replace(" ", "")).Replace(":", ""))).Replace(".", "");
+        private static string versionNumber = string.Format("Dev{0}", ((Convert.ToString(DateTime.Now).Replace(" ", "")).Replace(":", ""))).Replace(".", "");
         public static string currentLootTable = "none";
         public static string currentDatapack = "none";
 
@@ -44,18 +47,18 @@ namespace Random_Item_Giver_Updater
         public static wndAddItem wndAddItem;
 
         //Buttons
-        public Canvas cvsBtnAddItems = new Canvas();
-        public Image imgBtnAddItems = new Image();
-        public TextBlock tblBtnAddItems = new TextBlock();
-        public Canvas cvsBtnDuplicateFinder = new Canvas();
-        public Image imgBtnDuplicateFinder = new Image();
-        public TextBlock tblBtnDuplicateFinder = new TextBlock();
-        public Canvas cvsBtnSave = new Canvas();
-        public Image imgBtnSave = new Image();
-        public TextBlock tblBtnSave = new TextBlock();
-        public Canvas cvsBtnAbout = new Canvas();
-        public Image imgBtnAbout = new Image();
-        public TextBlock tblBtnAbout = new TextBlock();
+        private Canvas cvsBtnAddItems = new Canvas();
+        private Image imgBtnAddItems = new Image();
+        private TextBlock tblBtnAddItems = new TextBlock();
+        private Canvas cvsBtnDuplicateFinder = new Canvas();
+        private Image imgBtnDuplicateFinder = new Image();
+        private TextBlock tblBtnDuplicateFinder = new TextBlock();
+        private Canvas cvsBtnSave = new Canvas();
+        private Image imgBtnSave = new Image();
+        private TextBlock tblBtnSave = new TextBlock();
+        private Canvas cvsBtnAbout = new Canvas();
+        private Image imgBtnAbout = new Image();
+        private TextBlock tblBtnAbout = new TextBlock();
 
         //-- Constructor --//
 
@@ -63,47 +66,8 @@ namespace Random_Item_Giver_Updater
         {
             InitializeComponent();
 
-            //Create workspace stack panel
-            stpWorkspace.HorizontalAlignment = HorizontalAlignment.Stretch;
-            stpWorkspace.VerticalAlignment = VerticalAlignment.Stretch;
-            stpWorkspace.Children.Clear();
-
-            //Create workspace scrollviewer
-            svWorkspace.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            svWorkspace.HorizontalAlignment = HorizontalAlignment.Stretch;
-            svWorkspace.VerticalAlignment = VerticalAlignment.Stretch;
-            svWorkspace.Content = stpWorkspace;
-            svWorkspace.Background = new SolidColorBrush(Color.FromArgb(100, 140, 140, 140));
-
-            //Add the workspace scrollviewer to the grid
-            Grid.SetColumn(svWorkspace, 1);
-            Grid.SetRow(svWorkspace, 1);
-            grdWorkspace.Children.Add(svWorkspace);
-
-            //Create loot table list stack panel
-            stpLootTables.HorizontalAlignment = HorizontalAlignment.Stretch;
-            stpLootTables.VerticalAlignment = VerticalAlignment.Stretch;
-            stpLootTables.Children.Clear();
-
-            //Create loot table list scrollviewer
-            svLootTables.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            svLootTables.HorizontalAlignment = HorizontalAlignment.Stretch;
-            svLootTables.VerticalAlignment = VerticalAlignment.Stretch;
-            svLootTables.Content = stpLootTables;
-            svLootTables.Background = new SolidColorBrush(Color.FromArgb(100, 50, 50, 50));
-
-            //Add the loot table list scrollviewer to the grid
-            Grid.SetColumn(svLootTables, 0);
-            Grid.SetRow(svLootTables, 1);
-            grdWorkspace.Children.Add(svLootTables);
-
-            //Setup folder browser for datapack
-            fbdDatapack.Description = "Select the datapack that you want to edit.";
-
-            //Set version number in header
-            tblHeader.Text = String.Format("Random Item Giver Updater\nVersion {0}", versionNumber);
-
-            //Setup buttons to make them look right
+            //Setup controls
+            SetupControls();
             SetupButtons();
         }
 
@@ -172,7 +136,7 @@ namespace Random_Item_Giver_Updater
                     {
                         case MessageBoxResult.Yes:
                             //Save the current loot table
-                            MainWindow.SaveCurrentLootTable();
+                            wndMain.SaveCurrentLootTable();
                             break;
                         case MessageBoxResult.Cancel:
                             //Stop the quitting
@@ -185,7 +149,7 @@ namespace Random_Item_Giver_Updater
 
         //-- Custom Methods --//
 
-        public static void LoadLootTable(string path)
+        public async static void LoadLootTable(string path)
         {
 
             //Get list of content in file, remove all non-item lines so only items remain
@@ -253,8 +217,16 @@ namespace Random_Item_Giver_Updater
                 index++;
             }
 
+            //Show 'loading' message
+            stpWorkspace.Children.Clear();
+            tblLoadingItems.Margin = new Thickness(svWorkspace.ActualWidth / 2 - 150, svWorkspace.ActualHeight / 2 - 75, 0, 0);
+            stpWorkspace.Children.Add(tblLoadingItems);
+            await Task.Delay(1); //Allows the UI to update and show the textblock
+
             //Add all item entrys to workspace
             stpWorkspace.Children.Clear();
+            tblLootTableStats.Text = string.Format("Current Loot table: {0} - Total amount of items: {1}", currentLootTable.Replace(currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""), itemList.Count); 
+            stpWorkspace.Children.Add(cvsLootTableStats);
             foreach (itemEntry entry in itemList)
             {
                 stpWorkspace.Children.Add(entry.bdrItem);
@@ -289,10 +261,6 @@ namespace Random_Item_Giver_Updater
             stpLootTables.Children.Clear();
             foreach (lootTableCategory category in lootTableCategoryList)
             {
-                foreach (lootTable lootTable in category.lootTableList)
-                {
-                    //lootTable.lootTableCanvas.Visibility = Visibility.Hidden;
-                }
                 stpLootTables.Children.Add(category.stpCategory);
             }
         }
@@ -381,8 +349,13 @@ namespace Random_Item_Giver_Updater
             }
         }
 
-        public static void SaveCurrentLootTable()
+        public async void SaveCurrentLootTable()
         {
+            //Disable save button
+            btnSave.IsEnabled = false;
+            tblBtnSave.Text = "Saving...";
+            await Task.Delay(5);
+
             //Load the file once again
             string[] loadedItems = File.ReadAllLines(currentLootTable);
 
@@ -656,9 +629,12 @@ namespace Random_Item_Giver_Updater
             //Reload loot table
             LoadLootTable(currentLootTable);
 
-            //WIP - Remove
-            MessageBox.Show("Saved the loot table!", "Saved");
-
+            //Show save confirmation
+            await Task.Delay(5);
+            tblBtnSave.Text = "Saved!";
+            MessageBox.Show("Successfully saved the current loot table!", "Save Loot Table", MessageBoxButton.OK, MessageBoxImage.Information);
+            btnSave.IsEnabled = true;
+            tblBtnSave.Text = "Save Loot Table";
         }
 
 
@@ -680,7 +656,7 @@ namespace Random_Item_Giver_Updater
             return isModified;
         }
 
-        public void SetupButtons() //Adds Canvas with image and textblock to button
+        private void SetupButtons() //Adds Canvas with image and textblock to button
         {
             //btnAbout
             imgBtnAbout.Source = new BitmapImage(new Uri(@"/Random Item Giver Updater;component/Resources/imgAbout.png", UriKind.Relative));
@@ -741,6 +717,63 @@ namespace Random_Item_Giver_Updater
             cvsBtnAddItems.Children.Add(imgBtnAddItems);
             cvsBtnAddItems.Children.Add(tblBtnAddItems);
             btnAddItems.Content = cvsBtnAddItems;
+        }
+
+        private void SetupControls()
+        {
+            //Create workspace stack panel
+            stpWorkspace.HorizontalAlignment = HorizontalAlignment.Stretch;
+            stpWorkspace.VerticalAlignment = VerticalAlignment.Stretch;
+            stpWorkspace.Children.Clear();
+
+            //Create workspace scrollviewer
+            svWorkspace.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            svWorkspace.HorizontalAlignment = HorizontalAlignment.Stretch;
+            svWorkspace.VerticalAlignment = VerticalAlignment.Stretch;
+            svWorkspace.Content = stpWorkspace;
+            svWorkspace.Background = new SolidColorBrush(Color.FromArgb(100, 140, 140, 140));
+
+            //Add the workspace scrollviewer to the grid
+            Grid.SetColumn(svWorkspace, 1);
+            Grid.SetRow(svWorkspace, 1);
+            grdWorkspace.Children.Add(svWorkspace);
+
+            //Create loot table list stack panel
+            stpLootTables.HorizontalAlignment = HorizontalAlignment.Stretch;
+            stpLootTables.VerticalAlignment = VerticalAlignment.Stretch;
+            stpLootTables.Children.Clear();
+
+            //Create loot table list scrollviewer
+            svLootTables.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            svLootTables.HorizontalAlignment = HorizontalAlignment.Stretch;
+            svLootTables.VerticalAlignment = VerticalAlignment.Stretch;
+            svLootTables.Content = stpLootTables;
+            svLootTables.Background = new SolidColorBrush(Color.FromArgb(100, 50, 50, 50));
+
+            //Add the loot table list scrollviewer to the grid
+            Grid.SetColumn(svLootTables, 0);
+            Grid.SetRow(svLootTables, 1);
+            grdWorkspace.Children.Add(svLootTables);
+
+            //Setup folder browser for datapack
+            fbdDatapack.Description = "Select the datapack that you want to edit.";
+
+            //Set version number in header
+            tblHeader.Text = String.Format("Random Item Giver Updater\nVersion {0}", versionNumber);
+
+            //Create 'Loading' text for loading items
+            tblLoadingItems.Text = "Loading items, please wait...\nThis may take a few seconds!";
+            tblLoadingItems.Foreground = new SolidColorBrush(Colors.White);
+            tblLoadingItems.FontSize = 24;   
+            
+            //Create loot table stats canvas and textblock
+            cvsLootTableStats.Height = 50;
+            cvsLootTableStats.Background = new SolidColorBrush(Color.FromArgb(100, 20, 20, 20));
+            tblLootTableStats.Foreground = new SolidColorBrush(Colors.White);
+            tblLootTableStats.FontSize = 20;
+            tblLootTableStats.FontWeight = FontWeights.DemiBold;
+            tblLootTableStats.Margin = new Thickness(10, 10, 0, 0);
+            cvsLootTableStats.Children.Add(tblLootTableStats);
         }
     }
 }

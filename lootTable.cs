@@ -24,6 +24,9 @@ namespace Random_Item_Giver_Updater
         public string fullLootTablePath;
         public bool isSelectedForAdding = true;
 
+        //Windows
+        MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
+
 
         //-- Constructor --//
 
@@ -74,7 +77,7 @@ namespace Random_Item_Giver_Updater
                     {
                         case MessageBoxResult.Yes:
                             //Save the current loot table
-                            MainWindow.SaveCurrentLootTable();
+                            wndMain.SaveCurrentLootTable();
 
                             //Load the loot table
                             MainWindow.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);

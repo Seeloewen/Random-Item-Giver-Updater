@@ -31,6 +31,5 @@
                 <Button x:Name="btnAbout" Content="About" Width="102" Height="30" Canvas.Left="1247" Canvas.Top="51" Click="btnSaveLootTable_Click" HorizontalAlignment="Right" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="0,45,11,0"/>
             </Grid>
         </StackPanel>
-
     </Grid>
 </Window>
