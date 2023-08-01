@@ -16,6 +16,8 @@ using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Reflection;
 using System.ComponentModel;
+using System.Threading;
+using System.Windows.Threading;
 
 namespace Random_Item_Giver_Updater
 {
@@ -28,6 +30,7 @@ namespace Random_Item_Giver_Updater
         double addItemsWorkerProgress;
         int addItemsWorkerAddedItems;
         int addItemsWorkerAddedItemsLootTables;
+        DateTime startTime;
 
         //Reference to main window
         public MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
@@ -98,6 +101,9 @@ namespace Random_Item_Giver_Updater
                 {
                     tbAddedItemsList.AppendText(string.Format("{0}:{1}\n", item.itemPrefix, item.itemName));
                 }
+
+                //Show the elapsed time
+                tblElapsedTime.Text = string.Format("Elapsed time: {0}", (DateTime.Now - startTime).ToString(@"hh\:mm\:ss"));
             };
 
             bgwAddItems.ProgressChanged += delegate (object s, ProgressChangedEventArgs progress)
@@ -243,6 +249,9 @@ namespace Random_Item_Giver_Updater
                 gbStep6.Visibility = Visibility.Hidden;
                 btnBack.IsEnabled = false;
                 btnContinue.IsEnabled = false;
+
+                //Set start time for time calculation afterwards
+                startTime = DateTime.Now;
 
                 //Add the items
                 bgwAddItems.RunWorkerAsync();
