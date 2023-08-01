@@ -457,6 +457,12 @@ namespace Random_Item_Giver_Updater
             tblBtnSave.Text = "Save Loot Table";
         }
 
+        private void btnDuplicateFinder_Click(object sender, RoutedEventArgs e)
+        {
+            //WIP - Show error, since it's not implemented yet
+            MessageBox.Show("The Duplicate Finder is not implemented yet and will be added at a later point in development.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
         //-- Custom Methods --//
 
         public async static void LoadLootTable(string path)
