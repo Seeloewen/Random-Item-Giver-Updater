@@ -39,6 +39,7 @@ namespace Random_Item_Giver_Updater
         private static Canvas cvsLootTableStats = new Canvas();
         private static TextBlock tblLootTableStats = new TextBlock();
         private BackgroundWorker bgwEditLootTable = new BackgroundWorker();
+        private ProgressBar pbSavingItems = new ProgressBar();
 
         //General variables for the software
         private static string versionNumber = string.Format("Dev{0}", ((Convert.ToString(DateTime.Now).Replace(" ", "")).Replace(":", ""))).Replace(".", "");
@@ -432,15 +433,19 @@ namespace Random_Item_Giver_Updater
                     }
                     index4++;
                 }
+
+                //Report progress
+                bgwEditLootTable.ReportProgress(0, 100 / Convert.ToDouble(loadedItems.Count()));
             }
         }
 
-        private void bgwEditLootTable_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        private async void bgwEditLootTable_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            
+            pbSavingItems.Value += Convert.ToDouble(e.UserState);
+            await Task.Delay(5);
         }
 
-        private void bgwEditLootTable_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        private void bgwEditLootTable_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             //Reload loot table
             LoadLootTable(currentLootTable);
@@ -666,6 +671,11 @@ namespace Random_Item_Giver_Updater
             tblLoadingItems.Margin = new Thickness(svWorkspace.ActualWidth / 2 - 150, svWorkspace.ActualHeight / 2 - 75, 0, 0);
             tblLoadingItems.Text = "Saving items, please wait...\nThis may take a few seconds!";
             stpWorkspace.Children.Add(tblLoadingItems);
+
+            //Show loading bar
+            pbSavingItems.Value = 0;
+            stpWorkspace.Children.Add(pbSavingItems);
+            pbSavingItems.Margin = new Thickness(svWorkspace.ActualWidth / 2 - 538, 20, 0, 0);
             await Task.Delay(5); //Allows the UI to update and show the textblock
 
             //Save the loot table
@@ -815,6 +825,10 @@ namespace Random_Item_Giver_Updater
             bgwEditLootTable.ProgressChanged += bgwEditLootTable_ProgressChanged;
             bgwEditLootTable.RunWorkerCompleted += bgwEditLootTable_RunWorkerCompleted;
             bgwEditLootTable.WorkerReportsProgress = true;
+
+            //Create progress bar for saving items
+            pbSavingItems.Height = 15;
+            pbSavingItems.Width = 300;
         }
     }
 }
