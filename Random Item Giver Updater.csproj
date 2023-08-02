@@ -61,10 +61,24 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="wndAbout.xaml.cs">
+      <DependentUpon>wndAbout.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="wndChangelog.xaml.cs">
+      <DependentUpon>wndChangelog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="wndSelectLootTables.xaml.cs">
       <DependentUpon>wndSelectLootTables.xaml</DependentUpon>
     </Compile>
+    <Page Include="wndAbout.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="wndAddItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="wndChangelog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

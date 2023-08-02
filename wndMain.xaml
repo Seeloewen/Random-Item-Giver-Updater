@@ -28,7 +28,7 @@
                 <Image x:Name="imgHeader" Height="74" Canvas.Left="14" Canvas.Top="10" Width="70" HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Resources/imgIcon.png" Margin="10,10,0,0"/>
                 <TextBlock x:Name="tblDatapack" Canvas.Left="629" TextWrapping="Wrap" Text="Selected Datapack:" Canvas.Top="18" FontSize="18" Foreground="White" HorizontalAlignment="Right" Margin="0,8,625,0" Height="24" VerticalAlignment="Top"/>
                 <Button x:Name="btnDuplicateFinder" Content="Duplicate Finder" Width="170" Height="30" Canvas.Left="814" Canvas.Top="51" Background="#FFDDDDDD" HorizontalAlignment="Right" VerticalAlignment="Top" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,45,125,0" Click="btnDuplicateFinder_Click"/>
-                <Button x:Name="btnAbout" Content="About" Width="102" Height="30" Canvas.Left="1247" Canvas.Top="51" Click="btnSaveLootTable_Click" HorizontalAlignment="Right" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="0,45,11,0"/>
+                <Button x:Name="btnAbout" Content="About" Width="102" Height="30" Canvas.Left="1247" Canvas.Top="51" HorizontalAlignment="Right" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="0,45,11,0" Click="btnAbout_Click"/>
             </Grid>
         </StackPanel>
     </Grid>

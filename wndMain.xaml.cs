@@ -42,12 +42,14 @@ namespace Random_Item_Giver_Updater
         private ProgressBar pbSavingItems = new ProgressBar();
 
         //General variables for the software
-        private static string versionNumber = string.Format("Dev{0}", ((Convert.ToString(DateTime.Now).Replace(" ", "")).Replace(":", ""))).Replace(".", "");
+        public string versionNumber = string.Format("Public Beta");
+        public string versionDate = "02.08.2023";
         public static string currentLootTable = "none";
         public static string currentDatapack = "none";
 
         //Windows
         public static wndAddItem wndAddItem;
+        public static wndAbout wndAbout;
 
         //Buttons
         private Canvas cvsBtnAddItems = new Canvas();
@@ -461,6 +463,14 @@ namespace Random_Item_Giver_Updater
         {
             //WIP - Show error, since it's not implemented yet
             MessageBox.Show("The Duplicate Finder is not implemented yet and will be added at a later point in development.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void btnAbout_Click(object sender, RoutedEventArgs e)
+        {
+            //Show about window
+            wndAbout = new wndAbout();
+            wndAbout.Owner = Application.Current.MainWindow;
+            wndAbout.ShowDialog();
         }
 
         //-- Custom Methods --//
