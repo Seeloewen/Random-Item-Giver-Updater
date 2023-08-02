@@ -18,6 +18,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Windows.Threading;
 using System.ComponentModel;
 using System.Threading;
+using System.Windows.Media.Animation;
 
 namespace Random_Item_Giver_Updater
 {
@@ -44,8 +45,9 @@ namespace Random_Item_Giver_Updater
         //General variables for the software
         public string versionNumber = string.Format("Public Beta");
         public string versionDate = "02.08.2023";
-        public static string currentLootTable = "none";
-        public static string currentDatapack = "none";
+        public string currentLootTable = "none";
+        public string currentDatapack = "none";
+        private bool calledClose;
 
         //Windows
         public static wndAddItem wndAddItem;
@@ -107,7 +109,7 @@ namespace Random_Item_Giver_Updater
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
             //WIP
-            tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.20 Dev";
+            //For dev purposes: tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.20 Dev";
             currentDatapack = tbDatapack.Text;
             GetLootTables(currentDatapack);
         }
@@ -142,6 +144,8 @@ namespace Random_Item_Giver_Updater
                         case MessageBoxResult.Yes:
                             //Save the current loot table
                             SaveCurrentLootTable();
+                            e.Cancel = true;
+                            calledClose = true;
                             break;
                         case MessageBoxResult.Cancel:
                             //Stop the quitting
@@ -215,7 +219,7 @@ namespace Random_Item_Giver_Updater
                                         doLoop = false;
                                         isAtEnd = true;
 
-                                        if(is01item == false)
+                                        if (is01item == false)
                                         {
                                             loadedItems[i + index] = "";
                                             loadedItems[i + index + 1] = "";
@@ -449,14 +453,23 @@ namespace Random_Item_Giver_Updater
 
         private void bgwEditLootTable_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            //Reload loot table
-            LoadLootTable(currentLootTable);
+            if (calledClose == true)
+            {
+                //Close the app without showing any confirmation
+                lootTableModified();
+                Close();
+            }
+            else if (calledClose == false)
+            {
+                //Reload loot table
+                LoadLootTable(currentLootTable);
 
-            //Show save confirmation
-            tblBtnSave.Text = "Saved!";
-            MessageBox.Show("Successfully saved the current loot table!", "Save Loot Table", MessageBoxButton.OK, MessageBoxImage.Information);
-            btnSave.IsEnabled = true;
-            tblBtnSave.Text = "Save Loot Table";
+                //Show save confirmation
+                tblBtnSave.Text = "Saved!";
+                MessageBox.Show("Successfully saved the current loot table!", "Save Loot Table", MessageBoxButton.OK, MessageBoxImage.Information);
+                btnSave.IsEnabled = true;
+                tblBtnSave.Text = "Save Loot Table";
+            }
         }
 
         private void btnDuplicateFinder_Click(object sender, RoutedEventArgs e)
@@ -475,7 +488,7 @@ namespace Random_Item_Giver_Updater
 
         //-- Custom Methods --//
 
-        public async static void LoadLootTable(string path)
+        public async void LoadLootTable(string path)
         {
 
             //Get list of content in file, remove all non-item lines so only items remain
@@ -552,7 +565,7 @@ namespace Random_Item_Giver_Updater
 
             //Add all item entrys to workspace
             stpWorkspace.Children.Clear();
-            tblLootTableStats.Text = string.Format("Current Loot table: {0} - Total amount of items: {1}", currentLootTable.Replace(currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""), itemList.Count); 
+            tblLootTableStats.Text = string.Format("Current Loot table: {0} - Total amount of items: {1}", currentLootTable.Replace(currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""), itemList.Count);
             stpWorkspace.Children.Add(cvsLootTableStats);
             foreach (itemEntry entry in itemList)
             {
@@ -699,22 +712,29 @@ namespace Random_Item_Giver_Updater
         }
 
 
-        public static bool lootTableModified()
+        public bool lootTableModified()
         {
-            bool isModified = false;
-
-            //Check every item in the loot table
-            foreach (itemEntry item in itemList)
+            if (calledClose == false) 
             {
-                if (item.isModified == true)
-                {
-                    //If any item is modified, stop and return
-                    isModified = true;
-                    break;
-                }
-            }
+                bool isModified = false;
 
-            return isModified;
+                //Check every item in the loot table
+                foreach (itemEntry item in itemList)
+                {
+                    if (item.isModified == true)
+                    {
+                        //If any item is modified, stop and return
+                        isModified = true;
+                        break;
+                    }
+                }
+
+                return isModified;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private void SetupButtons() //Adds Canvas with image and textblock to button
@@ -825,8 +845,8 @@ namespace Random_Item_Giver_Updater
             //Create 'Loading' text for loading items
             tblLoadingItems.Text = "Loading items, please wait...\nThis may take a few seconds!";
             tblLoadingItems.Foreground = new SolidColorBrush(Colors.White);
-            tblLoadingItems.FontSize = 24;   
-            
+            tblLoadingItems.FontSize = 24;
+
             //Create loot table stats canvas and textblock
             cvsLootTableStats.Height = 50;
             cvsLootTableStats.Background = new SolidColorBrush(Color.FromArgb(100, 20, 20, 20));
