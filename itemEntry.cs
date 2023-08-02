@@ -14,22 +14,23 @@ namespace Random_Item_Giver_Updater
     {
         //Controls
         public Border bdrItem = new Border();
-        public Canvas cvsItem = new Canvas();
-        public TextBlock tblItemName = new TextBlock();
-        public TextBlock tblItemNBT = new TextBlock();
+        private Canvas cvsItem = new Canvas();
+        private TextBlock tblItemName = new TextBlock();
+        private TextBlock tblItemNBT = new TextBlock();
         public Button btnDelete = new Button();
-        public TextBox tbItemName = new TextBox();
-        public Button btnSaveItemName = new Button();
-        public TextBox tbItemNBT = new TextBox();
-        public Button btnSaveItemNBT = new Button();
+        private TextBox tbItemName = new TextBox();
+        private Button btnSaveItemName = new Button();
+        private TextBox tbItemNBT = new TextBox();
+        private Button btnSaveItemNBT = new Button();
         public TextBlock tblEntryIndex = new TextBlock();
+        private TextBlock tblIndicator = new TextBlock();
 
         //Item attributes
-        public string itemName;
+        public string itemName;     
         public string itemNBT;
         public string newName;
         public string newNBT;
-        public int itemIndex;
+        private int itemIndex;
         public bool isModified = false;
         public bool isDeleted = false;
 
@@ -134,6 +135,12 @@ namespace Random_Item_Giver_Updater
             tblEntryIndex.FontWeight = FontWeights.DemiBold;
             tblEntryIndex.Foreground = new SolidColorBrush(Colors.White);
             cvsItem.Children.Add(tblEntryIndex);
+
+            //Create Indicator
+            tblIndicator.Margin = new Thickness(wndMain.ActualWidth - 490, 5, 0, 0);
+            tblIndicator.FontWeight = FontWeights.Bold;
+            tblIndicator.FontSize = 24;
+            cvsItem.Children.Add(tblIndicator);
         }
 
         //-- Event Handlers --//
@@ -145,16 +152,18 @@ namespace Random_Item_Giver_Updater
                 isModified = true;
                 isDeleted = true;
                 btnDelete.Content = "Undo deletion";
+                SetIndicatorState();
             }
             else if (isDeleted == true) //If the item has been deleted, set state to undeleted
             {
                 //Check if the item has been modified in some other way before setting the modified state to false
-                if (itemName == newName && itemNBT == newNBT)
+                if (itemName == newName)
                 {
                     isModified = false;
                 }
                 isDeleted = false;
                 btnDelete.Content = "Delete";
+                SetIndicatorState();
             }
 
         }
@@ -172,6 +181,15 @@ namespace Random_Item_Giver_Updater
             if (newName != itemName)
             {
                 isModified = true;
+                SetIndicatorState();
+            }
+            else
+            {
+                if (isDeleted == false && itemNBT == newNBT)
+                {
+                    isModified = false;
+                }
+                SetIndicatorState();
             }
         }
 
@@ -184,10 +202,19 @@ namespace Random_Item_Giver_Updater
             newNBT = tbItemNBT.Text;
             tblItemNBT.Text = string.Format("NBT: {0}", newNBT);
 
-            //Check if the item name has been changed and change modified state
+            //Check if the item NBT has been changed and change modified state
             if (newNBT != itemNBT)
             {
                 isModified = true;
+                SetIndicatorState();
+            }
+            else
+            {
+                if (isDeleted == false && itemName == newName)
+                {
+                    isModified = false;
+                }
+                SetIndicatorState();
             }
         }
 
@@ -207,6 +234,36 @@ namespace Random_Item_Giver_Updater
             btnSaveItemNBT.Visibility = Visibility.Visible;
             tblItemNBT.Visibility = Visibility.Hidden;
             tbItemNBT.Text = tblItemNBT.Text.Replace("NBT: ", "");
+        }
+
+        //-- Custom Methods --//
+
+        private void SetIndicatorState() { 
+        
+            if(isModified == true && isDeleted == true)
+            {
+                //Item deleted, show indicator
+                tblIndicator.Visibility = Visibility.Visible;
+                tblIndicator.Text = "X";
+                tblIndicator.Foreground = new SolidColorBrush(Colors.Red);
+            }
+            else if (isModified == true && isDeleted == false)
+            {
+                //Item modified, show indicator
+                tblIndicator.Visibility = Visibility.Visible;
+                tblIndicator.Text = "#";
+                tblIndicator.Foreground = new SolidColorBrush(Colors.LightBlue);
+            }
+            else if(isModified == false && isDeleted == false)
+            {
+                //No changes, hide indicator
+                tblIndicator.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                //Invalid state provided, hide indicator
+                tblIndicator.Visibility = Visibility.Hidden;
+            }    
         }
     }
 }
