@@ -51,7 +51,7 @@ namespace Random_Item_Giver_Updater
             cvsLootTable.Children.Add(tblLootTable);
 
             //Create checkbox for adding items window
-            cbAddToLootTable.Content = fullLootTablePath.Replace(string.Format("{0}/data/randomitemgiver/loot_tables/", MainWindow.currentDatapack), "").Replace(".json", "");
+            cbAddToLootTable.Content = fullLootTablePath.Replace(string.Format("{0}/data/randomitemgiver/loot_tables/", wndMain.currentDatapack), "").Replace(".json", "");
             cbAddToLootTable.Foreground = new SolidColorBrush(Colors.White);
             cbAddToLootTable.Margin = new Thickness(20, 15, 0, 0);
             cbAddToLootTable.FontSize = 15;
@@ -66,9 +66,9 @@ namespace Random_Item_Giver_Updater
 
         private void cvsLootTable_MouseDown(object sender, MouseEventArgs e)
         {
-            if (MainWindow.currentLootTable != "none")
+            if (wndMain.currentLootTable != "none")
             {
-                if (MainWindow.lootTableModified() == true)
+                if (wndMain.lootTableModified() == true)
                 {
                     //Show warning if there are unsaved changes to the loot table
                     MessageBoxResult result = MessageBox.Show("You still have unsaved modifications in the current loot table.\nDo you want to save the changes before continuing?", "Save changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
@@ -80,13 +80,13 @@ namespace Random_Item_Giver_Updater
                             wndMain.SaveCurrentLootTable();
 
                             //Load the loot table
-                            MainWindow.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
-                            MainWindow.LoadLootTable(MainWindow.currentLootTable);
+                            wndMain.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
+                            wndMain.LoadLootTable(wndMain.currentLootTable);
                             break;
                         case MessageBoxResult.No:
                             //Just load the loot table without saving
-                            MainWindow.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
-                            MainWindow.LoadLootTable(MainWindow.currentLootTable);
+                            wndMain.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
+                            wndMain.LoadLootTable(wndMain.currentLootTable);
                             break;
                         case MessageBoxResult.Cancel:
                             break;
@@ -95,15 +95,15 @@ namespace Random_Item_Giver_Updater
                 else
                 {
                     //Load the loot table
-                    MainWindow.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
-                    MainWindow.LoadLootTable(MainWindow.currentLootTable);
+                    wndMain.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
+                    wndMain.LoadLootTable(wndMain.currentLootTable);
                 }
             }
             else
             {
                 //Load the loot table
-                MainWindow.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
-                MainWindow.LoadLootTable(MainWindow.currentLootTable);
+                wndMain.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
+                wndMain.LoadLootTable(wndMain.currentLootTable);
             }
         }
     }
