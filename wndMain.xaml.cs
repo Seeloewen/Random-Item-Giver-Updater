@@ -43,8 +43,8 @@ namespace Random_Item_Giver_Updater
         private ProgressBar pbSavingItems = new ProgressBar();
 
         //General variables for the software
-        public string versionNumber = string.Format("Dev");
-        public string versionDate = "02.08.2023";
+        public string versionNumber = string.Format("Public Beta");
+        public string versionDate = "03.08.2023";
         public string currentLootTable = "none";
         public string currentDatapack = "none";
         private bool calledClose;
