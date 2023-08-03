@@ -77,11 +77,10 @@ namespace Random_Item_Giver_Updater
                     {
                         case MessageBoxResult.Yes:
                             //Save the current loot table
+                            wndMain.calledNewLootTable = true;
+                            wndMain.calledLootTablePath = lootTablePath;
+                            wndMain.calledLootTableName = lootTableName;
                             wndMain.SaveCurrentLootTable();
-
-                            //Load the loot table
-                            wndMain.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
-                            wndMain.LoadLootTable(wndMain.currentLootTable);
                             break;
                         case MessageBoxResult.No:
                             //Just load the loot table without saving
