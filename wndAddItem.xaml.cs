@@ -64,7 +64,7 @@ namespace Random_Item_Giver_Updater
             gbStep5.Visibility = Visibility.Hidden;
             gbStep6.Visibility = Visibility.Hidden;
             btnBack.Content = "Close";
-            tblCurrentlySelectedDatapack.Text = string.Format("Currently selected Datapack: {0}\nPack format: {1} (Version {2})", wndMain.currentDatapack, MainWindow.GetDatapackVersionNumber(wndMain.currentDatapack), MainWindow.GetDatapackMCVersion(wndMain.currentDatapack));
+            tblCurrentlySelectedDatapack.Text = string.Format("Currently selected Datapack: {0}\n{1}", wndMain.currentDatapack, wndMain.GetDatapackVersionInfo(wndMain.currentDatapack));
 
             //Setup backgroundworker
             bgwAddItems.WorkerReportsProgress = true;

@@ -48,6 +48,9 @@ namespace Random_Item_Giver_Updater
         public string currentLootTable = "none";
         public string currentDatapack = "none";
         private bool calledClose;
+        public bool calledNewLootTable;
+        public string calledLootTableName;
+        public string calledLootTablePath;
 
         //Windows
         public static wndAddItem wndAddItem;
@@ -112,7 +115,7 @@ namespace Random_Item_Giver_Updater
             if ((!string.IsNullOrEmpty(tbDatapack.Text) && Directory.Exists(tbDatapack.Text)))
             {
                 //If the directory exists and is valid and no other datapack with unsaved changes is loaded, try to load the datapack
-                if(lootTableModified() == false)
+                if (lootTableModified() == false)
                 {
                     currentLootTable = "none";
                     itemList.Clear();
@@ -122,7 +125,7 @@ namespace Random_Item_Giver_Updater
                 }
                 else
                 {
-                    
+
                     MessageBoxResult result = MessageBox.Show("You have changes in your current loot table, that have not been saved yet. Loading a new loot table will discard all unsaved changes. Do you really want to continue?", "Load new loot table", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                     switch (result)
@@ -490,7 +493,19 @@ namespace Random_Item_Giver_Updater
                 lootTableModified();
                 Close();
             }
-            else if (calledClose == false)
+            else if (calledNewLootTable == true)
+            {
+                //Load the loot table
+                currentLootTable = string.Format("{0}/{1}", calledLootTablePath, calledLootTableName);
+                LoadLootTable(wndMain.currentLootTable);
+
+                //Show save confirmation
+                tblBtnSave.Text = "Saved!";
+                MessageBox.Show("Successfully saved the current loot table!", "Save Loot Table", MessageBoxButton.OK, MessageBoxImage.Information);
+                btnSave.IsEnabled = true;
+                tblBtnSave.Text = "Save Loot Table";
+            }
+            else if (calledClose == false && calledNewLootTable == false)
             {
                 //Reload loot table
                 LoadLootTable(currentLootTable);
@@ -637,7 +652,7 @@ namespace Random_Item_Giver_Updater
             }
         }
 
-        public static int GetDatapackVersionNumber(string path)
+        public int GetDatapackVersionNumberLegacy(string path)
         {
             //Read line with pack version from pack.mcmeta file, replace unnecessary characters and return the raw version
             string[] loadedItems = File.ReadAllLines(String.Format("{0}/pack.mcmeta", path));
@@ -648,76 +663,116 @@ namespace Random_Item_Giver_Updater
             return version;
         }
 
-        public static string GetDatapackMCVersion(string path)
+        public string GetDatapackMCVersionLegacy(string path)
         {
             //Get datapack version
-            int datapackVersion = GetDatapackVersionNumber(path);
+            int datapackVersion = GetDatapackVersionNumberLegacy(path);
 
             //Determine version based on datapack version
             if (datapackVersion == 4)
             {
                 //Version 1.13 - 1.14.4 (unsupported)
-                return "1.13 - 1.14.4 (unsupported)";
+                return "Version: 1.13 - 1.14.4 (unsupported) (Pack format: 4)";
             }
             else if (datapackVersion == 5)
             {
                 //Version 1.15 - 1.16.1 (unsupported)
-                return "1.15 - 1.16.1 (unsupported)";
+                return "Version: 1.15 - 1.16.1 (unsupported) (Pack format: 5)";
             }
             else if (datapackVersion == 6)
             {
                 //Version 1.16.2 - 1.16.5
-                return "1.16.2 - 1.16.5";
+                return "Version: 1.16.2 - 1.16.5 (Pack format: 6)";
             }
             else if (datapackVersion == 7)
             {
                 //Version 1.17 - 1.17.1
-                return "1.17 - 1.17.1";
+                return "Version: 1.17 - 1.17.1 (Pack format: 7)";
             }
             else if (datapackVersion == 8)
             {
                 //Version 1.18 - 1.18.1
-                return "1.18 - 1.18.1";
+                return "Version: 1.18 - 1.18.1 (Pack format: 8)";
             }
             else if (datapackVersion == 9)
             {
                 //Version 1.18.2
-                return "1.18.2";
+                return "Version: 1.18.2 (Pack format: 9)";
             }
             else if (datapackVersion == 10)
             {
                 //Version 1.19 - 1.19.3
-                return "1.19 - 1.19.3";
+                return "Version: 1.19 - 1.19.3 (Pack format: 10)";
             }
             else if (datapackVersion == 11)
             {
                 //Version 1.19.4-Snapshot
-                return "1.19.4-Snapshot";
+                return "Version: 1.19.4-Snapshot (Pack format: 11)";
             }
             else if (datapackVersion == 12)
             {
                 //Version 1.19.4
-                return "1.19.4";
+                return "Version: 1.19.4 (Pack format: 12)";
             }
             else if (datapackVersion == 13)
             {
                 //Version 1.20-Snapshot
-                return "1.20-Snapshot";
+                return "Version: 1.20-Snapshot (Pack format: 13)";
             }
             else if (datapackVersion == 14)
             {
                 //Version 1.20-Snapshot
-                return "1.20-Snapshot";
+                return "Version: 1.20-Snapshot (Pack format: 14)";
             }
             else if (datapackVersion == 15)
             {
                 //Version 1.20
-                return "1.20";
+                return "Version: 1.20 (Pack format: 15)";
             }
             else
             {
                 //Unknown version
-                return "Unknown";
+                return "Version: Unknown (Pack format: Unknown)";
+            }
+        }
+
+        public string GetDatapackVersionInfo(string path)
+        {
+            if (File.Exists(string.Format("{0}\\UPDATER.txt", path)))
+            {
+                //Use default method of detecting version by file
+                string datapackVersion = "unknown";
+                string mcVersion = "unknown";
+                string versionBranch = "unknown";
+
+                //Go through the file to get the variables
+                string[] file = File.ReadAllLines(string.Format("{0}\\UPDATER.txt", path));
+                for (int i = 0; i < file.Length; i++)
+                {
+                    //Only read the line if it's not a comment
+                    if (!file[i].Contains("#"))
+                    {
+                        if (file[i].Contains("datapack_version"))
+                        {
+                            datapackVersion = file[i].Replace("datapack_version=", "");
+                        }
+                        else if (file[i].Contains("version_branch"))
+                        {
+                            versionBranch = file[i].Replace("version_branch=", "");
+                        }
+                        else if (file[i].Contains("mc_version"))
+                        {
+                            mcVersion = file[i].Replace("mc_version=", "");
+                        }
+                    }
+                }
+
+                return (string.Format("Version {0} for {1} ({2})", datapackVersion, mcVersion, versionBranch));
+            }
+            else
+            {
+                //Use the legacy version of getting the version if the file doesn't exist (Most likely because the datapack is too old)
+                return GetDatapackMCVersionLegacy(path);
             }
         }
 
@@ -746,7 +801,7 @@ namespace Random_Item_Giver_Updater
 
         public bool lootTableModified()
         {
-            if (calledClose == false) 
+            if (calledClose == false)
             {
                 bool isModified = false;
 
