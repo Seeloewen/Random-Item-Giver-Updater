@@ -43,7 +43,7 @@ namespace Random_Item_Giver_Updater
         private ProgressBar pbSavingItems = new ProgressBar();
 
         //General variables for the software
-        public string versionNumber = string.Format("Public Beta");
+        public string versionNumber = string.Format("Dev");
         public string versionDate = "02.08.2023";
         public string currentLootTable = "none";
         public string currentDatapack = "none";
@@ -108,10 +108,41 @@ namespace Random_Item_Giver_Updater
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            //WIP
             //For dev purposes: tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.20 Dev";
-            currentDatapack = tbDatapack.Text;
-            GetLootTables(currentDatapack);
+            if ((!string.IsNullOrEmpty(tbDatapack.Text) && Directory.Exists(tbDatapack.Text)))
+            {
+                //If the directory exists and is valid and no other datapack with unsaved changes is loaded, try to load the datapack
+                if(lootTableModified() == false)
+                {
+                    currentLootTable = "none";
+                    itemList.Clear();
+                    stpWorkspace.Children.Clear();
+                    currentDatapack = tbDatapack.Text;
+                    GetLootTables(currentDatapack);
+                }
+                else
+                {
+                    
+                    MessageBoxResult result = MessageBox.Show("You have changes in your current loot table, that have not been saved yet. Loading a new loot table will discard all unsaved changes. Do you really want to continue?", "Load new loot table", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    switch (result)
+                    {
+                        case MessageBoxResult.Yes:
+                            //Discard the current loot table and load a new datapack
+                            currentLootTable = "none";
+                            itemList.Clear();
+                            stpWorkspace.Children.Clear();
+                            currentDatapack = tbDatapack.Text;
+                            GetLootTables(currentDatapack);
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                //Otherwise don't even attempt to load the datapack
+                MessageBox.Show("Could not load datapack. Please select a valid datapack folder!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void btnSaveLootTable_Click(object sender, RoutedEventArgs e)
@@ -576,7 +607,8 @@ namespace Random_Item_Giver_Updater
         private void GetLootTables(string path)
         {
             //Get all categories
-            string[] categories = Directory.GetDirectories(String.Format("{0}/data/randomitemgiver/loot_tables/", path));
+            lootTableCategoryList.Clear();
+            string[] categories = Directory.GetDirectories(string.Format("{0}/data/randomitemgiver/loot_tables/", path));
             for (int i = 0; i < categories.Length; i++)
             {
                 lootTableCategoryList.Add(new lootTableCategory(categories[i].Replace(String.Format("{0}/data/randomitemgiver/loot_tables/", path), ""), categories[i]));
