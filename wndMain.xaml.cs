@@ -150,8 +150,17 @@ namespace Random_Item_Giver_Updater
 
         private void btnSaveLootTable_Click(object sender, RoutedEventArgs e)
         {
-            //Save the current loot table
-            SaveCurrentLootTable();
+            //Check if a loot table is loaded
+            if (currentLootTable != "none")
+            {
+                //Save the current loot table
+                SaveCurrentLootTable();
+            }
+            else
+            {
+                //Show an error
+                MessageBox.Show("Please load a loot table before saving!", "Error", MessageBoxButton.OK, MessageBoxImage.Error );
+            }
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
