@@ -1,5 +1,7 @@
 # Random Item Giver Updater
 
+![GitHub all releases](https://img.shields.io/github/downloads/Seeloewen/Random-Item-Giver-Datapack/total?style=for-the-badge)
+
 This tool allows you to add new items to the Random Item Giver Datapack by Seeloewen/Louis9. It simplifies the process of editing loot tables by providing a simple yet powerful user interface with lots of useful elements.
 It is a rewrite of the older, less stable Random Item Giver Updater app.
 
