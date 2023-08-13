@@ -75,7 +75,7 @@ namespace Random_Item_Giver_Updater
                 addItemsWorkerAddedItems = 0;
                 addItemsWorkerAddedItemsLootTables = 0;
                 //Go through each loot table and add the items
-                foreach (lootTable lootTable in MainWindow.lootTableList)
+                foreach (lootTable lootTable in wndMain.lootTableList)
                 {
                     AddItems(string.Format("{0}/{1}", lootTable.lootTablePath, lootTable.lootTableName));
                     addItemsWorkerAddedItemsLootTables++;
@@ -112,7 +112,7 @@ namespace Random_Item_Giver_Updater
                 pbAddingItems.Value = Convert.ToDouble(progress.UserState);
 
                 //Report added items
-                tblAddingItemsProgress.Text = string.Format("Adding items... (Item {0}/{1} - Loot Table {2}/{3})", progress.ProgressPercentage, itemEntries.Count, addItemsWorkerAddedItemsLootTables, MainWindow.lootTableList.Count);
+                tblAddingItemsProgress.Text = string.Format("Adding items... (Item {0}/{1} - Loot Table {2}/{3})", progress.ProgressPercentage, itemEntries.Count, addItemsWorkerAddedItemsLootTables, wndMain.lootTableList.Count);
             };
         }
 
@@ -562,7 +562,7 @@ namespace Random_Item_Giver_Updater
                 }
 
                 //Report worker progress
-                addItemsWorkerProgress = addItemsWorkerProgress + (100 / (Convert.ToDouble(itemEntries.Count * MainWindow.lootTableList.Count)));
+                addItemsWorkerProgress = addItemsWorkerProgress + (100 / (Convert.ToDouble(itemEntries.Count * wndMain.lootTableList.Count)));
                 addItemsWorkerAddedItems++;
                 bgwAddItems.ReportProgress(addItemsWorkerAddedItems, addItemsWorkerProgress);
 

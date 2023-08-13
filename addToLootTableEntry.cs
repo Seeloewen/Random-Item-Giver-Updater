@@ -27,12 +27,15 @@ namespace Random_Item_Giver_Updater
         //Windows
         wndSelectLootTables wndSelectLootTables;
 
+        //Reference to main window
+        public MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
+
         //-- Constructor --//
 
         public addToLootTableEntry(string name, int index)
         {
             //Set loot table checklist
-            foreach(lootTable lootTable in MainWindow.lootTableList)
+            foreach(lootTable lootTable in wndMain.lootTableList)
             {
                 lootTableCheckList.Add(new lootTable(lootTable.lootTableName, lootTable.lootTableType, lootTable.lootTablePath));
             }
