@@ -8,11 +8,11 @@ using System.Windows;
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
 [assembly: AssemblyTitle("Random Item Giver Updater")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Simple but powerful tool for managing the Random Item Giver Datapack")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Random Item Giver Updater")]
-[assembly: AssemblyCopyright("Copyright ©  2023")]
+[assembly: AssemblyCopyright("Copyright © 2023 Louis/Seeloewen")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
