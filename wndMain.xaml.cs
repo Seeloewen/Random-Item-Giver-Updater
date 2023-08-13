@@ -19,6 +19,7 @@ using System.Windows.Threading;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Media.Animation;
+using SeeloewenLib;
 
 namespace Random_Item_Giver_Updater
 {
@@ -26,25 +27,25 @@ namespace Random_Item_Giver_Updater
     public partial class MainWindow : Window
     {
         //Lists for items and loot tables
-        private static List<itemEntry> itemList = new List<itemEntry>();
-        private static List<lootTableCategory> lootTableCategoryList = new List<lootTableCategory>();
-        public static List<lootTable> lootTableList = new List<lootTable>();
+        private List<itemEntry> itemList = new List<itemEntry>();
+        private List<lootTableCategory> lootTableCategoryList = new List<lootTableCategory>();
+        public List<lootTable> lootTableList = new List<lootTable>();
 
         //Controls
-        private static ScrollViewer svWorkspace = new ScrollViewer();
-        private static StackPanel stpWorkspace = new StackPanel();
+        private ScrollViewer svWorkspace = new ScrollViewer();
+        private StackPanel stpWorkspace = new StackPanel();
         private ScrollViewer svLootTables = new ScrollViewer();
-        private static StackPanel stpLootTables = new StackPanel();
+        private StackPanel stpLootTables = new StackPanel();
         private System.Windows.Forms.FolderBrowserDialog fbdDatapack = new System.Windows.Forms.FolderBrowserDialog();
-        private static TextBlock tblLoadingItems = new TextBlock();
-        private static Canvas cvsLootTableStats = new Canvas();
-        private static TextBlock tblLootTableStats = new TextBlock();
+        private TextBlock tblLoadingItems = new TextBlock();
+        private Canvas cvsLootTableStats = new Canvas();
+        private TextBlock tblLootTableStats = new TextBlock();
         private BackgroundWorker bgwEditLootTable = new BackgroundWorker();
         private ProgressBar pbSavingItems = new ProgressBar();
 
         //General variables for the software
-        public string versionNumber = string.Format("Public Beta");
-        public string versionDate = "03.08.2023";
+        public string versionNumber = string.Format("Dev");
+        public string versionDate = "13.08.2023";
         public string currentLootTable = "none";
         public string currentDatapack = "none";
         private bool calledClose;
@@ -55,6 +56,7 @@ namespace Random_Item_Giver_Updater
         //Windows
         public static wndAddItem wndAddItem;
         public static wndAbout wndAbout;
+        public static wndDuplicateFinder wndDuplicateFinder;
 
         //Buttons
         private Canvas cvsBtnAddItems = new Canvas();
@@ -111,7 +113,7 @@ namespace Random_Item_Giver_Updater
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            //For dev purposes: tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.20 Dev";
+            tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.20 Dev";
             if ((!string.IsNullOrEmpty(tbDatapack.Text) && Directory.Exists(tbDatapack.Text)))
             {
                 //If the directory exists and is valid and no other datapack with unsaved changes is loaded, try to load the datapack
@@ -159,7 +161,7 @@ namespace Random_Item_Giver_Updater
             else
             {
                 //Show an error
-                MessageBox.Show("Please load a loot table before saving!", "Error", MessageBoxButton.OK, MessageBoxImage.Error );
+                MessageBox.Show("Please load a loot table before saving!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -529,8 +531,17 @@ namespace Random_Item_Giver_Updater
 
         private void btnDuplicateFinder_Click(object sender, RoutedEventArgs e)
         {
-            //WIP - Show error, since it's not implemented yet
-            MessageBox.Show("The Duplicate Finder is not implemented yet and will be added at a later point in development.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            //Show duplicate finder window if a datapack is loaded
+            if(currentDatapack != "none")
+            {
+                wndDuplicateFinder = new wndDuplicateFinder();
+                wndDuplicateFinder.Owner = Application.Current.MainWindow;
+                wndDuplicateFinder.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("Please load a datapack before opening Duplicate Finder", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void btnAbout_Click(object sender, RoutedEventArgs e)

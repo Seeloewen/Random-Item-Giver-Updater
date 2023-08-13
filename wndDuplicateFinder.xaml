@@ -1,0 +1,28 @@
+﻿<Window x:Name="wndDuplicateFinder1" x:Class="Random_Item_Giver_Updater.wndDuplicateFinder"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Random_Item_Giver_Updater"
+        mc:Ignorable="d"
+        Background="#FF323232" Title="Duplicate Finder" Height="723" Width="802" WindowStartupLocation="CenterScreen">
+    <Grid x:Name="grdDuplicateFinder">
+        <TextBlock x:Name="tblHeader" HorizontalAlignment="Left" Margin="22,12,0,0" TextWrapping="Wrap" Text="Duplicate Finder" VerticalAlignment="Top" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+        <Canvas x:Name="cvsStep1" Margin="10,58,79,82" Visibility="Hidden">
+            <TextBlock x:Name="tblcvs1Header"  Canvas.Left="10" TextWrapping="Wrap" Canvas.Top="5" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" FontSize="16" Width="718"><Run Text="Welcome to the "/><Run Text="D"/><Run Text="uplicat"/><Run Text="e"/><Run Text=" Finder wizard. This wizard will help you find and remove duplicates in the Random Item Giver Datapack"/><Run Language="de-de" Text="."/><LineBreak/><Run/><LineBreak/><Run Text="Please select where the software should search for duplicates. They will be shown in a list after the process has completed."/></TextBlock>
+            <RadioButton x:Name="rbtnCurrent" Content="Only the currently selected Loot Table" Canvas.Left="10" Canvas.Top="137" Foreground="White" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Top" IsChecked="True" Padding="4,-4,0,0"/>
+            <RadioButton x:Name="rbtnAll" Content="All Loot Tables in the currently selected Datapack" Canvas.Left="10" Canvas.Top="161" Foreground="White" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Top" Padding="4,-4,0,0"/>
+        </Canvas>
+        <Canvas x:Name="cvsStep2" Margin="10,58,65,98" Visibility="Visible">
+            <ScrollViewer x:Name="svDuplicates" Height="406" Width="728" Canvas.Top="89" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Left="-10">
+                <StackPanel x:Name="stpDuplicates"/>
+            </ScrollViewer>
+            <TextBlock x:Name="tblDuplicateCategories" TextWrapping="Wrap" Canvas.Top="67" FontWeight="DemiBold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" Canvas.Left="12"><Run Text="Item name                "/><Run Text="          "/><Run Text="       "/><Run Text=" "/><Run Text=" "/><Run Language="de-de" Text=" "/><Run Text="Amount   Loot Table(s)"/></TextBlock>
+            <TextBlock x:Name="tblCvs2Header" Canvas.Left="12" TextWrapping="Wrap" Text="The following list contains all duplicate items. It shows their names, as well as how often and where the appear." Canvas.Top="5" FontSize="16" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Width="705"/>
+            <Button x:Name="btnDelete" Content="Delete Duplicates" Width="144" Height="26" FontSize="16" HorizontalAlignment="Center" Canvas.Left="140" Canvas.Top="507" VerticalAlignment="Top" Click="btnDelete_Click"/>
+            <Button x:Name="btnExportList" Content="Export List" Width="117" Height="26" FontSize="16" HorizontalAlignment="Center" Canvas.Left="7" Canvas.Top="507" VerticalAlignment="Top" Click="btnExportList_Click"/>
+        </Canvas>
+        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" Margin="663,644,0,0" VerticalAlignment="Top" Height="25" Width="100" FontSize="16"/>
+        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Left" Margin="546,644,0,0" VerticalAlignment="Top" Height="25" Width="100" FontSize="16"/>
+    </Grid>
+</Window>
