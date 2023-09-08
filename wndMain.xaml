@@ -6,7 +6,22 @@
         xmlns:local="clr-namespace:Random_Item_Giver_Updater"
         mc:Ignorable="d"
         Title="Random Item Giver Updater
-" Height="900" Width="1400" SizeChanged="Window_SizeChanged" Closing="wndMain_Closing">
+" Height="900" Width="1400" Closing="wndMain_Closing">
+    <Window.Resources>
+        <DataTemplate x:Key="ItemTemplate">
+            <Canvas x:Name="cvsItem" Height="50" Background="{Binding canvasBackColor}" Initialized="cvsItem_Initialized" Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}">
+                <TextBlock x:Name ="tblItemName" Text="{Binding itemName}" Canvas.Left="10" Canvas.Top="10" FontSize="20" Foreground="White" MouseDown="tblItemName_MouseDown"/>
+                <TextBox x:Name="tbItemName" Width="350" Height="25" FontSize="18" Canvas.Top="10" Canvas.Left="10" Visibility="Hidden"/>
+                <Button x:Name="btnSaveItemName" Height="25" Width="100" Content="Confirm" Canvas.Top="10" Canvas.Left="370" Visibility="Hidden" Click="btnSaveItemName_Click"/>
+                <Button x:Name="btnDelete" Height="25" Width="100" Content="Delete" Canvas.Top="12" Canvas.Right="100" Click="btnDelete_Click"/>
+                <Button x:Name="btnSaveItemNBT" Height="25" Width="100" Content="Confirm" Canvas.Top="10" Canvas.Left="759" Visibility="Hidden" Click="btnSaveItemNBT_Click"/>
+                <TextBox x:Name="tbItemNBT" Width="350" Height="25" FontSize="18" Canvas.Top="10" Canvas.Left="400" Visibility="Hidden"/>
+                <TextBlock x:Name="tblItemNBT" Text="{Binding itemNBT}" FontSize="20" Canvas.Top="10" Canvas.Left="400" Foreground="White" MouseDown="tblItemNBT_MouseDown" Visibility="Hidden"/>
+                <TextBlock x:Name="tblEntryIndex" Text="{Binding itemIndex}" FontSize="20" TextAlignment="Left" FontWeight="DemiBold" Foreground="White" Canvas.Top="10" Canvas.Right="40"/>
+                <TextBlock x:Name="tblIndicator" FontWeight="Bold" FontSize="24" Visibility="Hidden" Canvas.Top="8" Canvas.Right="225"/>
+            </Canvas>
+        </DataTemplate>
+    </Window.Resources>
     <Grid x:Name="grdWorkspace">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="260" />
@@ -31,5 +46,19 @@
                 <Button x:Name="btnAbout" Content="About" Width="102" Height="30" Canvas.Left="1247" Canvas.Top="51" HorizontalAlignment="Right" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="0,45,11,0" Click="btnAbout_Click"/>
             </Grid>
         </StackPanel>
+        <ListBox x:Name="lbItems" ItemsSource="{Binding itemList}" Grid.Column="1" Grid.Row="1" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ItemTemplate}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </Window>

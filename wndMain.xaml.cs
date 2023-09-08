@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows.Media.Animation;
 using SeeloewenLib;
+using System.Collections.ObjectModel;
 
 namespace Random_Item_Giver_Updater
 {
@@ -27,13 +28,11 @@ namespace Random_Item_Giver_Updater
     public partial class MainWindow : Window
     {
         //Lists for items and loot tables
-        private List<itemEntry> itemList = new List<itemEntry>();
+        public ObservableCollection<itemEntry> itemList { get; set; } = new ObservableCollection<itemEntry>();
         private List<lootTableCategory> lootTableCategoryList = new List<lootTableCategory>();
         public List<lootTable> lootTableList = new List<lootTable>();
 
         //Controls
-        private ScrollViewer svWorkspace = new ScrollViewer();
-        private StackPanel stpWorkspace = new StackPanel();
         private ScrollViewer svLootTables = new ScrollViewer();
         private StackPanel stpLootTables = new StackPanel();
         private System.Windows.Forms.FolderBrowserDialog fbdDatapack = new System.Windows.Forms.FolderBrowserDialog();
@@ -72,6 +71,10 @@ namespace Random_Item_Giver_Updater
         private Image imgBtnAbout = new Image();
         private TextBlock tblBtnAbout = new TextBlock();
 
+        //SeeloewenLib
+        SeeloewenLibTools SeeloewenLibTools = new SeeloewenLibTools();
+
+
         //-- Constructor --//
 
         public MainWindow()
@@ -79,6 +82,7 @@ namespace Random_Item_Giver_Updater
             InitializeComponent();
 
             //Setup controls
+            DataContext = this;
             SetupControls();
             SetupButtons();
         }
@@ -120,8 +124,8 @@ namespace Random_Item_Giver_Updater
                 if (lootTableModified() == false)
                 {
                     currentLootTable = "none";
-                    itemList.Clear();
-                    stpWorkspace.Children.Clear();
+                    //itemList.Clear();
+                    //stpWorkspace.Children.Clear();
                     currentDatapack = tbDatapack.Text;
                     GetLootTables(currentDatapack);
                 }
@@ -135,8 +139,8 @@ namespace Random_Item_Giver_Updater
                         case MessageBoxResult.Yes:
                             //Discard the current loot table and load a new datapack
                             currentLootTable = "none";
-                            itemList.Clear();
-                            stpWorkspace.Children.Clear();
+                            //itemList.Clear();
+                            //stpWorkspace.Children.Clear();
                             currentDatapack = tbDatapack.Text;
                             GetLootTables(currentDatapack);
                             break;
@@ -162,16 +166,6 @@ namespace Random_Item_Giver_Updater
             {
                 //Show an error
                 MessageBox.Show("Please load a loot table before saving!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            //Move delete button when window is resized
-            foreach (itemEntry item in itemList)
-            {
-                item.btnDelete.Margin = new Thickness(ActualWidth - 460, 10, 0, 0);
-                item.tblEntryIndex.Margin = new Thickness(wndMain.ActualWidth - 345, 10, 0, 0);
             }
         }
 
@@ -508,7 +502,7 @@ namespace Random_Item_Giver_Updater
             {
                 //Load the loot table
                 currentLootTable = string.Format("{0}/{1}", calledLootTablePath, calledLootTableName);
-                LoadLootTable(wndMain.currentLootTable);
+                LoadLootTable(currentLootTable);
 
                 //Show save confirmation
                 tblBtnSave.Text = "Saved!";
@@ -532,7 +526,7 @@ namespace Random_Item_Giver_Updater
         private void btnDuplicateFinder_Click(object sender, RoutedEventArgs e)
         {
             //Show duplicate finder window if a datapack is loaded
-            if(currentDatapack != "none")
+            if (currentDatapack != "none")
             {
                 wndDuplicateFinder = new wndDuplicateFinder();
                 wndDuplicateFinder.Owner = Application.Current.MainWindow;
@@ -623,21 +617,11 @@ namespace Random_Item_Giver_Updater
             }
 
             //Show 'loading' message
-            stpWorkspace.Children.Clear();
-            tblLoadingItems.Margin = new Thickness(svWorkspace.ActualWidth / 2 - 150, svWorkspace.ActualHeight / 2 - 75, 0, 0);
+            tblLoadingItems.Margin = new Thickness(lbItems.ActualWidth / 2 - 150, lbItems.ActualHeight / 2 - 75, 0, 0);
             tblLoadingItems.Text = "Loading items, please wait...\nThis may take a few seconds!";
-            stpWorkspace.Children.Add(tblLoadingItems);
             await Task.Delay(5); //Allows the UI to update and show the textblock
-
-            //Add all item entrys to workspace
-            stpWorkspace.Children.Clear();
-            tblLootTableStats.Text = string.Format("Current Loot table: {0} - Total amount of items: {1}", currentLootTable.Replace(currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""), itemList.Count);
-            stpWorkspace.Children.Add(cvsLootTableStats);
-            foreach (itemEntry entry in itemList)
-            {
-                stpWorkspace.Children.Add(entry.bdrItem);
-            }
         }
+
 
         private void GetLootTables(string path)
         {
@@ -803,15 +787,15 @@ namespace Random_Item_Giver_Updater
             tblBtnSave.Text = "Saving...";
 
             //Show 'loading' message
-            stpWorkspace.Children.Clear();
-            tblLoadingItems.Margin = new Thickness(svWorkspace.ActualWidth / 2 - 150, svWorkspace.ActualHeight / 2 - 75, 0, 0);
+            //stpWorkspace.Children.Clear();
+            tblLoadingItems.Margin = new Thickness(lbItems.ActualWidth / 2 - 150, lbItems.ActualHeight / 2 - 75, 0, 0);
             tblLoadingItems.Text = "Saving items, please wait...\nThis may take a few seconds!";
-            stpWorkspace.Children.Add(tblLoadingItems);
+            //stpWorkspace.Children.Add(tblLoadingItems);
 
             //Show loading bar
             pbSavingItems.Value = 0;
-            stpWorkspace.Children.Add(pbSavingItems);
-            pbSavingItems.Margin = new Thickness(svWorkspace.ActualWidth / 2 - 538, 20, 0, 0);
+            //stpWorkspace.Children.Add(pbSavingItems);
+            pbSavingItems.Margin = new Thickness(lbItems.ActualWidth / 2 - 538, 20, 0, 0);
             await Task.Delay(5); //Allows the UI to update and show the textblock
 
             //Save the loot table
@@ -909,22 +893,10 @@ namespace Random_Item_Giver_Updater
 
         private void SetupControls()
         {
-            //Create workspace stack panel
-            stpWorkspace.HorizontalAlignment = HorizontalAlignment.Stretch;
-            stpWorkspace.VerticalAlignment = VerticalAlignment.Stretch;
-            stpWorkspace.Children.Clear();
-
-            //Create workspace scrollviewer
-            svWorkspace.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            svWorkspace.HorizontalAlignment = HorizontalAlignment.Stretch;
-            svWorkspace.VerticalAlignment = VerticalAlignment.Stretch;
-            svWorkspace.Content = stpWorkspace;
-            svWorkspace.Background = new SolidColorBrush(Color.FromArgb(100, 140, 140, 140));
-
-            //Add the workspace scrollviewer to the grid
-            Grid.SetColumn(svWorkspace, 1);
-            Grid.SetRow(svWorkspace, 1);
-            grdWorkspace.Children.Add(svWorkspace);
+            //Add the listbox to the grid
+            Grid.SetColumn(lbItems, 1);
+            Grid.SetRow(lbItems, 1);
+            lbItems.Background = new SolidColorBrush(Color.FromArgb(100, 140, 140, 140));
 
             //Create loot table list stack panel
             stpLootTables.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -973,6 +945,159 @@ namespace Random_Item_Giver_Updater
             pbSavingItems.Height = 15;
             pbSavingItems.Width = 300;
         }
+
+        //-- Item Entry Event Handlers --//
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is itemEntry item)
+            {
+                if (item.isDeleted == false) //Set state to deleted
+                {
+                    item.isModified = true;
+                    item.isDeleted = true;
+                    button.Content = "Undo deletion";
+                    item.SetIndicatorState(sender);
+                }
+                else if (item.isDeleted == true) //If the item has been deleted, set state to undeleted
+                {
+                    //Check if the item has been modified in some other way before setting the modified state to false
+                    if (item.itemName == item.newName)
+                    {
+                        item.isModified = false;
+                    }
+                    item.isDeleted = false;
+                    button.Content = "Delete";
+                    item.SetIndicatorState(sender);
+                }
+            }
+        }
+
+        private void btnSaveItemName_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is itemEntry item)
+            {
+                //Get the parent canvas
+                Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(button);
+
+                //Get the necessary controls
+                TextBlock textblock = canvas.FindName("tblItemName") as TextBlock;
+                TextBox textbox = canvas.FindName("tbItemName") as TextBox;
+
+                //Hide the controls for editing and show the item name
+                textbox.Visibility = Visibility.Hidden;
+                button.Visibility = Visibility.Hidden;
+                textblock.Visibility = Visibility.Visible;
+                item.newName = textbox.Text;
+                textblock.Text = item.newName;
+
+                //Check if the item name has been changed and change modified state
+                if (item.newName != item.itemName)
+                {
+                    item.isModified = true;
+                    item.SetIndicatorState(sender);
+                }
+                else
+                {
+                    if (item.isDeleted == false && item.itemNBT == item.newNBT)
+                    {
+                        item.isModified = false;
+                    }
+                    item.SetIndicatorState(sender);
+                }
+            }
+        }
+
+        private void btnSaveItemNBT_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is itemEntry item)
+            {
+                //Get the parent canvas
+                Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(button);
+
+                //Get the necessary controls
+                TextBlock textblock = canvas.FindName("tblItemNBT") as TextBlock;
+                TextBox textbox = canvas.FindName("tbItemNBT") as TextBox;
+
+                //Hide the controls for editing and show the item NBT
+                textbox.Visibility = Visibility.Hidden;
+                button.Visibility = Visibility.Hidden;
+                textblock.Visibility = Visibility.Visible;
+                item.newNBT = textbox.Text;
+                textblock.Text = string.Format("NBT: {0}", item.newNBT);
+
+                //Check if the item NBT has been changed and change modified state
+                if (item.newNBT != item.itemNBT)
+                {
+                    item.isModified = true;
+                    item.SetIndicatorState(sender);
+                }
+                else
+                {
+                    if (item.isDeleted == false && item.itemName == item.newName)
+                    {
+                        item.isModified = false;
+                    }
+                    item.SetIndicatorState(sender);
+                }
+            }
+        }
+
+        private void tblItemName_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (sender is TextBlock textblock && textblock.DataContext is itemEntry item)
+            {
+                //Get the parent canvas
+                Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(textblock);
+
+                //Get the item name textbox
+                TextBox textBox = canvas.FindName("tbItemName") as TextBox;
+                textBox.Visibility = Visibility.Visible;
+                textBox.Text = textblock.Text;
+                textBox.Focus();
+
+                //Get the item name save button
+                Button button = canvas.FindName("btnSaveItemName") as Button;
+                button.Visibility = Visibility.Visible;
+
+                //Hide the textblock
+                textblock.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void tblItemNBT_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (sender is TextBlock textblock && textblock.DataContext is itemEntry item)
+            {
+                //Get the parent canvas
+                Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(textblock);
+
+                //Get the necessary controls
+                TextBox textbox = canvas.FindName("tbItemNBT") as TextBox;
+                Button button = canvas.FindName("btnSaveItemNBT") as Button;
+
+                //Show the controls for editing and hide the original NBT
+                textbox.Visibility = Visibility.Visible;
+                button.Visibility = Visibility.Visible;
+                textblock.Visibility = Visibility.Hidden;
+                textbox.Text = textblock.Text.Replace("NBT: ", "");
+            }
+        }
+
+        private void cvsItem_Initialized(object sender, EventArgs e)
+        {
+            if (sender is Canvas canvas && canvas.DataContext is itemEntry item)
+            {
+                //Check if the item has NBT, and show it in that case
+                if (item.itemNBT != "none")
+                {
+                    TextBlock textblock = canvas.FindName("tblItemNBT") as TextBlock;
+                    textblock.Visibility = Visibility.Visible;
+                }
+            }
+        }
     }
+
 }
+
 

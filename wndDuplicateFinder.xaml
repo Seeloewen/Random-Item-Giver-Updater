@@ -6,6 +6,16 @@
         xmlns:local="clr-namespace:Random_Item_Giver_Updater"
         mc:Ignorable="d"
         Background="#FF323232" Title="Duplicate Finder" Height="723" Width="802" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <DataTemplate x:Key="DuplicateTemplate">
+            <Canvas x:Name="cvsDuplicate" Height="40" >
+                <TextBlock x:Name="tblItemName" Width="220" Height="23" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="22" Text="{Binding itemName}" MouseDown="tblItemName_MouseDown"/>
+                <TextBlock x:Name="tblAmount" FontSize="16" Foreground="White" Canvas.Top="10" Canvas.Left="257" Text="{Binding amount}"/>
+                <TextBlock x:Name="tblLootTables" Width="240" Height="23" FontSize="16" Foreground="White" Canvas.Top="10" Canvas.Left="330" Text="{Binding lootTables}" FontWeight="DemiBold"/>
+                <Button x:Name="btnViewAll" Height="23" Width="100" Content="View All" FontSize="15" Canvas.Top="10" Canvas.Left="590" Click="btnViewAll_Click"/>
+            </Canvas>
+        </DataTemplate>
+    </Window.Resources>
     <Grid x:Name="grdDuplicateFinder">
         <TextBlock x:Name="tblHeader" HorizontalAlignment="Left" Margin="22,12,0,0" TextWrapping="Wrap" Text="Duplicate Finder" VerticalAlignment="Top" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
         <Canvas x:Name="cvsStep1" Margin="10,58,79,82" Visibility="Hidden">
@@ -14,10 +24,21 @@
             <RadioButton x:Name="rbtnAll" Content="All Loot Tables in the currently selected Datapack" Canvas.Left="10" Canvas.Top="161" Foreground="White" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Top" Padding="4,-4,0,0"/>
         </Canvas>
         <Canvas x:Name="cvsStep2" Margin="10,58,65,98" Visibility="Visible">
-            <ScrollViewer x:Name="svDuplicates" Height="406" Width="728" Canvas.Top="89" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Left="-10">
-                <StackPanel x:Name="stpDuplicates"/>
-            </ScrollViewer>
-            <TextBlock x:Name="tblDuplicateCategories" TextWrapping="Wrap" Canvas.Top="67" FontWeight="DemiBold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" Canvas.Left="12"><Run Text="Item name                "/><Run Text="          "/><Run Text="       "/><Run Text=" "/><Run Text=" "/><Run Language="de-de" Text=" "/><Run Text="Amount   Loot Table(s)"/></TextBlock>
+            <ListBox x:Name="lbDuplicates" ItemsSource="{Binding duplicateEntries}" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="390" Canvas.Top="107" Width="735" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="-11">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <ContentControl Content="{Binding}" ContentTemplate="{StaticResource DuplicateTemplate}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBlock x:Name="tblDuplicateCategories" TextWrapping="Wrap" Canvas.Top="67" FontWeight="DemiBold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" Canvas.Left="12"><Run Language="de-de" Text=" "/><Run Text="Item name                "/><Run Text="          "/><Run Text="       "/><Run Text=" "/><Run Text=" "/><Run Text=" "/><Run Text="Amount   Loot Table(s)"/></TextBlock>
             <TextBlock x:Name="tblCvs2Header" Canvas.Left="12" TextWrapping="Wrap" Text="The following list contains all duplicate items. It shows their names, as well as how often and where the appear." Canvas.Top="5" FontSize="16" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Width="705"/>
             <Button x:Name="btnDelete" Content="Delete Duplicates" Width="144" Height="26" FontSize="16" HorizontalAlignment="Center" Canvas.Left="140" Canvas.Top="507" VerticalAlignment="Top" Click="btnDelete_Click"/>
             <Button x:Name="btnExportList" Content="Export List" Width="117" Height="26" FontSize="16" HorizontalAlignment="Center" Canvas.Left="7" Canvas.Top="507" VerticalAlignment="Top" Click="btnExportList_Click"/>

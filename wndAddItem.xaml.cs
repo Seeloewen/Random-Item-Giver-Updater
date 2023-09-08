@@ -18,6 +18,8 @@ using System.Reflection;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Threading;
+using System.Collections.ObjectModel;
+using SeeloewenLib;
 
 namespace Random_Item_Giver_Updater
 {
@@ -26,14 +28,17 @@ namespace Random_Item_Giver_Updater
         //General attributes
         public bool isOpen;
         public int currentPage = 1;
-        public static List<addItemEntry> itemEntries = new List<addItemEntry>();
+        public ObservableCollection<addItemEntry> itemEntries { get; set; } = new ObservableCollection<addItemEntry>();
+        public ObservableCollection<addToLootTableEntry> lootTableEntries { get; set; } = new ObservableCollection<addToLootTableEntry>();
         double addItemsWorkerProgress;
         int addItemsWorkerAddedItems;
         int addItemsWorkerAddedItemsLootTables;
         DateTime startTime;
 
-        //Reference to main window
+        //Important references
         public MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
+        private wndSelectLootTables wndSelectLootTables;
+        public SeeloewenLibTools SeeloewenLibTools = new SeeloewenLibTools();
 
         //Controls
         private BackgroundWorker bgwAddItems = new BackgroundWorker();
@@ -45,6 +50,7 @@ namespace Random_Item_Giver_Updater
         {
             InitializeComponent();
             SetupControls();
+            DataContext = this;
         }
 
         //-- Event Handlers --//
@@ -53,7 +59,6 @@ namespace Random_Item_Giver_Updater
         {
             //Change open state to true
             isOpen = true;
-            svItems.Content = stpItems;
 
             //Show the first page
             currentPage = 1;
@@ -188,9 +193,6 @@ namespace Random_Item_Giver_Updater
                             index++;
                         }
                     }
-
-                    //Show all items
-                    UpdateItemDisplay();
                 }
                 else
                 {
@@ -211,31 +213,44 @@ namespace Random_Item_Giver_Updater
                 gbStep6.Visibility = Visibility.Hidden;
                 await Task.Delay(5);
 
-                //Show loading message
-                stpLootTableItems.Children.Add(tblLoadingItems);
-                tblLoadingItems.Margin = new Thickness(220, 180, 0, 0);
-                await Task.Delay(5);
-
                 //Update the items based on the settings from the last page
-                foreach (addItemEntry entry in itemEntries)
+                foreach (addItemEntry item in lbItems.Items)
                 {
-                    entry.itemName = entry.tbItemName.Text;
-                    entry.itemPrefix = entry.tbItemPrefix.Text;
-                    entry.itemNBT = entry.tbItemNBT.Text;
+                    ListBoxItem listBoxItem = (ListBoxItem)lbItems.ItemContainerGenerator.ContainerFromItem(item);
+                    if (listBoxItem != null)
+                    {
+                        ContentPresenter contentPresenter = FindVisualChild<ContentPresenter>(listBoxItem);
+                        if (contentPresenter != null)
+                        {
+                            DataTemplate dataTemplate = contentPresenter.ContentTemplate;
+                            if (dataTemplate != null)
+                            {
+                                Canvas canvas = dataTemplate.FindName("cvsItem", contentPresenter) as Canvas;
+                                if (canvas != null)
+                                {
+                                    TextBlock textblock = canvas.FindName("tbItemName") as TextBlock;
+                                    TextBlock textblock2 = canvas.FindName("tbItemPrefix") as TextBlock;
+                                    TextBlock textblock3 = canvas.FindName("tbItemNBT") as TextBlock;
+
+                                    if (textblock != null && textblock2 != null && textblock3 != null)
+                                    {
+                                        // Aktualisiere die Daten im addItemEntry-Objekt
+                                        item.itemName = textblock.Text;
+                                        item.itemPrefix = textblock2.Text;
+                                        item.itemNBT = textblock3.Text;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
+
 
                 //Add a loot table entry to every item
                 foreach (addItemEntry entry in itemEntries)
                 {
-                    entry.lootTableEntry = new addToLootTableEntry(string.Format("{0}:{1}", entry.tbItemPrefix.Text, entry.tbItemName.Text), entry.itemIndex);
-                }
-
-
-                //Display all loot tables
-                stpLootTableItems.Children.Clear();
-                foreach (addItemEntry entry in itemEntries)
-                {
-                    stpLootTableItems.Children.Add(entry.lootTableEntry.bdrItem);
+                    entry.lootTableEntry = new addToLootTableEntry(string.Format("{0}:{1}", entry.itemPrefix, entry.itemName), entry.itemIndex);
+                    lootTableEntries.Add(entry.lootTableEntry);
                 }
             }
             else if (currentPage == 4)
@@ -301,9 +316,6 @@ namespace Random_Item_Giver_Updater
                         gbStep5.Visibility = Visibility.Hidden;
                         gbStep6.Visibility = Visibility.Hidden;
 
-                        //Clear content of current page
-                        stpItems.Children.Clear();
-
                         break;
                     case MessageBoxResult.No:
                         //Increase the page number by one as it will be decreased later anyway
@@ -328,9 +340,6 @@ namespace Random_Item_Giver_Updater
                         gbStep5.Visibility = Visibility.Hidden;
                         gbStep6.Visibility = Visibility.Hidden;
 
-                        //Clear content of current page
-                        stpLootTableItems.Children.Clear();
-
                         break;
                     case MessageBoxResult.No:
                         //Increase the page number by one as it will be decreased later anyway
@@ -347,27 +356,10 @@ namespace Random_Item_Giver_Updater
         {
             //Add a new empty item
             itemEntries.Add(new addItemEntry("minecraft", "", itemEntries.Count));
-
-            //Display all items
-            UpdateItemDisplay();
         }
 
         //-- Custom Methods --//
 
-        public async void UpdateItemDisplay()
-        {
-            //Show loading message
-            stpItems.Children.Add(tblLoadingItems);
-            tblLoadingItems.Margin = new Thickness(220, 180, 0, 0);
-            await Task.Delay(5);
-
-            //Display all items
-            stpItems.Children.Clear();
-            foreach (addItemEntry entry in itemEntries)
-            {
-                stpItems.Children.Add(entry.bdrItem);
-            }
-        }
 
         public void AddItems(string lootTable)
         {
@@ -630,12 +622,110 @@ namespace Random_Item_Giver_Updater
             }
         }
 
+        private T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T typedChild)
+                    return typedChild;
+
+                var childOfChild = FindVisualChild<T>(child);
+                if (childOfChild != null)
+                    return childOfChild;
+            }
+            return null;
+        }
+
         private void SetupControls()
         {
             //Create 'Loading' text for loading items
             tblLoadingItems.Text = "Processing items, please wait...\nThis may take a few seconds!";
             tblLoadingItems.Foreground = new SolidColorBrush(Colors.White);
             tblLoadingItems.FontSize = 24;
+        }
+
+        //-- Add Item Entry Event Handlers --//
+
+        private void btnRemove_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button)
+            {
+                //Get the canvas which the button is in
+                Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(button);
+
+                if (canvas.DataContext is addItemEntry item)
+                {
+                    //Remove the current item from the list
+                    itemEntries.Remove(item);
+                }
+            }
+        }
+
+        //-- Add To Loot Table Entry Event Handlers --//
+
+        private void btnEditCertainLootTables_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button)
+            {
+                //Get the canvas which the button is in
+                Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(button);
+
+                if (canvas.DataContext is addToLootTableEntry item)
+                {
+                    //Open loot table selection window
+                    wndSelectLootTables = new wndSelectLootTables(item.lootTableCheckList) { Owner = Application.Current.MainWindow };
+                    wndSelectLootTables.Owner = Application.Current.MainWindow;
+                    wndSelectLootTables.ShowDialog();
+
+                    //Get loot tables string from loot table selection window
+                    foreach (lootTable lootTable in wndSelectLootTables.lootTableList)
+                    {
+                        if (lootTable.cbAddToLootTable.IsChecked == true)
+                        {
+                            item.lootTableWhiteList = string.Format("{0}{1}", item.lootTableWhiteList, lootTable.fullLootTablePath);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void rbtnAllLootTables_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is RadioButton radiobutton)
+            {
+                //Get the canvas which the radiobutton is in
+                Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(radiobutton);
+
+                if (canvas.DataContext is addToLootTableEntry item)
+                {
+                    //Disable edit button
+                    Button button = canvas.FindName("btnEditCertainLootTables") as Button;
+                    button.IsEnabled = false;
+
+                    //Set checkstate on variable that gets accessed by the item adding thread
+                    item.allLootTablesChecked = true;
+                }
+            }
+        }
+
+        private void rbtnCertainLootTables_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is RadioButton radiobutton)
+            {
+                //Get the canvas which the radiobutton is in
+                Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(radiobutton);
+
+                if (canvas.DataContext is addToLootTableEntry item)
+                {
+                    //Enable edit button
+                    Button button = canvas.FindName("btnEditCertainLootTables") as Button;
+                    button.IsEnabled = true;
+
+                    //Set checkstate on variable that gets accessed by the item adding thread
+                    item.allLootTablesChecked = false;
+                }
+            }
         }
     }
 }

@@ -1,11 +1,14 @@
 ﻿/////////////////////////////////////////////////////////////////////
 //                                                                 //
 // SealLib vDev                                                    //
-// Sunday, 13th August 2023                                        //
+// Saturday, 26th August 2023                                      //
 // Created by Seeloewen                                            //
 //                                                                 //
 // Simple library that contains some code that is used by my apps. //
 // You are free to use this library in your apps if you desire.    //
+//                                                                 //
+// Find the library on GitHub:                                     //
+// https://github.com/Seeloewen/SeeloewenLib                       //
 //                                                                 //
 /////////////////////////////////////////////////////////////////////
 
@@ -18,6 +21,9 @@ using System.Windows.Media.Animation;
 using System.Windows.Forms.VisualStyles;
 using System.Text;
 using System.Windows.Markup;
+using System.Windows.Media;
+using System.IO;
+using System.Linq;
 
 namespace SeeloewenLib
 {
@@ -37,6 +43,84 @@ namespace SeeloewenLib
 
             //Output the string
             return outputString;
+        }
+
+        public T FindVisualParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            //Takes a child object and returns its visual parent
+            child = VisualTreeHelper.GetParent(child);
+            return child as T;
+        }
+
+        public T FindVisualChild<T>(DependencyObject parent, int index) where T : DependencyObject
+        {
+            //Get the child corresponding to the index and parent
+            var child = VisualTreeHelper.GetChild(parent, index);
+            if (child is T typedChild)
+            {
+                //return the child
+                return typedChild;
+            }
+            return null;
+        }
+
+        private string ConvertNumberUnit(double number)
+        {
+            //Define unit
+            string unit = "";
+
+            if (number > 1000)
+            {
+                //If number is one thousand or more
+                unit = "k";
+                number = number / 1000;
+                if (number > 1000)
+                {
+                    //If number is one million or more
+                    unit = "m";
+                    number = number / 1000;
+                    if (number > 1000)
+                    {
+                        //If number is one billion or more
+                        unit = "b";
+                        number = number / 1000;
+                        if (number > 1000)
+                        {
+                            //If number is one trillion ore more
+                            unit = "t";
+                            number = number / 1000;
+                        }
+                    }
+                }
+            }
+
+
+            //Return the combination of number and unit
+            return string.Format("{0}{1}", number, unit);
+        }
+    }
+
+    public class SaveSystem //Currently in alpha, not very reliable. Only for test purposes.
+    {
+        public string path; //The path where the settings file is saved
+
+        public SaveSystem(string path)
+        {
+            //Set the path where the settings file will be saved
+            this.path = path;
+        }
+
+        public void Save(List<string> saveEntries)
+        {
+            //Save the settings to the file
+            File.WriteAllLines(string.Format("{0}/settings.txt", path), saveEntries);
+        }
+
+        public List<string> Load()
+        {
+            //Read the settings from the file and return it as a list
+            IEnumerable<string> output = File.ReadLines(string.Format("{0}/settings.txt", path));
+            return output.ToList();
         }
     }
 

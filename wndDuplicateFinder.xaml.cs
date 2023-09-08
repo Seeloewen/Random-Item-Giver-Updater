@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.IO;
 using SeeloewenLib;
 using System.Runtime.Remoting.Messaging;
+using System.Collections.ObjectModel;
 
 namespace Random_Item_Giver_Updater
 {
@@ -21,12 +22,11 @@ namespace Random_Item_Giver_Updater
     {
         //Controls
         Wizard wzdDuplicateFinder;
-        TextBlock tblLoadingDuplicates = new TextBlock();
         TextBlock tblNoDuplicatesFound = new TextBlock();
         System.Windows.Forms.SaveFileDialog sfdDuplicateList = new System.Windows.Forms.SaveFileDialog();
 
         //General attributes
-        List<duplicateEntry> duplicateEntries = new List<duplicateEntry>();
+        public ObservableCollection<duplicateEntry> duplicateEntries { get; set; } = new ObservableCollection<duplicateEntry>();
         int duplicateIndex = 0;
 
         //Reference to main window
@@ -42,6 +42,7 @@ namespace Random_Item_Giver_Updater
             InitializeComponent();
             CreateWizard();
             SetupControls();
+            DataContext = this;
         }
 
         //-- Event Handlers --//
@@ -53,44 +54,29 @@ namespace Random_Item_Giver_Updater
 
         //-- Custom Methods --//
 
-        private async void CheckForDuplicates()
+        private void CheckForDuplicates()
         {
             //If the rabiobutton for only the current loot table is checked
             if (rbtnCurrent.IsChecked == true)
             {
-                //Show loading message
-                stpDuplicates.Children.Add(tblLoadingDuplicates);
-                tblLoadingDuplicates.Margin = new Thickness(175, 150, 0, 0);
-                await Task.Delay(5);
-
                 //Check the current loot table
                 duplicateEntries.Clear();
                 CheckLootTable(wndMain.currentLootTable, wndMain.currentLootTable.Replace(wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
 
                 //Show a message with the amount of duplicates and display them in a list
-                stpDuplicates.Children.Clear();
-                foreach (duplicateEntry duplicateEntry in duplicateEntries)
-                {
-                    stpDuplicates.Children.Add(duplicateEntry.cvsItem);
-                }
                 MessageBox.Show(string.Format("Successfully searched for duplicates. Found {0} results.", duplicateEntries.Count()), "Search completed", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 //If no duplicates are found, show information text
                 if (duplicateEntries.Count == 0)
                 {
-                    stpDuplicates.Children.Add(tblNoDuplicatesFound);
-                    tblNoDuplicatesFound.Margin = new Thickness(220, 175, 0, 0);
+                    tblNoDuplicatesFound.Visibility = Visibility.Visible;
+                    tblNoDuplicatesFound.Margin = new Thickness(225, 275, 0, 0);
                 }
             }
 
             //if the radiobutton for all loot tables in the current datapack is checked
             else if (rbtnAll.IsChecked == true)
             {
-                //Show loading message
-                stpDuplicates.Children.Add(tblLoadingDuplicates);
-                tblLoadingDuplicates.Margin = new Thickness(175, 150, 0, 0);
-                await Task.Delay(5);
-
                 //Check all loot tables in the current datapack
                 duplicateEntries.Clear();
                 duplicateIndex = 0;
@@ -99,19 +85,14 @@ namespace Random_Item_Giver_Updater
                     CheckLootTable(lootTable.fullLootTablePath, lootTable.fullLootTablePath.Replace(wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
                 }
 
-                //Show a message with the amount of duplicates and display them in a list
-                stpDuplicates.Children.Clear();
-                foreach (duplicateEntry duplicateEntry in duplicateEntries)
-                {
-                    stpDuplicates.Children.Add(duplicateEntry.cvsItem);
-                }
+                //Show a message with the amount of duplicates
                 MessageBox.Show(string.Format("Successfully searched for duplicates. Found {0} results.", duplicateEntries.Count()), "Search completed", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 //If no duplicates are found, show information text
                 if (duplicateEntries.Count == 0)
                 {
-                    stpDuplicates.Children.Add(tblNoDuplicatesFound);
-                    tblNoDuplicatesFound.Margin = new Thickness(220, 175, 0, 0);
+                    tblNoDuplicatesFound.Visibility = Visibility.Visible;
+                    tblNoDuplicatesFound.Margin = new Thickness(225, 275, 0, 0);
                 }
             }
         }
@@ -186,10 +167,10 @@ namespace Random_Item_Giver_Updater
                 bool wasAdded = false;
 
                 //Go through every item in the duplicate list
-                foreach(duplicateEntry duplicate in duplicateEntries)
+                foreach (duplicateEntry duplicate in duplicateEntries)
                 {
                     //If the item already exists in the duplicate list, update it and stop searching
-                    if(duplicate.itemName == item)
+                    if (duplicate.itemName == item)
                     {
                         duplicate.UpdateLootTables(lootTable);
                         duplicate.UpdateAmount();
@@ -203,7 +184,7 @@ namespace Random_Item_Giver_Updater
                 {
                     duplicateIndex++;
                     duplicateEntries.Add(new duplicateEntry(item, lootTable, duplicateIndex));
-                }    
+                }
             }
         }
 
@@ -232,15 +213,12 @@ namespace Random_Item_Giver_Updater
 
         private void SetupControls()
         {
-            //Create 'Loading' text for searching duplicates
-            tblLoadingDuplicates.Text = "Searching for duplicates, please wait...\nThis may take a few seconds!";
-            tblLoadingDuplicates.Foreground = new SolidColorBrush(Colors.White);
-            tblLoadingDuplicates.FontSize = 24;
-
             //Create information text when no duplicates are found
             tblNoDuplicatesFound.Text = "No duplicates were found.";
             tblNoDuplicatesFound.Foreground = new SolidColorBrush(Colors.White);
             tblNoDuplicatesFound.FontSize = 24;
+            tblNoDuplicatesFound.Visibility = Visibility.Hidden;
+            cvsStep2.Children.Add(tblNoDuplicatesFound);
         }
 
         private bool pageTwoRequirements()
@@ -276,7 +254,7 @@ namespace Random_Item_Giver_Updater
             //Create a list of strings and add each entry in the duplicate list as a new line
             List<string> duplicatesList = new List<string>();
             duplicatesList.Add("Item Name - Amount - Loot Table(s)");
-            foreach(duplicateEntry duplicate in duplicateEntries)
+            foreach (duplicateEntry duplicate in duplicateEntries)
             {
                 duplicatesList.Add(string.Format("{0} - {1} - {2}", duplicate.itemName, duplicate.amount, duplicate.lootTables));
             }
@@ -292,7 +270,33 @@ namespace Random_Item_Giver_Updater
 
                 //Show confirmation message
                 MessageBox.Show(string.Format("Successfully saved the duplicate list to {0}", sfdDuplicateList.FileName), "Saved duplicate list", MessageBoxButton.OK, MessageBoxImage.Information);
-            }          
+            }
+        }
+
+        //-- Duplicate Entry Event Handlers --//
+
+        private void btnViewAll_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button)
+            {
+                //Get the canvas which the button is in
+                Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(button);
+
+                //Show a message in which loot tables the duplicate occurs
+                if (canvas.DataContext is duplicateEntry duplicateEntry)
+                {
+                    MessageBox.Show(string.Format("The duplicate occurs in the following loot tables:\n{0}", duplicateEntry.lootTables.Replace(", ", "\n")), "View all Loot Tables", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+        }
+
+        private void tblItemName_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (sender is TextBlock textBlock)
+            {
+                //Show the controls for editing and hide the original name
+                MessageBox.Show(string.Format("Full name of the item:\n{0}", textBlock.Text), "Full item name", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
     }
 }

@@ -6,6 +6,24 @@
         xmlns:local="clr-namespace:Random_Item_Giver_Updater"
         mc:Ignorable="d"
         Title="Add Item" Height="723" Width="802" Loaded="Window_Loaded" Unloaded="Window_Unloaded" Background="#FF323232" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <Window.Resources>
+        <DataTemplate x:Key="ItemTemplate">
+            <Canvas x:Name="cvsItem" Height="40" Background="{Binding canvasBackColor}" >
+                <TextBox x:Name="tbItemName" Width="255" Height="24" FontSize="15" Background="#FF636363" Foreground="White" Canvas.Top="6" Canvas.Left="205" Text="{Binding itemName}"/>
+                <TextBox x:Name="tbItemNBT" Width="200" Height="24" FontSize="15" Background="#FF636363" Foreground="White" Canvas.Top="6" Canvas.Left="475"/>
+                <TextBox x:Name="tbItemPrefix" Width="175" Height="24" FontSize="15" Background="#FF636363" Foreground="White" Canvas.Top="6" Canvas.Left="15" Text="{Binding itemPrefix}"/>
+                <Button x:Name="btnRemove" Height="24" Width="20" Content="X" FontSize="15" Canvas.Top="6" Canvas.Left="685" Click="btnRemove_Click"/>
+            </Canvas>
+        </DataTemplate>
+        <DataTemplate x:Key="LootTableTemplate">
+            <Canvas x:Name="cvsItem" Height="40" Background="{Binding canvasBackColor}" >
+                <TextBlock x:Name="tbItemName" Width="140" Height="24" FontSize="15" Foreground="White" Canvas.Top="6" Canvas.Left="20" Text="{Binding itemName}"/>
+                <RadioButton x:Name="rbtnAllLootTables" Width="255" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="175" Padding="5,-3.5,0,0" Content="All normal loot tables" IsChecked="True" Checked="rbtnAllLootTables_Checked"/>
+                <RadioButton x:Name="rbtnCertainLootTables" Width="255" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="350" Content="Only certain loot tables:" Padding="5,-3.5,0,0" Checked="rbtnCertainLootTables_Checked"/>
+                <Button x:Name="btnEditCertainLootTables" Height="25" Width="150" Content="Select loot tables" FontSize="15" Canvas.Top="6" Canvas.Left="550" Click="btnEditCertainLootTables_Click" IsEnabled="False"/>
+            </Canvas>
+        </DataTemplate>
+    </Window.Resources>
     <Grid Margin="0,0,0,-6" RenderTransformOrigin="0.5,0.5">
         <Grid.RenderTransform>
             <TransformGroup>
@@ -17,12 +35,23 @@
         </Grid.RenderTransform>
         <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" Margin="661,645,0,0" VerticalAlignment="Top" Width="99" Click="btnContinue_Click" Height="27" FontSize="16"/>
         <TextBlock x:Name="tblHeader" TextWrapping="Wrap" Text="Add Items" Margin="16,11,0,0" HorizontalAlignment="Left" Width="123" Height="41" VerticalAlignment="Top" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
-        <GroupBox x:Name="gbStep3" Header="Step 3: Finalize Items" Margin="21,54,0,0" FontSize="16" Foreground="White" HorizontalAlignment="Left" Width="742" Height="580" VerticalAlignment="Top" UseLayoutRounding="True" Visibility="Hidden">
+        <GroupBox x:Name="gbStep3" Header="Step 3: Finalize Items" Margin="21,54,0,0" FontSize="16" Foreground="White" HorizontalAlignment="Left" Width="742" Height="580" VerticalAlignment="Top" UseLayoutRounding="True" Visibility="Visible">
             <Canvas x:Name="cvsStep3" UseLayoutRounding="True">
-                <TextBlock x:Name="tblEditCategories" TextWrapping="Wrap" Text="Prefix                                  Name                                                   NBT" Width="704" Height="18" HorizontalAlignment="Left" Canvas.Left="12" Canvas.Top="62" VerticalAlignment="Center" FontWeight="DemiBold"/>
-                <ScrollViewer x:Name="svItems" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom" VerticalScrollBarVisibility="Auto" Height="416" Canvas.Top="89" Width="731" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="-2">
-                    <StackPanel x:Name="stpItems"/>
-                </ScrollViewer>
+                <TextBlock x:Name="tblEditCategories" TextWrapping="Wrap" Width="704" Height="18" HorizontalAlignment="Left" Canvas.Left="12" Canvas.Top="62" VerticalAlignment="Center" FontWeight="DemiBold"><Run Text="  "/><Run Text="Prefix                                  Name                                                   NBT"/></TextBlock>
+                <ListBox x:Name="lbItems" ItemsSource="{Binding itemEntries}" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="416" Canvas.Top="89" Width="736" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="-2">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ItemTemplate}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
                 <TextBlock x:Name="tblEditItems" Canvas.Left="11" TextWrapping="Wrap" Text="You can now edit the prefix, name and NBT of your items. To add more items, click the button at the bottom." Canvas.Top="7" HorizontalAlignment="Left" VerticalAlignment="Center" Width="704"/>
                 <Button x:Name="btnAddAdditionalItem" Content="Add additional item" Canvas.Left="10" Canvas.Top="517" HorizontalAlignment="Center" VerticalAlignment="Top" Width="171" Height="25" FontSize="16" Click="btnAddAdditionalItem_Click"/>
             </Canvas>
@@ -58,12 +87,23 @@
                 <TextBox x:Name="tbAddedItemsList" Canvas.Left="19" TextWrapping="Wrap" Canvas.Top="161" Width="693" Height="373" Background="#FF636363" Foreground="White"/>
             </Canvas>
         </GroupBox>
-        <GroupBox x:Name="gbStep4" Header="Step 4: Select Loot Tables" Margin="21,54,0,0" Height="580" Width="742" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16" Foreground="White" UseLayoutRounding="True" Visibility="Visible">
+        <GroupBox x:Name="gbStep4" Header="Step 4: Select Loot Tables" Margin="21,54,0,0" Height="580" Width="742" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16" Foreground="White" UseLayoutRounding="True" Visibility="Hidden">
             <Canvas x:Name="cvsStep4" UseLayoutRounding="True">
                 <TextBlock x:Name="tblSelectLootTables" Canvas.Left="15" TextWrapping="Wrap" Text="Now it's time to select the loot tables you want to add your items too. You can either add it to all normal loot tables or only certain ones" Canvas.Top="12" HorizontalAlignment="Left" VerticalAlignment="Center" Width="703"/>
-                <ScrollViewer x:Name="svLootTableItems" Height="442" Width="730" HorizontalAlignment="Center" Canvas.Top="107" VerticalAlignment="Top">
-                    <StackPanel x:Name="stpLootTableItems"/>
-                </ScrollViewer>
+                <ListBox x:Name="lbItemsLootTables" ItemsSource="{Binding lootTableEntries}" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="448" Canvas.Top="107" Width="734" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.Left="-2">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource LootTableTemplate}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
                 <TextBlock x:Name="tblLootTableCategories" Canvas.Left="18" TextWrapping="Wrap" Text="Item                         Add to..." Canvas.Top="74" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="DemiBold" FontSize="18"/>
             </Canvas>
         </GroupBox>
