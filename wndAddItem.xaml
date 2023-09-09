@@ -24,18 +24,26 @@
             </Canvas>
         </DataTemplate>
     </Window.Resources>
-    <Grid Margin="0,0,0,-6" RenderTransformOrigin="0.5,0.5">
-        <Grid.RenderTransform>
-            <TransformGroup>
-                <ScaleTransform/>
-                <SkewTransform/>
-                <RotateTransform Angle="-0.323"/>
-                <TranslateTransform/>
-            </TransformGroup>
-        </Grid.RenderTransform>
-        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" Margin="661,645,0,0" VerticalAlignment="Top" Width="99" Click="btnContinue_Click" Height="27" FontSize="16"/>
+    <Grid x:Name="grdAddItems" Margin="0,0,0,-6" RenderTransformOrigin="0.5,0.5">
+        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" Margin="661,645,0,0" VerticalAlignment="Top" Width="99" Height="27" FontSize="16"/>
+        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Left" Margin="553,645,0,0" VerticalAlignment="Top" Width="99" Height="27" FontSize="16"/>
         <TextBlock x:Name="tblHeader" TextWrapping="Wrap" Text="Add Items" Margin="16,11,0,0" HorizontalAlignment="Left" Width="123" Height="41" VerticalAlignment="Top" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
-        <GroupBox x:Name="gbStep3" Header="Step 3: Finalize Items" Margin="21,54,0,0" FontSize="16" Foreground="White" HorizontalAlignment="Left" Width="742" Height="580" VerticalAlignment="Top" UseLayoutRounding="True" Visibility="Visible">
+        <GroupBox x:Name="gbStep1" Header="Step 1: Select Datapack" Margin="21,54,0,0" HorizontalAlignment="Left" Width="742" Height="580" VerticalAlignment="Top" FontSize="16" Foreground="White" UseLayoutRounding="True" Visibility="Hidden">
+            <Canvas x:Name="cvsStep1" UseLayoutRounding="True">
+                <TextBlock x:Name="tblDescriptionSelectDatapack" Canvas.Left="12" TextWrapping="Wrap" Text="The items will be added to the datapack in the main window, so make sure you have the right datapack selected there." Canvas.Top="90" HorizontalAlignment="Left" VerticalAlignment="Center" Width="681"/>
+                <TextBlock x:Name="tblHeaderStep1" TextWrapping="Wrap" Text="Welcome to the Item Adding Wizard. This wizard will help you add items to the datapack. It allows adding invidiual items or lists as well as changing prefixes, names and NBT tags." Canvas.Left="11" Canvas.Top="12" HorizontalAlignment="Left" VerticalAlignment="Top" Width="707"/>
+                <TextBlock x:Name="tblCurrentlySelectedDatapack" Canvas.Left="12" TextWrapping="Wrap" Text="Currently selected datapack: None Pack version: None (Unknown)" Canvas.Top="170" HorizontalAlignment="Left" VerticalAlignment="Top" Width="703" Height="69" FontWeight="DemiBold"/>
+            </Canvas>
+        </GroupBox>
+        <GroupBox x:Name="gbStep2" Header="Step 2: Adding items" Margin="21,54,0,0" HorizontalAlignment="Left" Width="742" Height="580" VerticalAlignment="Top" FontSize="16" Foreground="White" UseLayoutRounding="True" Visibility="Hidden">
+            <Canvas x:Name="cvsStep2" UseLayoutRounding="True">
+                <TextBox x:Name="tbItemName" TextWrapping="Wrap" Width="690" AcceptsReturn="True" Height="348" HorizontalAlignment="Center" Canvas.Left="22" Canvas.Top="111" VerticalAlignment="Top" Foreground="White" Background="#FF636363"/>
+                <TextBlock x:Name="tblListItems" Canvas.Left="17" TextWrapping="Wrap" Text="You can now list all the items that you want to add to the datapack or import a list. If you're working with modded items, you should include the prefix and check the checkbox below." Canvas.Top="12" HorizontalAlignment="Left" VerticalAlignment="Center" Width="703"/>
+                <TextBlock x:Name="tblItems" Canvas.Left="23" TextWrapping="Wrap" Text="Items:" Canvas.Top="80" FontWeight="DemiBold" FontSize="18"/>
+                <CheckBox x:Name="cbIncludesPrefixes" Content="List includes prefixes for modded items" Canvas.Left="22" Canvas.Top="478" Foreground="White" Padding="4,-3,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </Canvas>
+        </GroupBox>
+        <GroupBox x:Name="gbStep3" Header="Step 3: Finalize Items" Margin="21,54,0,0" FontSize="16" Foreground="White" HorizontalAlignment="Left" Width="742" Height="580" VerticalAlignment="Top" UseLayoutRounding="True" Visibility="Hidden">
             <Canvas x:Name="cvsStep3" UseLayoutRounding="True">
                 <TextBlock x:Name="tblEditCategories" TextWrapping="Wrap" Width="704" Height="18" HorizontalAlignment="Left" Canvas.Left="12" Canvas.Top="62" VerticalAlignment="Center" FontWeight="DemiBold"><Run Text="  "/><Run Text="Prefix                                  Name                                                   NBT"/></TextBlock>
                 <ListBox x:Name="lbItems" ItemsSource="{Binding itemEntries}" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="416" Canvas.Top="89" Width="736" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="-2">
@@ -54,37 +62,6 @@
                 </ListBox>
                 <TextBlock x:Name="tblEditItems" Canvas.Left="11" TextWrapping="Wrap" Text="You can now edit the prefix, name and NBT of your items. To add more items, click the button at the bottom." Canvas.Top="7" HorizontalAlignment="Left" VerticalAlignment="Center" Width="704"/>
                 <Button x:Name="btnAddAdditionalItem" Content="Add additional item" Canvas.Left="10" Canvas.Top="517" HorizontalAlignment="Center" VerticalAlignment="Top" Width="171" Height="25" FontSize="16" Click="btnAddAdditionalItem_Click"/>
-            </Canvas>
-        </GroupBox>
-        <GroupBox x:Name="gbStep1" Header="Step 1: Select Datapack" Margin="21,54,0,0" HorizontalAlignment="Left" Width="742" Height="580" VerticalAlignment="Top" FontSize="16" Foreground="White" UseLayoutRounding="True" Visibility="Hidden">
-            <Canvas x:Name="cvStep1" UseLayoutRounding="True">
-                <TextBlock x:Name="tblDescriptionSelectDatapack" Canvas.Left="12" TextWrapping="Wrap" Text="The items will be added to the datapack in the main window, so make sure you have the right datapack selected there." Canvas.Top="90" HorizontalAlignment="Left" VerticalAlignment="Center" Width="681"/>
-                <TextBlock x:Name="tblHeaderStep1" TextWrapping="Wrap" Text="Welcome to the Item Adding Wizard. This wizard will help you add items to the datapack. It allows adding invidiual items or lists as well as changing prefixes, names and NBT tags." Canvas.Left="11" Canvas.Top="12" HorizontalAlignment="Left" VerticalAlignment="Top" Width="707"/>
-                <TextBlock x:Name="tblCurrentlySelectedDatapack" Canvas.Left="12" TextWrapping="Wrap" Text="Currently selected datapack: None Pack version: None (Unknown)" Canvas.Top="170" HorizontalAlignment="Left" VerticalAlignment="Top" Width="703" Height="69" FontWeight="DemiBold"/>
-            </Canvas>
-        </GroupBox>
-        <GroupBox x:Name="gbStep2" Header="Step 2: Adding items" Margin="21,54,0,0" HorizontalAlignment="Left" Width="742" Height="580" VerticalAlignment="Top" FontSize="16" Foreground="White" UseLayoutRounding="True" Visibility="Hidden">
-            <Canvas x:Name="cvsStep2" UseLayoutRounding="True">
-                <TextBox x:Name="tbItemName" TextWrapping="Wrap" Width="690" AcceptsReturn="True" Height="348" HorizontalAlignment="Center" Canvas.Left="22" Canvas.Top="111" VerticalAlignment="Top" Foreground="White" Background="#FF636363"/>
-                <TextBlock x:Name="tblListItems" Canvas.Left="17" TextWrapping="Wrap" Text="You can now list all the items that you want to add to the datapack or import a list. If you're working with modded items, you should include the prefix and check the checkbox below." Canvas.Top="12" HorizontalAlignment="Left" VerticalAlignment="Center" Width="703"/>
-                <TextBlock x:Name="tblItems" Canvas.Left="23" TextWrapping="Wrap" Text="Items:" Canvas.Top="80" FontWeight="DemiBold" FontSize="18"/>
-                <CheckBox x:Name="cbIncludesPrefixes" Content="List includes prefixes for modded items" Canvas.Left="22" Canvas.Top="478" Foreground="White" Padding="4,-3,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            </Canvas>
-        </GroupBox>
-        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Left" Margin="553,645,0,0" VerticalAlignment="Top" Width="99" Click="btnBack_Click" Height="27" FontSize="16"/>
-        <GroupBox x:Name="gbStep5" Header="Step 5: Adding..." Margin="21,54,0,0" HorizontalAlignment="Left" Width="742" Height="580" VerticalAlignment="Top" Foreground="White" FontSize="16" UseLayoutRounding="True" Visibility="Hidden">
-            <Canvas x:Name="cvsStep5" UseLayoutRounding="True">
-                <TextBlock x:Name="tblAddingItems" Canvas.Left="20" TextWrapping="Wrap" Text="Congratulations! Your items are now being added to the datapack. You can view the progress down below." Canvas.Top="16" HorizontalAlignment="Left" VerticalAlignment="Center" Width="692"/>
-                <TextBlock x:Name="tblAddingItemsProgress" Canvas.Left="20" TextWrapping="Wrap" Text="Adding items... (0/0)" Canvas.Top="98"/>
-                <ProgressBar x:Name="pbAddingItems" Height="19" Canvas.Left="21" Canvas.Top="125" Width="687" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            </Canvas>
-        </GroupBox>
-        <GroupBox x:Name="gbStep6" Header="Step 6: Finish" Margin="21,54,0,0" Width="742" Height="580" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" FontSize="16" UseLayoutRounding="True" Visibility="Hidden">
-            <Canvas x:Name="cvsStep6" UseLayoutRounding="True">
-                <TextBlock x:Name="tblAddedItems" Canvas.Left="15" TextWrapping="Wrap" Text="Your items have been added to the datapack! You can view a list of all added items down below. Click 'Finish' to exit the wizard." Canvas.Top="14" HorizontalAlignment="Left" VerticalAlignment="Center" Width="705"/>
-                <TextBlock x:Name="tblElapsedTime" Canvas.Left="17" TextWrapping="Wrap" Text="Elapsed time: /" Canvas.Top="79" FontWeight="DemiBold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <TextBlock x:Name="tblAddedItemsList" Canvas.Left="17" TextWrapping="Wrap" Text="Added items:" Canvas.Top="128" FontWeight="DemiBold" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <TextBox x:Name="tbAddedItemsList" Canvas.Left="19" TextWrapping="Wrap" Canvas.Top="161" Width="693" Height="373" Background="#FF636363" Foreground="White"/>
             </Canvas>
         </GroupBox>
         <GroupBox x:Name="gbStep4" Header="Step 4: Select Loot Tables" Margin="21,54,0,0" Height="580" Width="742" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16" Foreground="White" UseLayoutRounding="True" Visibility="Hidden">
@@ -107,6 +84,20 @@
                 <TextBlock x:Name="tblLootTableCategories" Canvas.Left="18" TextWrapping="Wrap" Text="Item                         Add to..." Canvas.Top="74" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="DemiBold" FontSize="18"/>
             </Canvas>
         </GroupBox>
-
+        <GroupBox x:Name="gbStep5" Header="Step 5: Adding..." Margin="21,54,0,0" HorizontalAlignment="Left" Width="742" Height="580" VerticalAlignment="Top" Foreground="White" FontSize="16" UseLayoutRounding="True" Visibility="Hidden">
+            <Canvas x:Name="cvsStep5" UseLayoutRounding="True">
+                <TextBlock x:Name="tblAddingItems" Canvas.Left="20" TextWrapping="Wrap" Text="Congratulations! Your items are now being added to the datapack. You can view the progress down below." Canvas.Top="16" HorizontalAlignment="Left" VerticalAlignment="Center" Width="692"/>
+                <TextBlock x:Name="tblAddingItemsProgress" Canvas.Left="20" TextWrapping="Wrap" Text="Adding items... (0/0)" Canvas.Top="98"/>
+                <ProgressBar x:Name="pbAddingItems" Height="19" Canvas.Left="21" Canvas.Top="125" Width="687" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </Canvas>
+        </GroupBox>
+        <GroupBox x:Name="gbStep6" Header="Step 6: Finish" Margin="21,54,0,0" Width="742" Height="580" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" FontSize="16" UseLayoutRounding="True" Visibility="Hidden">
+            <Canvas x:Name="cvsStep6" UseLayoutRounding="True">
+                <TextBlock x:Name="tblAddedItems" Canvas.Left="15" TextWrapping="Wrap" Text="Your items have been added to the datapack! You can view a list of all added items down below. Click 'Finish' to exit the wizard." Canvas.Top="14" HorizontalAlignment="Left" VerticalAlignment="Center" Width="705"/>
+                <TextBlock x:Name="tblElapsedTime" Canvas.Left="17" TextWrapping="Wrap" Text="Elapsed time: /" Canvas.Top="79" FontWeight="DemiBold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBlock x:Name="tblAddedItemsList" Canvas.Left="17" TextWrapping="Wrap" Text="Added items:" Canvas.Top="128" FontWeight="DemiBold" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBox x:Name="tbAddedItemsList" Canvas.Left="19" TextWrapping="Wrap" Canvas.Top="161" Width="693" Height="373" Background="#FF636363" Foreground="White"/>
+            </Canvas>
+        </GroupBox>
     </Grid>
 </Window>

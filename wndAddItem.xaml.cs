@@ -20,6 +20,7 @@ using System.Threading;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using SeeloewenLib;
+using System.Diagnostics;
 
 namespace Random_Item_Giver_Updater
 {
@@ -43,6 +44,7 @@ namespace Random_Item_Giver_Updater
         //Controls
         private BackgroundWorker bgwAddItems = new BackgroundWorker();
         private TextBlock tblLoadingItems = new TextBlock();
+        public Wizard wzdAddItems;
 
         //-- Constructor --//
 
@@ -50,6 +52,7 @@ namespace Random_Item_Giver_Updater
         {
             InitializeComponent();
             SetupControls();
+            CreateWizard();
             DataContext = this;
         }
 
@@ -60,65 +63,14 @@ namespace Random_Item_Giver_Updater
             //Change open state to true
             isOpen = true;
 
-            //Show the first page
-            currentPage = 1;
-            gbStep1.Visibility = Visibility.Visible;
-            gbStep2.Visibility = Visibility.Hidden;
-            gbStep3.Visibility = Visibility.Hidden;
-            gbStep4.Visibility = Visibility.Hidden;
-            gbStep5.Visibility = Visibility.Hidden;
-            gbStep6.Visibility = Visibility.Hidden;
-            btnBack.Content = "Close";
+            //Setup the first page
             tblCurrentlySelectedDatapack.Text = string.Format("Currently selected Datapack: {0}\n{1}", wndMain.currentDatapack, wndMain.GetDatapackVersionInfo(wndMain.currentDatapack));
 
             //Setup backgroundworker
             bgwAddItems.WorkerReportsProgress = true;
-            bgwAddItems.DoWork += delegate (object s, DoWorkEventArgs args)
-            {
-                //Reset previous progress
-                addItemsWorkerProgress = 0;
-                addItemsWorkerAddedItems = 0;
-                addItemsWorkerAddedItemsLootTables = 0;
-                //Go through each loot table and add the items
-                foreach (lootTable lootTable in wndMain.lootTableList)
-                {
-                    AddItems(string.Format("{0}/{1}", lootTable.lootTablePath, lootTable.lootTableName));
-                    addItemsWorkerAddedItemsLootTables++;
-                    addItemsWorkerAddedItems = 0;
-                }
-
-            };
-
-            bgwAddItems.RunWorkerCompleted += delegate (object s, RunWorkerCompletedEventArgs args)
-            {
-                //Go to the next page
-                currentPage++;
-                gbStep1.Visibility = Visibility.Hidden;
-                gbStep2.Visibility = Visibility.Hidden;
-                gbStep3.Visibility = Visibility.Hidden;
-                gbStep4.Visibility = Visibility.Hidden;
-                gbStep5.Visibility = Visibility.Hidden;
-                gbStep6.Visibility = Visibility.Visible;
-                btnContinue.Content = "Finish";
-                btnContinue.IsEnabled = true;
-
-                foreach (addItemEntry item in itemEntries)
-                {
-                    tbAddedItemsList.AppendText(string.Format("{0}:{1}\n", item.itemPrefix, item.itemName));
-                }
-
-                //Show the elapsed time
-                tblElapsedTime.Text = string.Format("Elapsed time: {0}", (DateTime.Now - startTime).ToString(@"hh\:mm\:ss"));
-            };
-
-            bgwAddItems.ProgressChanged += delegate (object s, ProgressChangedEventArgs progress)
-            {
-                //Report worker progress to progress bar
-                pbAddingItems.Value = Convert.ToDouble(progress.UserState);
-
-                //Report added items
-                tblAddingItemsProgress.Text = string.Format("Adding items... (Item {0}/{1} - Loot Table {2}/{3})", progress.ProgressPercentage, itemEntries.Count, addItemsWorkerAddedItemsLootTables, wndMain.lootTableList.Count);
-            };
+            bgwAddItems.DoWork += bgwAddItems_DoWork;
+            bgwAddItems.RunWorkerCompleted += bgwAddItems_RunWorkerCompleted;
+            bgwAddItems.ProgressChanged += bgwAddItems_ProgressChanged;
         }
 
         private void Window_Unloaded(object sender, RoutedEventArgs e)
@@ -127,239 +79,193 @@ namespace Random_Item_Giver_Updater
             isOpen = false;
         }
 
-        private async void btnContinue_Click(object sender, RoutedEventArgs e)
-        {
-            if (currentPage == 1)
-            {
-
-                //Show the corresponding next page
-                gbStep1.Visibility = Visibility.Hidden;
-                gbStep2.Visibility = Visibility.Visible;
-                gbStep3.Visibility = Visibility.Hidden;
-                gbStep4.Visibility = Visibility.Hidden;
-                gbStep5.Visibility = Visibility.Hidden;
-                gbStep6.Visibility = Visibility.Hidden;
-                btnBack.Content = "Back";
-
-            }
-
-            else if (currentPage == 2)
-            {
-                if (!string.IsNullOrEmpty(tbItemName.Text))
-                {
-
-
-                    //Show the corresponding next page
-                    gbStep1.Visibility = Visibility.Hidden;
-                    gbStep2.Visibility = Visibility.Hidden;
-                    gbStep3.Visibility = Visibility.Visible;
-                    gbStep4.Visibility = Visibility.Hidden;
-                    gbStep5.Visibility = Visibility.Hidden;
-                    gbStep6.Visibility = Visibility.Hidden;
-                    await Task.Delay(5);
-
-                    //Get all items into an array
-                    string[] items = tbItemName.Text.Split('\n');
-
-                    //Create an entry for every item
-                    itemEntries.Clear();
-                    int index = 0;
-                    if (cbIncludesPrefixes.IsChecked == true)
-                    {
-                        //Split the item into prefix and item name if checkbox for prefixes is checked
-                        foreach (string item in items)
-                        {
-                            string[] line = item.Split(':');
-                            if (line.Length != 2)
-                            {
-                                //If the line actually doesn't contain a prefix, add the item normally with default prefix
-                                itemEntries.Add(new addItemEntry("minecraft", line[0], index));
-                                index++;
-                            }
-                            else
-                            {
-                                //Add the item with prefix and name
-                                itemEntries.Add(new addItemEntry(line[0], line[1], index));
-                                index++;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //Add the line as an item name if checkbox for prefixes is not checked
-                        foreach (string item in items)
-                        {
-                            itemEntries.Add(new addItemEntry("minecraft", item, index));
-                            index++;
-                        }
-                    }
-                }
-                else
-                {
-                    //Don't go to the next page and throw error
-                    currentPage--;
-                    MessageBox.Show("Please enter some items that you want to add!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-
-            }
-            else if (currentPage == 3)
-            {
-                //Show the corresponding next page
-                gbStep1.Visibility = Visibility.Hidden;
-                gbStep2.Visibility = Visibility.Hidden;
-                gbStep3.Visibility = Visibility.Hidden;
-                gbStep4.Visibility = Visibility.Visible;
-                gbStep5.Visibility = Visibility.Hidden;
-                gbStep6.Visibility = Visibility.Hidden;
-                await Task.Delay(5);
-
-                //Update the items based on the settings from the last page
-                foreach (addItemEntry item in lbItems.Items)
-                {
-                    ListBoxItem listBoxItem = (ListBoxItem)lbItems.ItemContainerGenerator.ContainerFromItem(item);
-                    if (listBoxItem != null)
-                    {
-                        ContentPresenter contentPresenter = FindVisualChild<ContentPresenter>(listBoxItem);
-                        if (contentPresenter != null)
-                        {
-                            DataTemplate dataTemplate = contentPresenter.ContentTemplate;
-                            if (dataTemplate != null)
-                            {
-                                Canvas canvas = dataTemplate.FindName("cvsItem", contentPresenter) as Canvas;
-                                if (canvas != null)
-                                {
-                                    TextBlock textblock = canvas.FindName("tbItemName") as TextBlock;
-                                    TextBlock textblock2 = canvas.FindName("tbItemPrefix") as TextBlock;
-                                    TextBlock textblock3 = canvas.FindName("tbItemNBT") as TextBlock;
-
-                                    if (textblock != null && textblock2 != null && textblock3 != null)
-                                    {
-                                        // Aktualisiere die Daten im addItemEntry-Objekt
-                                        item.itemName = textblock.Text;
-                                        item.itemPrefix = textblock2.Text;
-                                        item.itemNBT = textblock3.Text;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-                //Add a loot table entry to every item
-                foreach (addItemEntry entry in itemEntries)
-                {
-                    entry.lootTableEntry = new addToLootTableEntry(string.Format("{0}:{1}", entry.itemPrefix, entry.itemName), entry.itemIndex);
-                    lootTableEntries.Add(entry.lootTableEntry);
-                }
-            }
-            else if (currentPage == 4)
-            {
-                //Show the corresponding next page
-                gbStep1.Visibility = Visibility.Hidden;
-                gbStep2.Visibility = Visibility.Hidden;
-                gbStep3.Visibility = Visibility.Hidden;
-                gbStep4.Visibility = Visibility.Hidden;
-                gbStep5.Visibility = Visibility.Visible;
-                gbStep6.Visibility = Visibility.Hidden;
-                btnBack.IsEnabled = false;
-                btnContinue.IsEnabled = false;
-
-                //Set start time for time calculation afterwards
-                startTime = DateTime.Now;
-
-                //Add the items
-                bgwAddItems.RunWorkerAsync();
-            }
-            else if (currentPage == 6)
-            {
-                //Exit the window
-                Close();
-            }
-
-            //Increase the page number
-            currentPage++;
-        }
-
-        private void btnBack_Click(object sender, RoutedEventArgs e)
-        {
-            if (currentPage == 1)
-            {
-                //Exit the window
-                Close();
-
-            }
-            if (currentPage == 2)
-            {
-                //Show the corresponding last page
-                gbStep1.Visibility = Visibility.Visible;
-                gbStep2.Visibility = Visibility.Hidden;
-                gbStep3.Visibility = Visibility.Hidden;
-                gbStep4.Visibility = Visibility.Hidden;
-                gbStep5.Visibility = Visibility.Hidden;
-                gbStep6.Visibility = Visibility.Hidden;
-                btnBack.Content = "Close";
-            }
-            else if (currentPage == 3)
-            {
-                //Show warning if there are items in the list as they could be modified
-                MessageBoxResult result = MessageBox.Show("Warning: You will loose any modifications to your items. Do you really want to go back?", "Go back", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                switch (result)
-                {
-                    case MessageBoxResult.Yes:
-                        //Show the corresponding last page
-                        gbStep1.Visibility = Visibility.Hidden;
-                        gbStep2.Visibility = Visibility.Visible;
-                        gbStep3.Visibility = Visibility.Hidden;
-                        gbStep4.Visibility = Visibility.Hidden;
-                        gbStep5.Visibility = Visibility.Hidden;
-                        gbStep6.Visibility = Visibility.Hidden;
-
-                        break;
-                    case MessageBoxResult.No:
-                        //Increase the page number by one as it will be decreased later anyway
-                        currentPage++;
-                        break;
-                }
-
-            }
-            if (currentPage == 4)
-            {
-                //Show warning if there are items in the list as they could be modified
-                MessageBoxResult result = MessageBox.Show("Warning: You will loose any loot table selections. Do you really want to go back?", "Go back", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                switch (result)
-                {
-                    case MessageBoxResult.Yes:
-                        //Show the corresponding last page
-                        gbStep1.Visibility = Visibility.Hidden;
-                        gbStep2.Visibility = Visibility.Hidden;
-                        gbStep3.Visibility = Visibility.Visible;
-                        gbStep4.Visibility = Visibility.Hidden;
-                        gbStep5.Visibility = Visibility.Hidden;
-                        gbStep6.Visibility = Visibility.Hidden;
-
-                        break;
-                    case MessageBoxResult.No:
-                        //Increase the page number by one as it will be decreased later anyway
-                        currentPage++;
-                        break;
-                }
-            }
-
-            //Decrease the page number
-            currentPage--;
-        }
-
         private void btnAddAdditionalItem_Click(object sender, RoutedEventArgs e)
         {
             //Add a new empty item
             itemEntries.Add(new addItemEntry("minecraft", "", itemEntries.Count));
         }
 
+        private void bgwAddItems_DoWork(object s, DoWorkEventArgs args)
+        {
+            //Reset previous progress
+            addItemsWorkerProgress = 0;
+            addItemsWorkerAddedItems = 0;
+            addItemsWorkerAddedItemsLootTables = 0;
+
+            //Go through each loot table and add the items
+            foreach (lootTable lootTable in wndMain.lootTableList)
+            {
+                AddItems(string.Format("{0}/{1}", lootTable.lootTablePath, lootTable.lootTableName));
+                addItemsWorkerAddedItemsLootTables++;
+                addItemsWorkerAddedItems = 0;
+            }
+        }
+
+        private void bgwAddItems_RunWorkerCompleted(object s, RunWorkerCompletedEventArgs args)
+        {
+            //Go to the next page
+            wzdAddItems.ShowNextPage();   
+        }
+
+        private void bgwAddItems_ProgressChanged(object s, ProgressChangedEventArgs progress)
+        {
+            //Report worker progress to progress bar
+            pbAddingItems.Value = Convert.ToDouble(progress.UserState);
+
+            //Report added items
+            tblAddingItemsProgress.Text = string.Format("Adding items... (Item {0}/{1} - Loot Table {2}/{3})", progress.ProgressPercentage, itemEntries.Count, addItemsWorkerAddedItemsLootTables, wndMain.lootTableList.Count);
+        }
+
         //-- Custom Methods --//
 
+
+        private void CreateWizard()
+        {
+            //Create the wizard
+            wzdAddItems = new Wizard(6, 580, 742, btnContinue, btnBack, Close, Close, new Thickness(0, 0, 0, 0));
+            grdAddItems.Children.Add(wzdAddItems.gbWizard);
+            gbStep1.Content = null;
+            gbStep2.Content = null;
+            gbStep3.Content = null;
+            gbStep4.Content = null;
+            gbStep5.Content = null;
+            gbStep6.Content = null;
+            wzdAddItems.gbWizard.Foreground = new SolidColorBrush(Colors.White);
+            wzdAddItems.gbWizard.FontSize = 16;
+
+            //Setup the pages
+            wzdAddItems.pages[0].grdContent.Children.Add(cvsStep1);
+            wzdAddItems.pages[1].grdContent.Children.Add(cvsStep2);
+            wzdAddItems.pages[2].grdContent.Children.Add(cvsStep3);
+            wzdAddItems.pages[3].grdContent.Children.Add(cvsStep4);
+            wzdAddItems.pages[4].grdContent.Children.Add(cvsStep5);
+            wzdAddItems.pages[5].grdContent.Children.Add(cvsStep6);
+
+            wzdAddItems.pages[2].code = codePage3;
+            wzdAddItems.pages[2].requirements = requirementsPage3;
+            wzdAddItems.pages[2].requirementsNotFulfilledMsg = "Please enter items you want to add to the datapack to continue!";
+            wzdAddItems.pages[3].code = codePage4;
+            wzdAddItems.pages[4].code = codePage5;
+            wzdAddItems.pages[4].canGoBack = false;
+            wzdAddItems.pages[4].canContinue = false;
+            wzdAddItems.pages[5].code = codePage6;
+            wzdAddItems.pages[5].canGoBack = false;
+        }
+        private bool requirementsPage3()
+        {
+            //Check if the item name textbox is empty
+            if (!string.IsNullOrEmpty(tbItemName.Text))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void codePage3()
+        {
+            //Get all items into an array
+            string[] items = tbItemName.Text.Split('\n');
+
+            //Create an entry for every item
+            itemEntries.Clear();
+            int index = 0;
+            if (cbIncludesPrefixes.IsChecked == true)
+            {
+                //Split the item into prefix and item name if checkbox for prefixes is checked
+                foreach (string item in items)
+                {
+                    string[] line = item.Split(':');
+                    if (line.Length != 2)
+                    {
+                        //If the line actually doesn't contain a prefix, add the item normally with default prefix
+                        itemEntries.Add(new addItemEntry("minecraft", line[0], index));
+                        index++;
+                    }
+                    else
+                    {
+                        //Add the item with prefix and name
+                        itemEntries.Add(new addItemEntry(line[0], line[1], index));
+                        index++;
+                    }
+                }
+            }
+            else
+            {
+                //Add the line as an item name if checkbox for prefixes is not checked
+                foreach (string item in items)
+                {
+                    itemEntries.Add(new addItemEntry("minecraft", item, index));
+                    index++;
+                }
+            }
+        }
+
+        private void codePage4()
+        {
+            //Update the items based on the settings from the last page
+            foreach (addItemEntry item in lbItems.Items)
+            {
+                ListBoxItem listBoxItem = (ListBoxItem)lbItems.ItemContainerGenerator.ContainerFromItem(item);
+                if (listBoxItem != null)
+                {
+                    ContentPresenter contentPresenter = FindVisualChild<ContentPresenter>(listBoxItem);
+                    if (contentPresenter != null)
+                    {
+                        DataTemplate dataTemplate = contentPresenter.ContentTemplate;
+                        if (dataTemplate != null)
+                        {
+                            Canvas canvas = dataTemplate.FindName("cvsItem", contentPresenter) as Canvas;
+                            if (canvas != null)
+                            {
+                                TextBlock textblock = canvas.FindName("tbItemName") as TextBlock;
+                                TextBlock textblock2 = canvas.FindName("tbItemPrefix") as TextBlock;
+                                TextBlock textblock3 = canvas.FindName("tbItemNBT") as TextBlock;
+
+                                if (textblock != null && textblock2 != null && textblock3 != null)
+                                {
+                                    // Aktualisiere die Daten im addItemEntry-Objekt
+                                    item.itemName = textblock.Text;
+                                    item.itemPrefix = textblock2.Text;
+                                    item.itemNBT = textblock3.Text;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            //Add a loot table entry to every item
+            foreach (addItemEntry entry in itemEntries)
+            {
+                entry.lootTableEntry = new addToLootTableEntry(string.Format("{0}:{1}", entry.itemPrefix, entry.itemName), entry.itemIndex);
+                lootTableEntries.Add(entry.lootTableEntry);
+            }
+        }
+
+        private void codePage5()
+        {
+            //Set start time for time calculation afterwards
+            startTime = DateTime.Now;
+
+            //Add the items
+            bgwAddItems.RunWorkerAsync();
+        }
+
+        private void codePage6()
+        {
+            //Add all items to the added items list
+            foreach (addItemEntry item in itemEntries)
+            {
+                tbAddedItemsList.AppendText(string.Format("{0}:{1}\n", item.itemPrefix, item.itemName));
+            }
+
+            //Show the elapsed time
+            tblElapsedTime.Text = string.Format("Elapsed time: {0}", (DateTime.Now - startTime).ToString(@"hh\:mm\:ss"));
+        }
 
         public void AddItems(string lootTable)
         {
@@ -644,6 +550,8 @@ namespace Random_Item_Giver_Updater
             tblLoadingItems.Foreground = new SolidColorBrush(Colors.White);
             tblLoadingItems.FontSize = 24;
         }
+
+
 
         //-- Add Item Entry Event Handlers --//
 
