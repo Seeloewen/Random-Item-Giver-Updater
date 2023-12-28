@@ -357,7 +357,7 @@ namespace Random_Item_Giver_Updater
                 //Only add the item to the loot table if selected
                 if (item.lootTableEntry.allLootTablesChecked == true)
                 {
-                    if (lootTable.Contains("main") || lootTable.Contains("special"))
+                    if (lootTable.Contains("main") || lootTable.Contains("special") || lootTable.Contains("normal"))
                     {
                         List<string> temporaryConstruct = new List<string>();
                         foreach (string line in itemConstruct)
@@ -582,7 +582,7 @@ namespace Random_Item_Giver_Updater
                 if (canvas.DataContext is addToLootTableEntry item)
                 {
                     //Open loot table selection window
-                    wndSelectLootTables = new wndSelectLootTables(item.lootTableCheckList) { Owner = Application.Current.MainWindow };
+                    wndSelectLootTables = new wndSelectLootTables(item.lootTableCheckList, "Select the Loot Tables, that you want to add the item to.") { Owner = Application.Current.MainWindow };
                     wndSelectLootTables.Owner = Application.Current.MainWindow;
                     wndSelectLootTables.ShowDialog();
 

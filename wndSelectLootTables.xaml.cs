@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,7 +25,7 @@ namespace Random_Item_Giver_Updater
         public bool lootTableSelected = false;
 
         //-- Constructor --//
-        public wndSelectLootTables(List<lootTable> lootTableListArg)
+        public wndSelectLootTables(List<lootTable> lootTableListArg, string header)
         {
             InitializeComponent();
 
@@ -36,6 +37,9 @@ namespace Random_Item_Giver_Updater
             {
                 stpLootTables.Children.Add(lootTable.cbAddToLootTable);
             }
+
+            //Set header
+            tblHeader.Text = header;
         }
 
         //-- Event Handlers --//
