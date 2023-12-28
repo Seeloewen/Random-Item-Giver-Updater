@@ -1,0 +1,70 @@
+﻿<Window x:Class="Random_Item_Giver_Updater.wndRemoveItems"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Random_Item_Giver_Updater"
+        mc:Ignorable="d"
+        Title="Remove Items" Height="723" Width="802" Background="#FF323232" Loaded="Window_Loaded" Unloaded="Window_Unloaded">
+    <Window.Resources>
+        <DataTemplate x:Key="ItemTemplate">
+            <Canvas x:Name="cvsItem" Height="40" Background="Black" >
+                <TextBlock x:Name="tblItemName" Width="155" Height="24" FontSize="15" Foreground="White" Canvas.Top="6" Canvas.Left="15" Text="{Binding fullItemName}" MouseDown="tblItemName_MouseDown"/>
+                <TextBlock x:Name="tblLootTables" Width="300" Height="24" FontSize="15" Foreground="White" Canvas.Top="6" Canvas.Left="200" Text="{Binding lootTablesString}" MouseDown="tblLootTables_MouseDown"/>
+                <Button x:Name="btnEditLootTables" Height="25" Width="150" Content="Select loot tables" FontSize="15" Canvas.Top="6" Canvas.Left="525" IsEnabled="True" Click="btnEditLootTables_Click"/>
+            </Canvas>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid x:Name="grdRemoveItems">
+        <GroupBox x:Name="gbStep1" Header="Step 1" Margin="34,46,0,0" Width="742" Height="580" FontSize="18" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Hidden">
+            <Canvas x:Name="cvsStep1">
+                <TextBlock x:Name="tblStep1" TextWrapping="Wrap" Height="172" Canvas.Left="20" Canvas.Top="10" Width="690" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18"><Run Text="Welcome to the Item Removing Wizard! This wizard will help you remove items from certain loot tables, that you don't need anymore.&#xD;&#xA;&#xD;&#xA;You'll be able to search for specific items by giving their name. If you only want to remove "/><Run Language="de-de" Text="items "/><Run Text="individually from one loot table, it is recommended to use the main window."/></TextBlock>
+            </Canvas>
+        </GroupBox>
+        <TextBlock x:Name="tblHeader" HorizontalAlignment="Left" Margin="22,12,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" FontWeight="SemiBold" Text="Remove Items" Foreground="White"/>
+        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" Margin="661,645,0,0" VerticalAlignment="Top" Width="99" Height="27" FontSize="16"/>
+        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Left" Margin="553,645,0,0" VerticalAlignment="Top" Width="99" Height="27" FontSize="16"/>
+        <GroupBox x:Name="gbStep2" Header="Step 2" Margin="815,46,0,0" Width="742" Height="580" FontSize="18" Foreground="White" RenderTransformOrigin="-0.371,1.603" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Hidden">
+            <Canvas x:Name="cvsStep2">
+                <TextBlock x:Name="tblStep2" Canvas.Left="25" TextWrapping="Wrap" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Center" Width="690" Text="Please enter the names of the items that you want to remove. The software will then search for these items and show you, where they were found."/>
+                <TextBox x:Name="tbItems" Canvas.Left="25" TextWrapping="Wrap" Canvas.Top="80" Width="681" HorizontalAlignment="Left" VerticalAlignment="Center" Height="401" FontSize="15" Background="#FF636363" Foreground="White" AcceptsReturn="True"/>
+                <CheckBox x:Name="cbIncludesCustomPrefixes" Content="Includes custom prefixes (for example for modded items)" HorizontalAlignment="Center" Canvas.Left="25" Canvas.Top="503" VerticalAlignment="Top" Foreground="White" Padding="4,-5,0,0"/>
+            </Canvas>
+        </GroupBox>
+        <GroupBox x:Name="gbStep4" Header="Step 4" Margin="34,710,0,0" Width="742" Height="580" FontSize="18" Foreground="White" RenderTransformOrigin="-0.371,1.603" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Hidden">
+            <Canvas x:Name="cvsStep4">
+                <TextBlock x:Name="tbStep4" Canvas.Left="20" TextWrapping="Wrap" Text="The items are now being removed from the selected loot tables. This may take a while, depending on the item amount." Canvas.Top="18" HorizontalAlignment="Center" VerticalAlignment="Top" Width="710"/>
+                <ProgressBar x:Name="pbItemRemoving" Height="22" Width="675" HorizontalAlignment="Center" Canvas.Left="20" Canvas.Top="132" VerticalAlignment="Top"/>
+                <TextBlock x:Name="tblItemRemovingProgress" Canvas.Left="20" TextWrapping="Wrap" Text="Removing Item x/x (Loot Table x/x)" Canvas.Top="99" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            </Canvas>
+        </GroupBox>
+        <GroupBox x:Name="gbStep3" Header="Step 3" Margin="1591,46,0,0" Width="742" Height="580" FontSize="18" Foreground="White" RenderTransformOrigin="-0.371,1.603" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Hidden">
+            <Canvas x:Name="cvsStep3">
+                <TextBlock x:Name="tblStep3" Canvas.Left="20" TextWrapping="Wrap" Canvas.Top="10" Width="710" HorizontalAlignment="Left" VerticalAlignment="Center"><Run Text="In the following list, please select which loot tables you want to remove the items from."/><LineBreak/><Run Text="Please note that every item selected will only be removed from a loot table once."/><Run Text=" If i"/><Run Text="you wa"/><Run Text="n"/><Run Text="t to remove it multiple times you'll have to run the wizard again."/></TextBlock>
+                <ListBox x:Name="lbItemsLootTables" ItemsSource="{Binding itemRemovalEntries}" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="410" Canvas.Top="145" Width="734" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.Left="-2">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ItemTemplate}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <TextBlock x:Name="tblItemsFoundDesc" Canvas.Left="20" TextWrapping="Wrap" Canvas.Top="113" FontWeight="DemiBold"><Run Text="Item              "/><Run Text="                  "/><Run Text=" "/><Run Language="de-de" Text="  "/><Run Text="Loot Table(s)                                          "/><Run Text="         "/><Run Text=" Remove from..."/></TextBlock>
+            </Canvas>
+        </GroupBox>
+        <GroupBox x:Name="gbStep5" Header="Step 5" Margin="815,710,0,0" Width="742" Height="580" FontSize="18" Foreground="White" RenderTransformOrigin="-0.371,1.603" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Hidden">
+            <Canvas x:Name="cvsStep5">
+                <TextBlock x:Name="tblStep5" Canvas.Left="26" TextWrapping="Wrap" Text="The Item Removing Wizard has completed! The specified items were succesfully removed from the selected loot tables. You can see a list of all removed items down below." Canvas.Top="18" HorizontalAlignment="Left" VerticalAlignment="Center" Width="701"/>
+                <TextBlock x:Name="tblRemovedItemsDesc" Canvas.Left="26" TextWrapping="Wrap" Text="Removed Items:" Canvas.Top="126" FontWeight="DemiBold"/>
+                <TextBox x:Name="tbRemovedItems" TextWrapping="Wrap" Width="674" HorizontalAlignment="Left" Canvas.Left="30" Canvas.Top="162"  Background="#FF636363" VerticalAlignment="Top" Height="363" Foreground="White"/>
+            </Canvas>
+        </GroupBox>
+
+    </Grid>
+</Window>

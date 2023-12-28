@@ -54,6 +54,7 @@ namespace Random_Item_Giver_Updater
 
         //Windows
         public static wndAddItem wndAddItem;
+        public static wndRemoveItems wndRemoveItems;
         public static wndAbout wndAbout;
         public static wndDuplicateFinder wndDuplicateFinder;
 
@@ -70,6 +71,9 @@ namespace Random_Item_Giver_Updater
         private Canvas cvsBtnAbout = new Canvas();
         private Image imgBtnAbout = new Image();
         private TextBlock tblBtnAbout = new TextBlock();
+        private Canvas cvsBtnRemoveItems = new Canvas();
+        private Image imgBtnRemoveItems = new Image();
+        private TextBlock tblBtnRemoveItems = new TextBlock();
 
         //SeeloewenLib
         SeeloewenLibTools SeeloewenLibTools = new SeeloewenLibTools();
@@ -107,6 +111,27 @@ namespace Random_Item_Giver_Updater
                 }
             }
         }
+
+        private void btnRemoveItems_Click(object sender, RoutedEventArgs e)
+        {
+            //Open remove item window
+            wndRemoveItems = new wndRemoveItems() { Owner = this };
+            wndRemoveItems.Owner = Application.Current.MainWindow;
+            if (wndRemoveItems.isOpen == false)
+            {
+                //Check if the datapack path exists before opening the window
+
+                if (Directory.Exists(currentDatapack))
+                {
+                    wndRemoveItems.ShowDialog();
+                }
+                else
+                {
+                    MessageBox.Show("Error: Could not detect datapack. Please make sure the currently selected datapack exists and is valid.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+    
 
         private void btnBrowseDatapack_Click(object sender, RoutedEventArgs e)
         {
@@ -211,7 +236,7 @@ namespace Random_Item_Giver_Updater
             }
             loadedItems = filteredArray.ToArray();
 
-
+            //Delete the item
             foreach (itemEntry item in itemList)
             {
                 //Check if the item is modified
@@ -534,7 +559,7 @@ namespace Random_Item_Giver_Updater
             }
             else
             {
-                MessageBox.Show("Please load a datapack before opening Duplicate Finder", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error: Could not detect datapack. Please make sure the currently selected datapack exists and is valid.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -889,6 +914,21 @@ namespace Random_Item_Giver_Updater
             cvsBtnAddItems.Children.Add(imgBtnAddItems);
             cvsBtnAddItems.Children.Add(tblBtnAddItems);
             btnAddItems.Content = cvsBtnAddItems;
+
+            //BtnRemove
+            imgBtnRemoveItems.Source = new BitmapImage(new Uri(@"/Random Item Giver Updater;component/Resources/imgRemoveItems.png", UriKind.Relative));
+            imgBtnRemoveItems.Margin = new Thickness(5, -10, 0, 0);
+            imgBtnRemoveItems.Width = 20;
+            imgBtnRemoveItems.Height = 20;
+            imgBtnRemoveItems.Stretch = Stretch.UniformToFill;
+
+            tblBtnRemoveItems.Text = "Remove Items";
+            tblBtnRemoveItems.FontSize = 17;
+            tblBtnRemoveItems.Margin = new Thickness(35, -12, 0, 0);
+
+            cvsBtnRemoveItems.Children.Add(imgBtnRemoveItems);
+            cvsBtnRemoveItems.Children.Add(tblBtnRemoveItems);
+            btnRemoveItems.Content = cvsBtnRemoveItems;
         }
 
         private void SetupControls()

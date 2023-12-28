@@ -62,6 +62,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="duplicateEntry.cs" />
+    <Compile Include="itemRemovalEntry.cs" />
     <Compile Include="SeeloewenLib.cs" />
     <Compile Include="wndAbout.xaml.cs">
       <DependentUpon>wndAbout.xaml</DependentUpon>
@@ -71,6 +72,9 @@
     </Compile>
     <Compile Include="wndDuplicateFinder.xaml.cs">
       <DependentUpon>wndDuplicateFinder.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="wndRemoveItems.xaml.cs">
+      <DependentUpon>wndRemoveItems.xaml</DependentUpon>
     </Compile>
     <Compile Include="wndSelectLootTables.xaml.cs">
       <DependentUpon>wndSelectLootTables.xaml</DependentUpon>
@@ -111,6 +115,10 @@
       <DependentUpon>wndMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="wndRemoveItems.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="wndSelectLootTables.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -156,6 +164,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\imgAbout.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\imgRemoveItems.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

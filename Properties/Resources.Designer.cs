@@ -103,6 +103,16 @@ namespace Random_Item_Giver_Updater.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap imgRemoveItems {
+            get {
+                object obj = ResourceManager.GetObject("imgRemoveItems", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap imgSave {
             get {
                 object obj = ResourceManager.GetObject("imgSave", resourceCulture);
