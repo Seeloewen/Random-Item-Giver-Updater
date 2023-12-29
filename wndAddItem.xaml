@@ -64,7 +64,7 @@
                 <Button x:Name="btnAddAdditionalItem" Content="Add additional item" Canvas.Left="10" Canvas.Top="517" HorizontalAlignment="Center" VerticalAlignment="Top" Width="171" Height="25" FontSize="16" Click="btnAddAdditionalItem_Click"/>
             </Canvas>
         </GroupBox>
-        <GroupBox x:Name="gbStep4" Header="Step 4: Select Loot Tables" Margin="21,54,0,0" Height="580" Width="742" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16" Foreground="White" UseLayoutRounding="True" Visibility="Visible">
+        <GroupBox x:Name="gbStep4" Header="Step 4: Select Loot Tables" Margin="21,54,0,0" Height="580" Width="742" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16" Foreground="White" UseLayoutRounding="True" Visibility="Hidden">
             <Canvas x:Name="cvsStep4" UseLayoutRounding="True">
                 <TextBlock x:Name="tblSelectLootTables" Canvas.Left="15" TextWrapping="Wrap" Text="Now it's time to select the loot tables you want to add your items too. You can either add it to all normal loot tables or only certain ones" Canvas.Top="12" HorizontalAlignment="Left" VerticalAlignment="Center" Width="703"/>
                 <ListBox x:Name="lbItemsLootTables" ItemsSource="{Binding lootTableEntries}" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="448" Canvas.Top="107" Width="734" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.Left="-2">
