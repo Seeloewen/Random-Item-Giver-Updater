@@ -20,30 +20,33 @@ namespace Random_Item_Giver_Updater
 {
     public partial class wndRemoveItems : Window
     {
-        public Wizard wzdRemoveItems;
+        //General attributes
         public ObservableCollection<itemRemovalEntry> itemRemovalEntries { get; set; } = new ObservableCollection<itemRemovalEntry>();
-        public bool isOpen;
         public wndSelectLootTables wndSelectLootTables;
-
-        //Reference to main window
-        MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
-
-        //SeeloewenLib
-        SeeloewenLibTools SeeloewenLibTools = new SeeloewenLibTools();
-
-        //Background worker
         private double removeItemsWorkerProgress = 0;
         private int removeItemsWorkerAddedItems = 0;
         private int removeItemsWorkerAddedItemsLootTables = 0;
+        public bool isOpen;
+
+        //Important references
+        MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
+        SeeloewenLibTools SeeloewenLibTools = new SeeloewenLibTools();
+
+        //Controls
+        public Wizard wzdRemoveItems;
         private BackgroundWorker bgwRemoveItems = new BackgroundWorker();
+
+        //-- Constructor --//
 
         public wndRemoveItems()
         {
             InitializeComponent();
             InitializeWizard();
             DataContext = this;
-
         }
+
+        //-- Event Handlers --//
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //Change open state to true
@@ -105,8 +108,17 @@ namespace Random_Item_Giver_Updater
             tblItemRemovingProgress.Text = string.Format("Adding items... (Item {0}/{1} - Loot Table {2}/{3})", progress.ProgressPercentage, itemRemovalEntries.Count, removeItemsWorkerAddedItemsLootTables, wndMain.lootTableList.Count);
         }
 
+        private void Window_Unloaded(object sender, RoutedEventArgs e)
+        {
+            //Change open state to false
+            isOpen = false;
+        }
+
+        //-- Custom Methods --//
+
         public void InitializeWizard()
         {
+            //Create the wizard
             wzdRemoveItems = new Wizard(5, 580, 742, btnContinue, btnBack, Close, Close, new Thickness(0, 0, 0, 0));
             grdRemoveItems.Children.Add(wzdRemoveItems.gbWizard);
             gbStep1.Content = null;
@@ -123,7 +135,6 @@ namespace Random_Item_Giver_Updater
             wzdRemoveItems.pages[2].grdContent.Children.Add(cvsStep3);
             wzdRemoveItems.pages[3].grdContent.Children.Add(cvsStep4);
             wzdRemoveItems.pages[4].grdContent.Children.Add(cvsStep5);
-
             wzdRemoveItems.pages[2].requirements = requirementsPage3;
             wzdRemoveItems.pages[3].requirements = requirementsPage4;
             wzdRemoveItems.pages[2].requirementsNotFulfilledMsg = "Please enter items you want to add to the datapack to continue!";
@@ -443,11 +454,7 @@ namespace Random_Item_Giver_Updater
             File.WriteAllLines(lootTable.fullLootTablePath, loadedItems);
         }
 
-        private void Window_Unloaded(object sender, RoutedEventArgs e)
-        {
-            //Change open state to false
-            isOpen = false;
-        }
+        //-- Item Removal Entry Event Handlers --//
 
         private void btnEditLootTables_Click(object sender, RoutedEventArgs e)
         {
@@ -481,6 +488,7 @@ namespace Random_Item_Giver_Updater
         {
             if (sender is TextBlock textblock && textblock.DataContext is itemRemovalEntry item)
             {
+                //Add all loot tables that the item is in to a list and display that list
                 string lootTables = "";
                 foreach(lootTable lootTable in item.lootTables)
                 {
@@ -494,6 +502,7 @@ namespace Random_Item_Giver_Updater
         {
             if (sender is TextBlock textblock && textblock.DataContext is itemRemovalEntry item)
             {
+                //Show the full item name in case it's cut off
                 MessageBox.Show(item.fullItemName, "Full item name", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
