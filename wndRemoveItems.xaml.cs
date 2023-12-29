@@ -138,6 +138,7 @@ namespace Random_Item_Giver_Updater
             wzdRemoveItems.pages[2].requirements = requirementsPage3;
             wzdRemoveItems.pages[3].requirements = requirementsPage4;
             wzdRemoveItems.pages[2].requirementsNotFulfilledMsg = "Please enter items you want to add to the datapack to continue!";
+            wzdRemoveItems.pages[3].requirementsNotFulfilledMsg = "No items to remove were found!";
             wzdRemoveItems.pages[2].code = codePage3;
             wzdRemoveItems.pages[3].code = codePage4;
             wzdRemoveItems.pages[3].canGoBack = false;
