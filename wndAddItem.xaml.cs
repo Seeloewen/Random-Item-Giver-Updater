@@ -104,7 +104,7 @@ namespace Random_Item_Giver_Updater
         private void bgwAddItems_RunWorkerCompleted(object s, RunWorkerCompletedEventArgs args)
         {
             //Go to the next page
-            wzdAddItems.ShowNextPage();   
+            wzdAddItems.ShowNextPage();
         }
 
         private void bgwAddItems_ProgressChanged(object s, ProgressChangedEventArgs progress)
@@ -367,6 +367,7 @@ namespace Random_Item_Giver_Updater
                             {
                                 temporaryConstruct.Add(line.Replace("{!REPLACE_NAME!}", string.Format("{0}:{1}", item.itemPrefix, item.itemName)));
                             }
+
                             //Just add to the temporary construct
                             else
                             {
@@ -399,13 +400,19 @@ namespace Random_Item_Giver_Updater
                         }
                         else
                         {
+
+                            //Remove nbt entry construct if there is one even though the item has no NBT
+                            if (hasNbtEntry == true)
+                            {
+                                temporaryConstruct = RemoveNbtEntry(temporaryConstruct);
+                            }
+
                             //Continue without NBT
                             temporaryFinalConstruct = temporaryConstruct;
                         }
+
                         //Write the construct with the item prefix, name and nbt to the file
                         File.AppendAllText(lootTable, string.Join(Environment.NewLine, temporaryFinalConstruct) + "\n");
-
-
                     }
                 }
                 else if (item.lootTableEntry.allLootTablesChecked == false && item.lootTableEntry.lootTableWhiteList.Contains(lootTable))
@@ -418,6 +425,7 @@ namespace Random_Item_Giver_Updater
                         {
                             temporaryConstruct.Add(line.Replace("{!REPLACE_NAME!}", string.Format("{0}:{1}", item.itemPrefix, item.itemName)));
                         }
+
                         //Just add to the temporary construct
                         else
                         {
@@ -450,6 +458,12 @@ namespace Random_Item_Giver_Updater
                     }
                     else
                     {
+                        //Remove nbt entry construct if there is one even though the item has no NBT
+                        if (hasNbtEntry == true)
+                        {
+                            temporaryConstruct = RemoveNbtEntry(temporaryConstruct);
+                        }
+
                         //Continue without NBT
                         temporaryFinalConstruct = temporaryConstruct;
                     }
@@ -526,6 +540,142 @@ namespace Random_Item_Giver_Updater
                 construct.Insert(construct.Count - 1, "                    ]");
                 return construct;
             }
+        }
+
+        public List<string> RemoveNbtEntry(List<string> construct)
+        {
+            //Create neccessary temporary variables
+            List<string> tempConstruct = new List<string>();
+            List<string> endConstruct = new List<string>();
+            List<string> endConstruct2 = new List<string>();
+            bool hasCount = false;
+            bool hasCountSpecial = false;
+            tempConstruct = construct;
+
+            for (int i = construct.Count - 1; i >= 0; i--)
+            {
+                //Check if the loot table has a count, and if the count is special
+                if (construct[i].Contains("\"target\":"))
+                {
+                    hasCountSpecial = true;
+                }
+                else if (construct[i].Contains("\"count\":"))
+                {
+                    hasCount = true;
+                    //If it's not special, add the "count" section already to the end construct
+                    if (hasCountSpecial == false)
+                    {
+                        endConstruct.Add(construct[i - 2]);
+                        endConstruct.Add(construct[i - 1]);
+                        endConstruct.Add(construct[i]);
+                    }
+                    break;
+                }
+            }
+
+            if (hasCount == true && hasCountSpecial == false)
+            {
+                //If it has count but isn't special add all brackets (end part) to the a temporary end construct 2 until it hits a count or tag part
+                for (int i = construct.Count - 1; i >= 0; i--)
+                {
+                    if (construct[i].Contains("\"count\":") || construct[i].Contains("\"tag\":"))
+                    {
+                        break;
+                    }
+                    else if (construct[i].Contains("}") || construct[i].Contains("]"))
+                    {
+                        endConstruct2.Add(construct[i]);
+                    }
+                }
+
+                //Reverse the code and add it to the actual end construct
+                endConstruct2.Reverse();
+                foreach (string entry in endConstruct2)
+                {
+                    endConstruct.Add(entry);
+                }
+
+            }
+            else if (hasCount == true && hasCountSpecial == true)
+            {
+                //If the loot table has special count add all the lines at the end to the temporary end construct 2 until it hits the count part
+                for (int i = construct.Count - 1; i >= 0; i--)
+                {
+                    //If it hits the count section add that and stop
+                    if (construct[i].Contains("\"count\":"))
+                    {
+                        endConstruct2.Add(construct[i]);
+                        endConstruct2.Add(construct[i - 1]);
+                        endConstruct2.Add(construct[i - 2]);
+                        break;
+                    }
+                    else
+                    {
+                        endConstruct2.Add(construct[i]);
+                        //If it hits a NBT section skip that
+                        if (construct[i - 1].Contains("\"tag\":"))
+                        {
+                            i = i - 4;
+                        }
+                    }
+                }
+
+                //Reverse the code and add it to the actual end construct
+                endConstruct2.Reverse();
+                foreach (string entry in endConstruct2)
+                {
+                    endConstruct.Add(entry);
+                }
+            }
+            else if (hasCount == false)
+            {
+                //If it hasn't got any count, remove the comma in the name part as it is no longer needed and would cause errors
+                for (int i = construct.Count - 1; i >= 0; i--)
+                {
+                    if (construct[i].Contains("\"name\":"))
+                    {
+                        tempConstruct[i] = tempConstruct[i].Replace(",", "");
+                    }
+                }
+
+                //Simply add the last character (most likely a comma) to the end construct
+                endConstruct.Add(construct.Last());
+            }
+
+            for (int i = construct.Count - 1; i >= 0; i--)
+            {
+                //If it hasn't got a count, remove everything up until the name part
+                if (hasCount == false)
+                {
+                    if (!tempConstruct[i].Contains("\"name\""))
+                    {
+                        tempConstruct.Remove(tempConstruct[i]);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    //If it has got a count, remove everything up until the beginning of the function part
+                    if (!tempConstruct[i].Contains("\"functions\""))
+                    {
+                        tempConstruct.Remove(tempConstruct[i]);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            //Add the end construct to the full construct and return that
+            foreach (string entry in endConstruct)
+            {
+                tempConstruct.Add(entry);
+            }
+            return tempConstruct;
         }
 
         private T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
