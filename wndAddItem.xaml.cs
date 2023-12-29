@@ -122,7 +122,7 @@ namespace Random_Item_Giver_Updater
         private void CreateWizard()
         {
             //Create the wizard
-            wzdAddItems = new Wizard(6, 580, 742, btnContinue, btnBack, Close, Close, new Thickness(0, 0, 0, 0));
+            wzdAddItems = new Wizard(6, 580, 742, btnContinue, btnBack, Close, codeFinish, new Thickness(0, 0, 0, 0));
             grdAddItems.Children.Add(wzdAddItems.gbWizard);
             gbStep1.Content = null;
             gbStep2.Content = null;
@@ -551,7 +551,12 @@ namespace Random_Item_Giver_Updater
             tblLoadingItems.FontSize = 24;
         }
 
-
+        private void codeFinish()
+        {
+            //Reload the currently loaded loot table and close this window
+            wndMain.LoadLootTable(wndMain.currentLootTable);
+            Close();
+        }
 
         //-- Add Item Entry Event Handlers --//
 

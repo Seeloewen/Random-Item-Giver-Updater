@@ -119,7 +119,7 @@ namespace Random_Item_Giver_Updater
         public void InitializeWizard()
         {
             //Create the wizard
-            wzdRemoveItems = new Wizard(5, 580, 742, btnContinue, btnBack, Close, Close, new Thickness(0, 0, 0, 0));
+            wzdRemoveItems = new Wizard(5, 580, 742, btnContinue, btnBack, Close, codeFinish, new Thickness(0, 0, 0, 0));
             grdRemoveItems.Children.Add(wzdRemoveItems.gbWizard);
             gbStep1.Content = null;
             gbStep2.Content = null;
@@ -453,6 +453,14 @@ namespace Random_Item_Giver_Updater
 
             //Write modified content to file
             File.WriteAllLines(lootTable.fullLootTablePath, loadedItems);
+        }
+
+
+        private void codeFinish()
+        {
+            //Reload the currently loaded loot table and close this window
+            wndMain.LoadLootTable(wndMain.currentLootTable);
+            Close();
         }
 
         //-- Item Removal Entry Event Handlers --//
