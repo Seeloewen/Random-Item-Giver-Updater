@@ -459,7 +459,10 @@ namespace Random_Item_Giver_Updater
         private void codeFinish()
         {
             //Reload the currently loaded loot table and close this window
-            wndMain.LoadLootTable(wndMain.currentLootTable);
+            if (wndMain.currentLootTable != "none")
+            {
+                wndMain.LoadLootTable(wndMain.currentLootTable);
+            }
             Close();
         }
 
