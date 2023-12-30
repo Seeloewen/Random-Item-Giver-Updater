@@ -96,7 +96,7 @@
                 <TextBlock x:Name="tblAddedItems" Canvas.Left="15" TextWrapping="Wrap" Text="Your items have been added to the datapack! You can view a list of all added items down below. Click 'Finish' to exit the wizard." Canvas.Top="14" HorizontalAlignment="Left" VerticalAlignment="Center" Width="705"/>
                 <TextBlock x:Name="tblElapsedTime" Canvas.Left="17" TextWrapping="Wrap" Text="Elapsed time: /" Canvas.Top="79" FontWeight="DemiBold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <TextBlock x:Name="tblAddedItemsList" Canvas.Left="17" TextWrapping="Wrap" Text="Added items:" Canvas.Top="128" FontWeight="DemiBold" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <TextBox x:Name="tbAddedItemsList" Canvas.Left="19" TextWrapping="Wrap" Canvas.Top="161" Width="693" Height="373" Background="#FF636363" Foreground="White"/>
+                <TextBox x:Name="tbAddedItemsList" Canvas.Left="19" TextWrapping="Wrap" Canvas.Top="161" Width="693" Height="373" Background="#FF636363" Foreground="White" IsReadOnly="True"/>
             </Canvas>
         </GroupBox>
     </Grid>

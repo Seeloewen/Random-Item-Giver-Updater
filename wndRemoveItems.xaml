@@ -62,7 +62,7 @@
             <Canvas x:Name="cvsStep5">
                 <TextBlock x:Name="tblStep5" Canvas.Left="26" TextWrapping="Wrap" Text="The Item Removing Wizard has completed! The specified items were succesfully removed from the selected loot tables. You can see a list of all removed items down below." Canvas.Top="18" HorizontalAlignment="Left" VerticalAlignment="Center" Width="701"/>
                 <TextBlock x:Name="tblRemovedItemsDesc" Canvas.Left="30" TextWrapping="Wrap" Text="Removed Items:" Canvas.Top="96" FontWeight="DemiBold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <TextBox x:Name="tbRemovedItems" TextWrapping="Wrap" Width="674" HorizontalAlignment="Center" Canvas.Left="30" Canvas.Top="131"  Background="#FF636363" VerticalAlignment="Top" Height="400" Foreground="White"/>
+                <TextBox x:Name="tbRemovedItems" TextWrapping="Wrap" Width="674" HorizontalAlignment="Center" Canvas.Left="30" Canvas.Top="131"  Background="#FF636363" VerticalAlignment="Top" Height="400" Foreground="White" IsReadOnly="True"/>
             </Canvas>
         </GroupBox>
     </Grid>
