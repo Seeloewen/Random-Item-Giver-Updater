@@ -239,6 +239,7 @@ namespace Random_Item_Giver_Updater
 
 
             //Add a loot table entry to every item
+            lootTableEntries.Clear();
             foreach (addItemEntry entry in itemEntries)
             {
                 entry.lootTableEntry = new addToLootTableEntry(string.Format("{0}:{1}", entry.itemPrefix, entry.itemName), entry.itemIndex);
