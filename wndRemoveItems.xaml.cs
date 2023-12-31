@@ -518,5 +518,14 @@ namespace Random_Item_Giver_Updater
                 MessageBox.Show(item.fullItemName, "Full item name", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+
+        private void btnRemove_Click(object sender, RoutedEventArgs e)
+        {
+            if(sender is Button button && button.DataContext is itemRemovalEntry item)
+            {
+                //Remove the item from the item removal list
+                itemRemovalEntries.Remove(item);
+            }
+        }
     }
 }
