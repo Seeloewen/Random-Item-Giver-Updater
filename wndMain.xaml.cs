@@ -1136,6 +1136,34 @@ namespace Random_Item_Giver_Updater
                 }
             }
         }
+
+        private void cvsItem_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (sender is Canvas canvas && canvas.DataContext is itemEntry item)
+            {
+                //Get neccessary controls
+                Button button = canvas.FindName("btnDelete") as Button;
+                TextBlock textblock = canvas.FindName("tblIndicator") as TextBlock;
+
+                //Show the button and move the indicator accordingly
+                button.Visibility = Visibility.Visible;
+                Canvas.SetRight(textblock, 225);
+            }
+        }
+
+        private void cvsItem_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (sender is Canvas canvas && canvas.DataContext is itemEntry item)
+            {
+                //Get neccessary controls
+                Button button = canvas.FindName("btnDelete") as Button;
+                TextBlock textblock = canvas.FindName("tblIndicator") as TextBlock;
+
+                //Hide the button and move the indicator accordingly
+                button.Visibility = Visibility.Hidden;
+                Canvas.SetRight(textblock, 90);
+            }
+        }
     }
 
 }
