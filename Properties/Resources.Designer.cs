@@ -119,5 +119,15 @@ namespace Random_Item_Giver_Updater.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap imgWorkplace {
+            get {
+                object obj = ResourceManager.GetObject("imgWorkplace", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

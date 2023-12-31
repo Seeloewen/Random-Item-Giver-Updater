@@ -41,10 +41,11 @@ namespace Random_Item_Giver_Updater
         private TextBlock tblLootTableStats = new TextBlock();
         private BackgroundWorker bgwEditLootTable = new BackgroundWorker();
         private ProgressBar pbSavingItems = new ProgressBar();
+        private TextBlock tblNoDatapackLoaded = new TextBlock();
 
         //General variables for the software
-        public string versionNumber = string.Format("Dev");
-        public string versionDate = "13.08.2023";
+        public string versionNumber = string.Format("Bye Bye 2023!");
+        public string versionDate = "31.12.2023";
         public string currentLootTable = "none";
         public string currentDatapack = "none";
         private bool calledClose;
@@ -131,7 +132,7 @@ namespace Random_Item_Giver_Updater
                 }
             }
         }
-    
+
 
         private void btnBrowseDatapack_Click(object sender, RoutedEventArgs e)
         {
@@ -575,6 +576,8 @@ namespace Random_Item_Giver_Updater
 
         public async void LoadLootTable(string path)
         {
+            //Hide workplace image
+            imgWorkplace.Visibility = Visibility.Hidden;
 
             //Get list of content in file, remove all non-item lines so only items remain
             string[] loadedItems = File.ReadAllLines(currentLootTable);
@@ -948,6 +951,7 @@ namespace Random_Item_Giver_Updater
             svLootTables.HorizontalAlignment = HorizontalAlignment.Stretch;
             svLootTables.VerticalAlignment = VerticalAlignment.Stretch;
             svLootTables.Content = stpLootTables;
+            svLootTables.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             svLootTables.Background = new SolidColorBrush(Color.FromArgb(100, 50, 50, 50));
 
             //Add the loot table list scrollviewer to the grid
@@ -959,7 +963,7 @@ namespace Random_Item_Giver_Updater
             fbdDatapack.Description = "Select the datapack that you want to edit.";
 
             //Set version number in header
-            tblHeader.Text = String.Format("Random Item Giver Updater\nVersion {0}", versionNumber);
+            tblHeader.Text = string.Format("Random Item Giver Updater\nVersion {0}", versionNumber);
 
             //Create 'Loading' text for loading items
             tblLoadingItems.Text = "Loading items, please wait...\nThis may take a few seconds!";
@@ -984,6 +988,13 @@ namespace Random_Item_Giver_Updater
             //Create progress bar for saving items
             pbSavingItems.Height = 15;
             pbSavingItems.Width = 300;
+
+            //Create textblock for sidebar when no datapack is loaded
+            tblNoDatapackLoaded.FontSize = 18;
+            tblNoDatapackLoaded.Text = "No datapack loaded";
+            tblNoDatapackLoaded.Margin = new Thickness(45, 15, 0, 0);
+            tblNoDatapackLoaded.Foreground = new SolidColorBrush(Colors.LightGray);
+            stpLootTables.Children.Add(tblNoDatapackLoaded);
         }
 
         //-- Item Entry Event Handlers --//

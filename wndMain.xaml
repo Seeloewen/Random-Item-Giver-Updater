@@ -61,5 +61,6 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+        <Image x:Name="imgWorkplace" Grid.Column="1" Margin="308,136,308,178" Grid.Row="1" Source="/Resources/imgWorkplace.png"/>
     </Grid>
 </Window>
