@@ -205,39 +205,6 @@ namespace Random_Item_Giver_Updater
 
         private void codePage4()
         {
-            //Update the items based on the settings from the last page
-            foreach (addItemEntry item in lbItems.Items)
-            {
-                ListBoxItem listBoxItem = (ListBoxItem)lbItems.ItemContainerGenerator.ContainerFromItem(item);
-                if (listBoxItem != null)
-                {
-                    ContentPresenter contentPresenter = FindVisualChild<ContentPresenter>(listBoxItem);
-                    if (contentPresenter != null)
-                    {
-                        DataTemplate dataTemplate = contentPresenter.ContentTemplate;
-                        if (dataTemplate != null)
-                        {
-                            Canvas canvas = dataTemplate.FindName("cvsItem", contentPresenter) as Canvas;
-                            if (canvas != null)
-                            {
-                                TextBlock textblock = canvas.FindName("tbItemName") as TextBlock;
-                                TextBlock textblock2 = canvas.FindName("tbItemPrefix") as TextBlock;
-                                TextBlock textblock3 = canvas.FindName("tbItemNBT") as TextBlock;
-
-                                if (textblock != null && textblock2 != null && textblock3 != null)
-                                {
-                                    // Aktualisiere die Daten im addItemEntry-Objekt
-                                    item.itemName = textblock.Text;
-                                    item.itemPrefix = textblock2.Text;
-                                    item.itemNBT = textblock3.Text;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-
             //Add a loot table entry to every item
             lootTableEntries.Clear();
             foreach (addItemEntry entry in itemEntries)
@@ -323,7 +290,7 @@ namespace Random_Item_Giver_Updater
                 }
                 else
                 {
-                    if (lootTableFile[lootTableFile.Length - index - 2].Contains("\"name\": \"out\"") || lootTableFile[lootTableFile.Length - index - 2].Contains("\"count\":") || lootTableFile[lootTableFile.Length - index - 2].Contains("\"tag\":") || lootTableFile[lootTableFile.Length - index - 2].Contains("}"))
+                    if (lootTableFile[lootTableFile.Length - index - 2].Contains("\"name\": \"RandomItemGiver\"") || lootTableFile[lootTableFile.Length - index - 2].Contains("\"name\": \"out\"") || lootTableFile[lootTableFile.Length - index - 2].Contains("\"count\":") || lootTableFile[lootTableFile.Length - index - 2].Contains("\"tag\":") || lootTableFile[lootTableFile.Length - index - 2].Contains("}"))
                     {
                         //If it contains the item name, replace
                         if (lootTableFile[lootTableFile.Length - index - 1].Contains("\"name\"") && lootTableFile[lootTableFile.Length - index - 2].Contains("item\""))
@@ -354,7 +321,6 @@ namespace Random_Item_Giver_Updater
             //Add all the items to the loot table
             foreach (addItemEntry item in itemEntries)
             {
-
                 //Only add the item to the loot table if selected
                 if (item.lootTableEntry.allLootTablesChecked == true)
                 {
@@ -526,7 +492,7 @@ namespace Random_Item_Giver_Updater
                 construct[construct.Count - 3] = construct[construct.Count - 3].Replace("}", "},");
                 construct.Insert(construct.Count - 2, "                        {");
                 construct.Insert(construct.Count - 2, "                            \"function\": \"set_nbt\",");
-                construct.Insert(construct.Count - 2, "                            \"tag\": \"!REPLACE_NBT!\"");
+                construct.Insert(construct.Count - 2, "                            \"tag\": \"{!REPLACE_NBT!}\"");
                 construct.Insert(construct.Count - 2, "                        }");
                 return construct;
             }
@@ -536,7 +502,7 @@ namespace Random_Item_Giver_Updater
                 construct.Insert(construct.Count - 1, "                    \"functions\": [");
                 construct.Insert(construct.Count - 1, "                        {");
                 construct.Insert(construct.Count - 1, "                            \"function\": \"set_nbt\",");
-                construct.Insert(construct.Count - 1, "                            \"tag\": \"!REPLACE_NBT!\"");
+                construct.Insert(construct.Count - 1, "                            \"tag\": \"{!REPLACE_NBT!}\"");
                 construct.Insert(construct.Count - 1, "                        }");
                 construct.Insert(construct.Count - 1, "                    ]");
                 return construct;
@@ -791,6 +757,48 @@ namespace Random_Item_Giver_Updater
 
                     //Set checkstate on variable that gets accessed by the item adding thread
                     item.allLootTablesChecked = false;
+                }
+            }
+        }
+
+        private void tbItemName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox textbox)
+            {
+
+                if (textbox.DataContext is addItemEntry item)
+                {
+
+                    //Set checkstate on variable that gets accessed by the item adding thread
+                    item.itemName = textbox.Text;
+                }
+            }
+        }
+
+        private void tbItemPrefix_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox textbox)
+            {
+
+                if (textbox.DataContext is addItemEntry item)
+                {
+
+                    //Set checkstate on variable that gets accessed by the item adding thread
+                    item.itemPrefix = textbox.Text;
+                }
+            }
+        }
+
+        private void tbItemNBT_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox textbox)
+            {
+
+                if (textbox.DataContext is addItemEntry item)
+                {
+
+                    //Set checkstate on variable that gets accessed by the item adding thread
+                    item.itemNBT = textbox.Text;
                 }
             }
         }
