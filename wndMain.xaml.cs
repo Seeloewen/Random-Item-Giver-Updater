@@ -592,7 +592,7 @@ namespace Random_Item_Giver_Updater
                     itemFiltered = item.Replace(" ", "");
                     itemFiltered = itemFiltered.Replace("\"tag\":", "");
                     itemFiltered = itemFiltered.Substring(1, itemFiltered.Length - 2);
-                    items.Add(itemFiltered);
+                    items.Add(itemFiltered + "{isNBT}"); //Add NBT marker to let software know it's NBT
                 }
                 else if (!item.Contains("\"tag\"") && !item.Contains("{") && !item.Contains("}") && !item.Contains("[") && !item.Contains("]") && !item.Contains("\"rolls\"") && !item.Contains("\"type\"") && !item.Contains("\"function\"") && item.Contains("\"") && !item.Contains("\"weight\"") && !item.Contains("\"count\"") && !item.Contains("\"min\": 1") && !item.Contains("\"max\": 64") && !item.Contains("\"out\"") && !item.Contains("\"score\""))
                 {
@@ -610,14 +610,14 @@ namespace Random_Item_Giver_Updater
             //Check for each item if it has NBT and add it to the string
             for (int i = 0; i < items.Count; i++)
             {
-                if (!items[i].Contains("{"))
+                if (!items[i].Contains("{isNBT}"))
                 {
                     if (i < items.Count - 1)
                     {
 
                         if (items[i + 1].Contains("{"))
                         {
-                            finalItemList.Add(string.Format("{0};{1}", items[i], items[i + 1]));
+                            finalItemList.Add(string.Format("{0};{1}", items[i], items[i + 1].Replace("{isNBT}", "")));
                         }
 
                         if (!items[i + 1].Contains("{"))
@@ -1075,7 +1075,8 @@ namespace Random_Item_Giver_Updater
                 button.Visibility = Visibility.Hidden;
                 textblock.Visibility = Visibility.Visible;
                 item.newNBT = textbox.Text;
-                textblock.Text = string.Format("NBT: {0}", item.newNBT);
+                textblock.Text = item.newNBT;
+                
 
                 //Check if the item NBT has been changed and change modified state
                 if (item.newNBT != item.itemNBT)
@@ -1131,7 +1132,7 @@ namespace Random_Item_Giver_Updater
                 textbox.Visibility = Visibility.Visible;
                 button.Visibility = Visibility.Visible;
                 textblock.Visibility = Visibility.Hidden;
-                textbox.Text = textblock.Text.Replace("NBT: ", "");
+                textbox.Text = textblock.Text;
             }
         }
 
