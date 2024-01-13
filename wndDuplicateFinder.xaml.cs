@@ -115,7 +115,7 @@ namespace Random_Item_Giver_Updater
                     itemFiltered = itemFiltered.Substring(1, itemFiltered.Length - 2);
                     items.Add(itemFiltered);
                 }
-                else if (!item.Contains("\"tag\"") && !item.Contains("{") && !item.Contains("}") && !item.Contains("[") && !item.Contains("]") && !item.Contains("\"rolls\"") && !item.Contains("\"type\"") && !item.Contains("\"function\"") && item.Contains("\"") && !item.Contains("\"weight\"") && !item.Contains("\"count\"") && !item.Contains("\"min\": 1") && !item.Contains("\"max\": 64") && !item.Contains("\"out\"") && !item.Contains("\"score\""))
+                else if (!item.Contains("\"tag\"") && !item.Contains("{") && !item.Contains("}") && !item.Contains("[") && !item.Contains("]") && !item.Contains("\"rolls\"") && !item.Contains("\"type\"") && !item.Contains("\"function\"") && item.Contains("\"") && !item.Contains("\"weight\"") && !item.Contains("\"count\"") && !item.Contains("\"min\": 1") && !item.Contains("\"max\": 64")&& !item.Contains("\"RandomItemGiver\"") && !item.Contains("\"out\"") && !item.Contains("\"score\""))
                 {
                     string itemFiltered;
                     itemFiltered = item.Replace("\"", "");
