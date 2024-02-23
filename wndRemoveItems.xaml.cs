@@ -158,7 +158,7 @@ namespace Random_Item_Giver_Updater
             wzdRemoveItems.pages[4].grdContent.Children.Add(cvsStep5);
             wzdRemoveItems.pages[2].requirements = requirementsPage3;
             wzdRemoveItems.pages[3].requirements = requirementsPage4;
-            wzdRemoveItems.pages[2].requirementsNotFulfilledMsg = "Please enter items you want to add to the datapack to continue!";
+            wzdRemoveItems.pages[2].requirementsNotFulfilledMsg = "Please enter items you want to remove from the datapack to continue!";
             wzdRemoveItems.pages[3].requirementsNotFulfilledMsg = "No items to remove were found or you have not selected loot tables to remove from!";
             wzdRemoveItems.pages[2].code = codePage3;
             wzdRemoveItems.pages[3].code = codePage4;
