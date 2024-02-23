@@ -146,6 +146,8 @@ namespace Random_Item_Giver_Updater
             wzdAddItems.pages[2].requirementsNotFulfilledMsg = "Please enter items you want to add to the datapack to continue!";
             wzdAddItems.pages[3].code = codePage4;
             wzdAddItems.pages[4].code = codePage5;
+            wzdAddItems.pages[4].requirements = requirementsPage5;
+            wzdAddItems.pages[4].requirementsNotFulfilledMsg = "You have selected to only add the item to certain loot tables without actually selecting any. Please choose any loot tables before continuing.";
             wzdAddItems.pages[4].canGoBack = false;
             wzdAddItems.pages[4].canContinue = false;
             wzdAddItems.pages[5].code = codePage6;
@@ -162,6 +164,19 @@ namespace Random_Item_Giver_Updater
             {
                 return false;
             }
+        }
+
+        private bool requirementsPage5()
+        {
+            foreach (addItemEntry addItemEntry in itemEntries)
+            {
+                if(addItemEntry.lootTableEntry.allLootTablesChecked == false && string.IsNullOrEmpty(addItemEntry.lootTableEntry.lootTableWhiteList))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void codePage3()
@@ -673,7 +688,7 @@ namespace Random_Item_Giver_Updater
             //Reload the currently loaded loot table and close this window
             if (wndMain.currentLootTable != "none")
             {
-                wndMain.LoadLootTable(wndMain.currentLootTable);          
+                wndMain.LoadLootTable(wndMain.currentLootTable);
             }
             Close();
         }

@@ -79,6 +79,9 @@
     <Compile Include="wndSelectLootTables.xaml.cs">
       <DependentUpon>wndSelectLootTables.xaml</DependentUpon>
     </Compile>
+    <Compile Include="wndSettings.xaml.cs">
+      <DependentUpon>wndSettings.xaml</DependentUpon>
+    </Compile>
     <Page Include="wndAbout.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -120,6 +123,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="wndSelectLootTables.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="wndSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

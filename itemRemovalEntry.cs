@@ -62,9 +62,7 @@ namespace Random_Item_Giver_Updater
             lootTableCheckList.Clear();
             foreach (lootTable lootTable in lootTables)
             {
-                lootTableCheckList.Add(new lootTable(lootTable.lootTableName, lootTable.lootTableType, lootTable.lootTablePath));
-                lootTableWhiteList = string.Format("{0}{1}", lootTableWhiteList, lootTable.fullLootTablePath);
-            }
+                lootTableCheckList.Add(new lootTable(lootTable.lootTableName, lootTable.lootTableType, lootTable.lootTablePath));            }
         }
     }
 }

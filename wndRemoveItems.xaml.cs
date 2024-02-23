@@ -93,7 +93,7 @@ namespace Random_Item_Giver_Updater
             //Go to the next page
             wzdRemoveItems.ShowNextPage();
 
-            foreach(itemRemovalEntry entry in itemRemovalEntries)
+            foreach (itemRemovalEntry entry in itemRemovalEntries)
             {
                 tbRemovedItems.AppendText(entry.itemName + "\n");
             }
@@ -138,7 +138,7 @@ namespace Random_Item_Giver_Updater
             wzdRemoveItems.pages[2].requirements = requirementsPage3;
             wzdRemoveItems.pages[3].requirements = requirementsPage4;
             wzdRemoveItems.pages[2].requirementsNotFulfilledMsg = "Please enter items you want to add to the datapack to continue!";
-            wzdRemoveItems.pages[3].requirementsNotFulfilledMsg = "No items to remove were found!";
+            wzdRemoveItems.pages[3].requirementsNotFulfilledMsg = "No items to remove were found or you have not selected loot tables to remove from!";
             wzdRemoveItems.pages[2].code = codePage3;
             wzdRemoveItems.pages[3].code = codePage4;
             wzdRemoveItems.pages[3].canGoBack = false;
@@ -164,6 +164,13 @@ namespace Random_Item_Giver_Updater
             //Checks if any items to remove were found and only let's you continue if thats the case
             if (itemRemovalEntries.Count() != 0)
             {
+                foreach (itemRemovalEntry itemRemovalEntry in itemRemovalEntries)
+                {
+                    if (string.IsNullOrEmpty(itemRemovalEntry.lootTableWhiteList))
+                    {
+                        return false;
+                    }
+                }
                 return true;
             }
             else
@@ -443,7 +450,7 @@ namespace Random_Item_Giver_Updater
                             }
                         }
 
-                        itemsDone = string.Format("{0};{1}", itemsDone, string.Format("\"{0}\"", itemName)); 
+                        itemsDone = string.Format("{0};{1}", itemsDone, string.Format("\"{0}\"", itemName));
                     }
                 }
             }
@@ -502,7 +509,7 @@ namespace Random_Item_Giver_Updater
             {
                 //Add all loot tables that the item is in to a list and display that list
                 string lootTables = "";
-                foreach(lootTable lootTable in item.lootTables)
+                foreach (lootTable lootTable in item.lootTables)
                 {
                     lootTables = string.Format("{0}\n{1}", lootTables, lootTable.fullLootTablePath.Replace(wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
                 }
@@ -521,7 +528,7 @@ namespace Random_Item_Giver_Updater
 
         private void btnRemove_Click(object sender, RoutedEventArgs e)
         {
-            if(sender is Button button && button.DataContext is itemRemovalEntry item)
+            if (sender is Button button && button.DataContext is itemRemovalEntry item)
             {
                 //Remove the item from the item removal list
                 itemRemovalEntries.Remove(item);
