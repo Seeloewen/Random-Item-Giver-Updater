@@ -40,6 +40,18 @@ namespace Random_Item_Giver_Updater
 
             //Set header
             tblHeader.Text = header;
+
+            //Add all loot tables to scheme selection
+            cbxScheme.Items.Clear();
+            cbxScheme.Items.Add("None");
+            foreach (lootTable lootTable in lootTableList)
+            {       
+                if (!cbxScheme.Items.Contains(lootTable.lootTableName.Replace(".json", "")))
+                {
+                    cbxScheme.Items.Add(lootTable.lootTableName.Replace(".json", ""));
+                }
+            }
+            cbxScheme.SelectedIndex = 0;
         }
 
         //-- Event Handlers --//
@@ -85,6 +97,7 @@ namespace Random_Item_Giver_Updater
             {
                 lootTable.cbAddToLootTable.IsChecked = true;
             }
+
         }
 
         private void btnUncheckAll_Click(object sender, RoutedEventArgs e)
@@ -93,6 +106,36 @@ namespace Random_Item_Giver_Updater
             foreach (lootTable lootTable in lootTableList)
             {
                 lootTable.cbAddToLootTable.IsChecked = false;
+            }
+        }
+
+        private void btnSelectScheme_Click(object sender, RoutedEventArgs e)
+        {
+            if(cbxScheme.Text != "None")
+            //Check each checkbox if it matches the scheme and change check state properly
+            foreach(lootTable lootTable in lootTableList)
+            {
+                if(lootTable.lootTableName.Replace(".json", "").ToString().Contains(cbxScheme.Text))
+                {
+                    lootTable.cbAddToLootTable.IsChecked = true;
+                }
+                else
+                {
+                    lootTable.cbAddToLootTable.IsChecked= false;
+                }
+            }
+        }
+
+        private void cbxScheme_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //Toggle "Use" button depending if a scheme is selected or not
+            if(cbxScheme.Text != "None")
+            {
+                btnSelectScheme.IsEnabled = false;
+            }
+            else
+            {
+                btnSelectScheme.IsEnabled = true;
             }
         }
     }
