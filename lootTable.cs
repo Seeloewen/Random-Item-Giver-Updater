@@ -25,7 +25,7 @@ namespace Random_Item_Giver_Updater
         public bool isSelectedForAdding = true;
 
         //Windows
-        MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
+        public MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
 
 
         //-- Constructor --//
@@ -51,7 +51,7 @@ namespace Random_Item_Giver_Updater
             cvsLootTable.Children.Add(tblLootTable);
 
             //Create checkbox for adding items window
-            cbAddToLootTable.Content = fullLootTablePath.Replace(string.Format("{0}/data/randomitemgiver/loot_tables/", wndMain.currentDatapack), "").Replace(".json", "");
+            cbAddToLootTable.Content = fullLootTablePath.Replace(string.Format("{0}/data/randomitemgiver/loot_tables/", wndMain.currentDatapack), "").Replace(".json", "").Replace("_", "__");
             cbAddToLootTable.Foreground = new SolidColorBrush(Colors.White);
             cbAddToLootTable.Margin = new Thickness(20, 15, 0, 0);
             cbAddToLootTable.FontSize = 15;
