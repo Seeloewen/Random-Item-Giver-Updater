@@ -116,7 +116,7 @@ namespace Random_Item_Giver_Updater
         private void btnRemoveItems_Click(object sender, RoutedEventArgs e)
         {
             //Open remove item window
-            wndRemoveItems = new wndRemoveItems() { Owner = this };
+            wndRemoveItems = new wndRemoveItems(false, null) { Owner = this };
             wndRemoveItems.Owner = Application.Current.MainWindow;
             if (wndRemoveItems.isOpen == false)
             {

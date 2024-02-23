@@ -27,6 +27,8 @@ namespace Random_Item_Giver_Updater
         private int removeItemsWorkerAddedItems = 0;
         private int removeItemsWorkerAddedItemsLootTables = 0;
         public bool isOpen;
+        private bool hasInput;
+        private List<string> inputItems = new List<string>();
 
         //Important references
         MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
@@ -38,11 +40,16 @@ namespace Random_Item_Giver_Updater
 
         //-- Constructor --//
 
-        public wndRemoveItems()
+        public wndRemoveItems(bool hasInput, List<string> items)
         {
             InitializeComponent();
             InitializeWizard();
             DataContext = this;
+            this.hasInput = hasInput;
+            if(hasInput == true)
+            {
+                inputItems = items;
+            }
         }
 
         //-- Event Handlers --//
@@ -57,6 +64,20 @@ namespace Random_Item_Giver_Updater
             bgwRemoveItems.DoWork += bgwRemoveItems_DoWork;
             bgwRemoveItems.RunWorkerCompleted += bgwRemoveItems_RunWorkerCompleted;
             bgwRemoveItems.ProgressChanged += bgwRemoveItems_ProgressChanged;
+
+            //Input items if it was called with input
+            if(hasInput == true)
+            {
+                if (inputItems.Count > 0)
+                {
+                    wzdRemoveItems.ShowPage(2);
+                    cbIncludesCustomPrefixes.IsChecked = true;
+                    foreach (string item in inputItems)
+                    {
+                        tbItems.AppendText(string.Format("{0}\n", item));
+                    }
+                }
+            }
         }
 
         private void bgwRemoveItems_DoWork(object s, DoWorkEventArgs args)

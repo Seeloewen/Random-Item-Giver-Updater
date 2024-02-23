@@ -29,8 +29,9 @@ namespace Random_Item_Giver_Updater
         public ObservableCollection<duplicateEntry> duplicateEntries { get; set; } = new ObservableCollection<duplicateEntry>();
         int duplicateIndex = 0;
 
-        //Reference to main window
+        //Reference to other windows
         MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
+        static wndRemoveItems wndRemoveItems;
 
         //Seeloewen Lib
         SeeloewenLibTools SeeloewenLibTools = new SeeloewenLibTools();
@@ -49,7 +50,29 @@ namespace Random_Item_Giver_Updater
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("This feature is not available yet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            //Add the duplicates to a string list
+            List<string> duplicates = new List<string>();
+            foreach(duplicateEntry duplicate in duplicateEntries)
+            {
+               duplicates.Add(duplicate.itemName);
+            }
+
+            //Open remove item window
+            wndRemoveItems = new wndRemoveItems(true, duplicates) { Owner = this };
+            wndRemoveItems.Owner = Application.Current.MainWindow;
+            if (wndRemoveItems.isOpen == false)
+            {
+                //Check if the datapack path exists before opening the window
+                if (Directory.Exists(wndMain.currentDatapack))
+                {
+                    wndRemoveItems.ShowDialog();
+                }
+                else
+                {
+                    MessageBox.Show("Error: Could not detect datapack. Please make sure the currently selected datapack exists and is valid.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            Close();
         }
 
         //-- Custom Methods --//
