@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Random_Item_Giver_Updater"
         mc:Ignorable="d"
-        Background="#FF323232" Title="Duplicate Finder" Height="723" Width="802" WindowStartupLocation="CenterScreen">
+        Background="#FF323232" Title="Duplicate Finder" Height="723" Width="802" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Window.Resources>
         <DataTemplate x:Key="DuplicateTemplate">
             <Canvas x:Name="cvsDuplicate" Height="40" >

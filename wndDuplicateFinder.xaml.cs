@@ -111,11 +111,18 @@ namespace Random_Item_Giver_Updater
                 //Show a message with the amount of duplicates
                 MessageBox.Show(string.Format("Successfully searched for duplicates. Found {0} results.", duplicateEntries.Count()), "Search completed", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                //If no duplicates are found, show information text
+                //If no duplicates are found, show information text and disable buttons regarding duplicates
                 if (duplicateEntries.Count == 0)
                 {
                     tblNoDuplicatesFound.Visibility = Visibility.Visible;
                     tblNoDuplicatesFound.Margin = new Thickness(225, 275, 0, 0);
+                    btnExportList.IsEnabled = false;
+                    btnDelete.IsEnabled = false;
+                }
+                else
+                {
+                    btnExportList.IsEnabled = true;
+                    btnDelete.IsEnabled = true;
                 }
             }
         }
