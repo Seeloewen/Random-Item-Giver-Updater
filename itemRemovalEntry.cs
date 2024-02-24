@@ -35,7 +35,7 @@ namespace Random_Item_Giver_Updater
             //Set attributes
             itemName = name;
             itemNBT = nbt;
-            if(string.IsNullOrEmpty(itemNBT))
+            if (string.IsNullOrEmpty(itemNBT))
             {
                 fullItemName = itemName;
             }
@@ -62,7 +62,22 @@ namespace Random_Item_Giver_Updater
             lootTableCheckList.Clear();
             foreach (lootTable lootTable in lootTables)
             {
-                lootTableCheckList.Add(new lootTable(lootTable.lootTableName, lootTable.lootTableType, lootTable.lootTablePath));            }
+                //Check if the loot table is already on the list
+                bool isAdded = false;
+                foreach (lootTable lootTableCheck in lootTableCheckList)
+                {
+                    if (lootTableCheck.fullLootTablePath == lootTable.fullLootTablePath)
+                    {
+                        isAdded = true;
+                    }
+                }
+
+                if (isAdded == false)
+                {
+                    lootTableCheckList.Add(new lootTable(lootTable.lootTableName, lootTable.lootTableType, lootTable.lootTablePath));
+                    lootTableWhiteList = string.Format("{0}{1}", lootTableWhiteList, lootTable.fullLootTablePath);
+                }
+            }
         }
     }
 }
