@@ -44,8 +44,8 @@ namespace Random_Item_Giver_Updater
         private TextBlock tblNoDatapackLoaded = new TextBlock();
 
         //General variables for the software
-        public string versionNumber = string.Format("Bye Bye 2023!");
-        public string versionDate = "31.12.2023";
+        public string versionNumber = string.Format("Public Beta 2");
+        public string versionDate = "24.02.2024";
         public string currentLootTable = "none";
         public string currentDatapack = "none";
         private bool calledClose;
@@ -143,7 +143,7 @@ namespace Random_Item_Giver_Updater
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.20 Dev";
+            //tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.20 Dev";
             if ((!string.IsNullOrEmpty(tbDatapack.Text) && Directory.Exists(tbDatapack.Text)))
             {
                 //If the directory exists and is valid and no other datapack with unsaved changes is loaded, try to load the datapack
