@@ -125,18 +125,5 @@ namespace Random_Item_Giver_Updater
                 }
             }
         }
-
-        private void cbxScheme_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            //Toggle "Use" button depending if a scheme is selected or not
-            if(cbxScheme.Text != "None")
-            {
-                btnSelectScheme.IsEnabled = false;
-            }
-            else
-            {
-                btnSelectScheme.IsEnabled = true;
-            }
-        }
     }
 }
