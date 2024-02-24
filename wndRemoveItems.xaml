@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Random_Item_Giver_Updater"
         mc:Ignorable="d"
-        Title="Remove Items" Height="723" Width="802" Background="#FF323232" Loaded="Window_Loaded" Unloaded="Window_Unloaded" WindowStartupLocation="CenterScreen">
+        Title="Remove Items" Height="723" Width="802" Background="#FF323232" Loaded="Window_Loaded" Unloaded="Window_Unloaded" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Window.Resources>
         <DataTemplate x:Key="ItemTemplate">
             <Canvas x:Name="cvsItem" Height="40" Background="Black" >

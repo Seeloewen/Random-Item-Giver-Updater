@@ -15,7 +15,7 @@
         <Button x:Name="btnCheckAll" Content="Check all" HorizontalAlignment="Left" Margin="10,49,0,0" VerticalAlignment="Top" Width="137" Height="24" FontSize="14" Click="btnCheckAll_Click"/>
         <Button x:Name="btnUncheckAll" Content="Uncheck all" HorizontalAlignment="Left" Margin="162,49,0,0" VerticalAlignment="Top" Width="137" Height="24" FontSize="14" Click="btnUncheckAll_Click"/>
         <Button x:Name="btnSelectScheme" Content="Use" HorizontalAlignment="Left" Margin="620,49,0,0" VerticalAlignment="Top" Height="24" Width="62" Click="btnSelectScheme_Click"/>
-        <ComboBox x:Name="cbxScheme" HorizontalAlignment="Left" Margin="453,50,0,0" VerticalAlignment="Top" Width="158" SelectionChanged="cbxScheme_SelectionChanged"/>
+        <ComboBox x:Name="cbxScheme" HorizontalAlignment="Left" Margin="453,50,0,0" VerticalAlignment="Top" Width="158"/>
         <TextBlock x:Name="tblScheme" HorizontalAlignment="Left" Margin="385,48,0,0" TextWrapping="Wrap" Text="Scheme:" VerticalAlignment="Top" FontSize="16" Foreground="White"/>
     </Grid>
 </Window>
