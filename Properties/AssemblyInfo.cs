@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Random Item Giver Updater")]
-[assembly: AssemblyCopyright("Copyright © 2023 Louis/Seeloewen")]
+[assembly: AssemblyCopyright("Copyright © 2024 Louis/Seeloewen")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

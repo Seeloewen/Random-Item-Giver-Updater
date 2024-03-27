@@ -173,9 +173,7 @@
     <Resource Include="Resources\imgAbout.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\imgRemoveItems.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Resource Include="Resources\imgRemoveItems.png" />
     <Resource Include="Resources\imgWorkplace.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
