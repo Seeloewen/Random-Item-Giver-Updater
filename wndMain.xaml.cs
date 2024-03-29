@@ -48,6 +48,7 @@ namespace Random_Item_Giver_Updater
         public string versionDate = "24.02.2024";
         public string currentLootTable = "none";
         public string currentDatapack = "none";
+        public bool datapackUsesLegacyNBT = false;
         private bool calledClose;
         public bool calledNewLootTable;
         public string calledLootTableName;
@@ -151,10 +152,9 @@ namespace Random_Item_Giver_Updater
                 if (lootTableModified() == false)
                 {
                     currentLootTable = "none";
-                    //itemList.Clear();
-                    //stpWorkspace.Children.Clear();
                     currentDatapack = tbDatapack.Text;
                     GetLootTables(currentDatapack);
+                    CheckForLegacyNBT();
                 }
                 else
                 {
@@ -166,10 +166,9 @@ namespace Random_Item_Giver_Updater
                         case MessageBoxResult.Yes:
                             //Discard the current loot table and load a new datapack
                             currentLootTable = "none";
-                            //itemList.Clear();
-                            //stpWorkspace.Children.Clear();
                             currentDatapack = tbDatapack.Text;
                             GetLootTables(currentDatapack);
+                            CheckForLegacyNBT();
                             break;
                     }
                 }
@@ -588,67 +587,70 @@ namespace Random_Item_Giver_Updater
             imgWorkplace.Visibility = Visibility.Hidden;
 
             //Get list of content in file, remove all non-item lines so only items remain
+            itemList.Clear();
             string[] loadedItems = File.ReadAllLines(currentLootTable);
             List<string> items = new List<string>();
 
             items.Clear();
+            int index = 0;
             foreach (string item in loadedItems)
             {
-                if (item.Contains("\"tag\""))
+                List<string> itemStackComponent = new List<string>();
+                string itemName = "";
+                string itemNBT = "";
+                bool hasNBT = false;
+                bool hasFunctionBody;
+
+                if (item.Contains("\"name\":"))
                 {
-                    string itemFiltered;
-                    itemFiltered = item.Replace(" ", "");
-                    itemFiltered = itemFiltered.Replace("\"tag\":", "");
-                    itemFiltered = itemFiltered.Substring(1, itemFiltered.Length - 2);
-                    items.Add(itemFiltered + "{isNBT}"); //Add NBT marker to let software know it's NBT
+                    //Get the item name
+                    itemName = item.Replace("\"", "").Replace("name:", "").Replace(" ", "").Replace(",", ""); ;
+
+                    //Get if item has function body
+                    if (loadedItems[index + 1].Contains("\"functions\":"))
+                    {
+                        hasFunctionBody = true;
                 }
-                else if (!item.Contains("\"tag\"") && !item.Contains("{") && !item.Contains("}") && !item.Contains("[") && !item.Contains("]") && !item.Contains("\"rolls\"") && !item.Contains("\"type\"") && !item.Contains("\"function\"") && item.Contains("\"") && !item.Contains("\"weight\"") && !item.Contains("\"count\"") && !item.Contains("\"min\": 1") && !item.Contains("\"max\": 64") && !item.Contains("\"out\"") && !item.Contains("\"RandomItemGiver\"") && !item.Contains("\"score\""))
+                    else
                 {
-                    string itemFiltered;
-                    itemFiltered = item.Replace("\"", "");
-                    itemFiltered = itemFiltered.Replace("name:", "");
-                    itemFiltered = itemFiltered.Replace(" ", "");
-                    itemFiltered = itemFiltered.Replace("tag:", "");
-                    itemFiltered = itemFiltered.Replace(",", "");
-                    items.Add(itemFiltered);
+                        hasFunctionBody = false;
                 }
+
+                    //Get Item Stack Components
+                    if (GetItemStackComponents(loadedItems, index) != null)
+                    {
+                        itemStackComponent = GetItemStackComponents(loadedItems, index);
             }
 
-            List<string> finalItemList = new List<string>();
-            //Check for each item if it has NBT and add it to the string
-            for (int i = 0; i < items.Count; i++)
+                    //Get NBT tag
+                    if (GetNBT(loadedItems, index) != null)
             {
-                if (!items[i].Contains("{isNBT}"))
+                        hasNBT = true;
+                        itemNBT = GetNBT(loadedItems, index);
+                    }
+                    else
                 {
-                    if (i < items.Count - 1)
-                    {
+                        hasNBT = false;
+                    }
 
-                        if (items[i + 1].Contains("{"))
+                    //Add item to item list
+                    if (datapackUsesLegacyNBT == true)
                         {
-                            finalItemList.Add(string.Format("{0};{1}", items[i], items[i + 1].Replace("{isNBT}", "")));
+                        if (hasNBT == true)
+                        {
+                            itemList.Add(new itemEntry(itemName, itemNBT, itemList.Count() + 1, hasFunctionBody));
                         }
-
-                        if (!items[i + 1].Contains("{"))
+                        else
                         {
-                            finalItemList.Add(string.Format("{0};none", items[i]));
+                            itemList.Add(new itemEntry(itemName, "none", itemList.Count() + 1, hasFunctionBody));
                         }
                     }
                     else
                     {
-                        {
-                            finalItemList.Add(string.Format("{0};none", items[i]));
-                        }
-                    }
-                }
+                        itemList.Add(new itemEntry(itemName, itemStackComponent, itemList.Count() + 1, hasFunctionBody));
             }
 
-            itemList.Clear();
-            int index = 0;
-            //Add an entry for all items
-            foreach (string item in finalItemList)
-            {
-                string[] splitItem = item.Split(';');
-                itemList.Add(new itemEntry(splitItem[0], splitItem[1], index));
+                }
                 index++;
             }
 
@@ -658,6 +660,81 @@ namespace Random_Item_Giver_Updater
             await Task.Delay(5); //Allows the UI to update and show the textblock
         }
 
+        public List<string> GetItemStackComponents(string[] file, int itemLine)
+        {
+            List<string> itemStackComponent = new List<string>();
+            int index = 1;
+
+            while (true)
+            {
+                //Search for a component, return null if none is found
+                if (file[itemLine + index].Contains("\"components\":"))
+                {
+                    int openBrackets = 1;
+                    int index2 = 0;
+
+                    //Go through the entire item stack component by checking when the last bracket was closed (aka the item stack component ends)
+                    while (openBrackets > 0)
+                    {
+                        if (file[itemLine + index + index2].Contains("{") || file[itemLine + index + index2].Contains("["))
+                        {
+                            openBrackets++;
+                        }
+                        else if (file[itemLine + index + index2].Contains("}") || file[itemLine + index + index2].Contains("]"))
+                        {
+                            openBrackets--;
+                        }
+
+                        //Add the line to the component
+                        itemStackComponent.Add(file[itemLine + index + index2]);
+                        index2++;
+                    }
+
+                    //Remove the first and last two parts as they are not part of component
+                    itemStackComponent.Remove(itemStackComponent[0]);
+                    itemStackComponent.Remove(itemStackComponent[itemStackComponent.Count - 1]);
+                    itemStackComponent.Remove(itemStackComponent[itemStackComponent.Count - 2]);
+                    return itemStackComponent;
+                }
+                else if (file[itemLine + index].Contains("\"name\":"))
+                {
+                    //Stop if it reaches the next item
+                    return null;
+                }
+                else if ((file[itemLine + index].Contains("]") && file[itemLine + index + 1].Contains("}") && file[itemLine + index + 2].Contains("]")))
+                {
+                    //Stop if it reaches the bottom of the file
+                    return null;
+                }
+                index++;
+            }
+        }
+
+        public string GetNBT(string[] file, int itemLine)
+        {
+            int index = 1;
+            string nbt;
+            while (true)
+            {
+                if (file[itemLine + index].Contains("\"tag\":"))
+                {
+                    nbt = file[itemLine + index].Replace(" ", "").Replace("\"tag\":", "");
+                    nbt = nbt.Substring(1, nbt.Length - 2);
+                    return nbt;
+                }
+                else if (file[itemLine + index].Contains("\"name\":"))
+                {
+                    //Stop if it reaches the next item
+                    return null;
+                }
+                else if ((file[itemLine + index].Contains("]") && file[itemLine + index + 1].Contains("}") && file[itemLine + index + 2].Contains("]")))
+                {
+                    //Stop if it reaches the bottom of the file
+                    return null;
+                }
+                index++;
+            }
+        }
 
         private void GetLootTables(string path)
         {
@@ -862,6 +939,34 @@ namespace Random_Item_Giver_Updater
             {
                 return false;
             }
+        }
+
+        public void CheckForLegacyNBT()
+        {
+            //Go through the file to check whether the line specifying the legacy nbt state is present
+            bool hasLegacyNBT = true;
+            string[] file = File.ReadAllLines(string.Format("{0}\\UPDATER.txt", currentDatapack));
+            for (int i = 0; i < file.Length; i++)
+            {
+                //Check if legacy nbt is present or not
+                if (file[i].Contains("uses_legacy_nbt=false"))
+                {
+                    hasLegacyNBT = false;
+                }
+                else if (file[i].Contains("uses_legacy_nbt=true"))
+                {
+                    hasLegacyNBT = true;
+                }
+            }
+
+            if (hasLegacyNBT == true)
+            {
+                datapackUsesLegacyNBT = true;
+            }
+            else
+            {
+                datapackUsesLegacyNBT = false;
+        }
         }
 
         private void SetupButtons() //Adds Canvas with image and textblock to button
