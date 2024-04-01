@@ -21,6 +21,8 @@ using System.Threading;
 using System.Windows.Media.Animation;
 using SeeloewenLib;
 using System.Collections.ObjectModel;
+using System.Windows.Media.Converters;
+using System.Reflection;
 
 namespace Random_Item_Giver_Updater
 {
@@ -44,6 +46,8 @@ namespace Random_Item_Giver_Updater
         private TextBlock tblNoDatapackLoaded = new TextBlock();
 
         //General variables for the software
+        public List<string> lootTableStart = new List<string>();
+        public List<string> lootTableEnd = new List<string>();
         public string versionNumber = string.Format("Public Beta 2");
         public string versionDate = "24.02.2024";
         public string currentLootTable = "none";
@@ -54,12 +58,14 @@ namespace Random_Item_Giver_Updater
         public string calledLootTableName;
         public string calledLootTablePath;
 
+
         //Windows
         public static wndAddItem wndAddItem;
         public static wndRemoveItems wndRemoveItems;
         public static wndAbout wndAbout;
         public static wndDuplicateFinder wndDuplicateFinder;
         public static wndSettings wndSettings;
+        public wndNBTEditor wndNBTEditor;
 
         //Buttons
         private Canvas cvsBtnAddItems = new Canvas();
@@ -230,291 +236,46 @@ namespace Random_Item_Giver_Updater
 
         private void bgwEditLootTable_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            //Load the file once again
-            string[] loadedItems = File.ReadAllLines(currentLootTable);
+            //Put start of loot table into new list
+            List<string> newFile = [.. lootTableStart];
 
-            //Remove lines that only contain spaces from the file
-            List<string> filteredArray = new List<string>();
-            foreach (string line in loadedItems)
-            {
-                if (!string.IsNullOrWhiteSpace(line))
-                {
-                    filteredArray.Add(line);
-                }
-            }
-            loadedItems = filteredArray.ToArray();
+            //Make sure last construct does not have a comma
+            itemList[itemList.Count() - 1].itemBody[itemList[itemList.Count() - 1].itemBody.Count() - 1].Replace(",", "");
 
-            //Delete the item
+            //Put each item entry into the new list
             foreach (itemEntry item in itemList)
             {
-                //Check if the item is modified
-                if (item.isModified == true && item.isDeleted == true)
+                //Check if the item wasn't deleted and add it to the loot table
+                if (!item.changes.Contains(itemEntry.changeType.Deleted))
                 {
-                    if (item.itemNBT == "none") //If the item hasn't got any NBT
+                    foreach (string str in item.itemBody)
                     {
-                        for (int i = 0; i < loadedItems.Count(); i++)
-                        {
-                            bool isAtEnd = false;
-                            bool is01item = false;
-                            if (loadedItems[i].Contains(item.itemName))
-                            {
-                                //Check if it's an item in a 01item loot table
-                                if (loadedItems[i - 3].Contains("},") && !loadedItems[i - 4].Contains("]"))
-                                {
-                                    is01item = true;
-                                }
-
-                                //Delete the item line
-                                loadedItems[i] = "";
-
-                                //Delete all lines that come after that
-                                int index = 1;
-                                bool doLoop = true;
-                                while (doLoop == true)
-                                {
-                                    //Go through every line after the item name
-                                    if ((loadedItems[i + index].Contains("}") && loadedItems[i + index + 1].Contains("}") && loadedItems[i + index + 2].Contains("]") && loadedItems[i + index + 3].Contains("}") && loadedItems[i + index + 4].Contains("]")))
-                                    {
-                                        //Stop if it's about to reach the file end, so it doesn't corrupt the loot table (For special loot tables)
-                                        loadedItems[i + index] = "";
-                                        loadedItems[i + index + 1] = "";
-                                        loadedItems[i + index + 2] = "";
-                                        loadedItems[i + index + 3] = "";
-
-                                        doLoop = false;
-                                        isAtEnd = true;
-
-                                    }
-                                    else if ((loadedItems[i + index].Contains("]") && loadedItems[i + index + 1].Contains("}") && loadedItems[i + index + 2].Contains("]")))
-                                    {
-                                        //Stop if it's about to reach the file end, so it doesn't corrupt the loot table
-                                        doLoop = false;
-                                        isAtEnd = true;
-
-                                        if (is01item == false)
-                                        {
-                                            loadedItems[i + index] = "";
-                                            loadedItems[i + index + 1] = "";
-                                        }
-
-                                    }
-                                    else if (!(loadedItems[i + index].Contains("{") && loadedItems[i + index + 1].Contains("\"type\"") && !loadedItems[i + index].Contains("count") && !loadedItems[i + index].Contains("target")))
-                                    {
-                                        //Continue if it hasn't reached the next item yet
-                                        loadedItems[i + index] = "";
-                                        index++;
-                                    }
-
-                                    else
-                                    {
-                                        //Stop if it reaches an item
-                                        doLoop = false;
-                                    }
-                                }
-
-                                //Delete all lines that come before that
-                                int index2 = 1;
-                                bool doLoop2 = true;
-                                while (doLoop2 == true)
-                                {
-                                    if (!(loadedItems[i - index2].Contains("},") || loadedItems[i - index2].Contains("\"entries\": [")))
-                                    {
-                                        //Continue if it hasn't reached another item or the top of the file
-                                        loadedItems[i - index2] = "";
-                                        index2++;
-                                    }
-                                    else if (loadedItems[i - index2].Contains("},") || loadedItems[i - index2].Contains("\"entries\": ["))
-                                    {
-                                        //Stop if it reaches the top of the file or another item
-                                        doLoop2 = false;
-                                        if (isAtEnd)
-                                        {
-                                            //Remove comma to avoid corruption of the loot table
-                                            loadedItems[i - index2] = loadedItems[i - index2].Replace("},", "}");
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        newFile.Add(str);
                     }
-                    else //If the item has NBT
-                    {
-
-                        for (int i = 0; i < loadedItems.Count(); i++)
-                        {
-                            bool isAtEnd = false;
-
-                            if (loadedItems[i].Contains(item.itemName))
-                            {
-                                int index = 1;
-                                bool doLoop = true;
-
-                                while (doLoop == true)
-                                {
-                                    if ((loadedItems[i + index].Contains("]") && loadedItems[i + index + 1].Contains("}") && loadedItems[i + index + 2].Contains("]")))
-                                    {
-                                        //Stop if it's about to reach the file end, so it doesn't corrupt the loot table
-                                        doLoop = false;
-                                    }
-                                    else if (loadedItems[i + index].Contains(item.itemNBT))
-                                    {
-                                        //Stop the loop
-                                        doLoop = false;
-
-                                        //Delete the item line
-                                        loadedItems[i] = "";
-
-                                        //Delete all lines that come after that
-                                        int index2 = 1;
-                                        bool doLoop2 = true;
-                                        while (doLoop2 == true)
-                                        {
-
-                                            //Go through every line after the item name
-                                            if ((loadedItems[i + index2].Contains("]") && loadedItems[i + index2 + 1].Contains("}") && loadedItems[i + index2 + 2].Contains("]")))
-                                            {
-                                                //Stop if it's about to reach the file end, so it doesn't corrupt the loot table, but still remove some brackets
-                                                loadedItems[i + index2] = "";
-                                                loadedItems[i + index2 + 1] = "";
-                                                doLoop2 = false;
-                                                isAtEnd = true;
-                                            }
-                                            else if (!(loadedItems[i + index2].Contains("{") && loadedItems[i + index2 + 1].Contains("\"type\"") && !loadedItems[i + index2].Contains("count") && !loadedItems[i + index2].Contains("target")))
-                                            {
-                                                //Continue if it hasn't reached the next item yet
-                                                loadedItems[i + index2] = "";
-                                                index2++;
-                                            }
-
-                                            else
-                                            {
-                                                //Stop if it reaches an item
-                                                doLoop2 = false;
-                                            }
-                                        }
-
-                                        //Delete all lines that come before that
-                                        int index3 = 1;
-                                        bool doLoop3 = true;
-                                        while (doLoop3 == true)
-                                        {
-                                            if (!(loadedItems[i - index3].Contains("},") || loadedItems[i - index3].Contains("\"entries\": [")))
-                                            {
-                                                //Continue if it hasn't reached another item or the top of the file
-                                                loadedItems[i - index3] = "";
-                                                index3++;
-                                            }
-                                            else if (loadedItems[i - index3].Contains("},") || loadedItems[i - index3].Contains("\"entries\": ["))
-                                            {
-                                                //Stop if it reaches another item or the top of the file
-                                                doLoop3 = false;
-                                                if (isAtEnd)
-                                                {
-                                                    //If the last item was deleted, remove a comma to avoid corruption
-                                                    loadedItems[i - index3] = loadedItems[i - index3].Replace("},", "}");
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else if (loadedItems[i + index].Contains("\"name\""))
-                                    {
-                                        doLoop = false;
-                                    }
-                                    else
-                                    {
-                                        index++;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                //Edit the item
-                else if (item.isModified == true && item.isDeleted == false)
-                {
-                    if (item.itemNBT == "none") //If the item has no NBT
-                    {
-                        //Go through every line and look for the item name. Warning: This means that every item with that name is being replaced, hence why you should make sure to not include duplicates
-                        for (int i = 0; i < loadedItems.Count(); i++)
-                        {
-                            //If item name is found, replace with new item name
-                            if (loadedItems[i].Contains(item.itemName))
-                            {
-                                loadedItems[i] = loadedItems[i].Replace(item.itemName, item.newName);
-                            }
-                        }
-                    }
-                    else //If the item has NBT
-                    {
-                        for (int i = 0; i < loadedItems.Count(); i++)
-                        {
-                            if (loadedItems[i].Contains(item.itemName))
-                            {
-                                int index = 1;
-                                bool doLoop = true;
-
-                                while (doLoop == true)
-                                {
-                                    if ((loadedItems[i + index].Contains("]") && loadedItems[i + index + 1].Contains("}") && loadedItems[i + index + 2].Contains("]")))
-                                    {
-                                        //Stop if it reaches the bottom of the file
-                                        doLoop = false;
-                                    }
-                                    else if (loadedItems[i + index].Contains(item.itemNBT))
-                                    {
-                                        //If the item has the correct NBT, replace both Item Name and NBT
-                                        loadedItems[i] = loadedItems[i].Replace(item.itemName, item.newName);
-                                        loadedItems[i + index] = loadedItems[i + index].Replace(item.itemNBT, item.newNBT);
-                                        doLoop = false;
-                                    }
-                                    else if (loadedItems[i + index].Contains("\"name\""))
-                                    {
-                                        //Stop if it reaches another item
-                                        doLoop = false;
-                                    }
-                                    else
-                                    {
-                                        index++;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-
-            //Remove empty lines
-            loadedItems = loadedItems.Where(x => !string.IsNullOrEmpty(x)).ToArray();
-
-            //Clear file
-            using (var writer = new StreamWriter(currentLootTable, false))
-            {
-                writer.Write("");
-            }
-
-            //Append text to file
-            int index4 = 0;
-            foreach (string line in loadedItems)
-            {
-                using (var writer = new StreamWriter(currentLootTable, true))
-                {
-                    //This is done to avoid empty lines at the beginning or end
-                    if (index4 == 0)
-                    {
-                        writer.Write(line);
-                    }
-                    else
-                    {
-                        writer.Write("\n" + line);
-                    }
-                    index4++;
                 }
 
                 //Report progress
-                bgwEditLootTable.ReportProgress(0, 100 / Convert.ToDouble(loadedItems.Count()));
+                bgwEditLootTable.ReportProgress(0, 100 / Convert.ToDouble(itemList.Count()));
             }
+
+            //Don't forget the end, put that in as well
+            foreach (string str in lootTableEnd)
+            {
+                newFile.Add(str);
+            }
+
+            //Remove lines that only contain spaces from the file
+            List<string> newFileFinal = new List<string>();
+            foreach (string line in newFile)
+            {
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    newFileFinal.Add(line);
+                }
+            }
+
+            //Finally write the loot table to the file
+            File.WriteAllLines(currentLootTable, newFile);
         }
 
         private async void bgwEditLootTable_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -588,14 +349,21 @@ namespace Random_Item_Giver_Updater
 
             //Get list of content in file, remove all non-item lines so only items remain
             itemList.Clear();
-            string[] loadedItems = File.ReadAllLines(currentLootTable);
+            string[] loadedItems = File.ReadAllLines(path);
             List<string> items = new List<string>();
+
+            //Get Loot Table Start
+            lootTableStart = GetLootTableStart(loadedItems);
+
+            //Get Loot Table End
+            lootTableEnd = GetLootTableEnd(loadedItems);
 
             items.Clear();
             int index = 0;
             foreach (string item in loadedItems)
             {
                 List<string> itemStackComponent = new List<string>();
+                List<string> itemBody = new List<string>();
                 string itemName = "";
                 string itemNBT = "";
                 bool hasNBT = false;
@@ -606,51 +374,62 @@ namespace Random_Item_Giver_Updater
                     //Get the item name
                     itemName = item.Replace("\"", "").Replace("name:", "").Replace(" ", "").Replace(",", ""); ;
 
-                    //Get if item has function body
-                    if (loadedItems[index + 1].Contains("\"functions\":"))
+                    //Get entire item body
+                    if (GetItemBody(loadedItems, index) != null)
                     {
-                        hasFunctionBody = true;
-                }
-                    else
-                {
-                        hasFunctionBody = false;
-                }
+                        itemBody = GetItemBody(loadedItems, index);
 
-                    //Get Item Stack Components
-                    if (GetItemStackComponents(loadedItems, index) != null)
-                    {
-                        itemStackComponent = GetItemStackComponents(loadedItems, index);
-            }
-
-                    //Get NBT tag
-                    if (GetNBT(loadedItems, index) != null)
-            {
-                        hasNBT = true;
-                        itemNBT = GetNBT(loadedItems, index);
-                    }
-                    else
-                {
-                        hasNBT = false;
-                    }
-
-                    //Add item to item list
-                    if (datapackUsesLegacyNBT == true)
+                        //Get if item has function body
+                        if (loadedItems[index + 1].Contains("\"functions\":"))
                         {
-                        if (hasNBT == true)
-                        {
-                            itemList.Add(new itemEntry(itemName, itemNBT, itemList.Count() + 1, hasFunctionBody));
+                            hasFunctionBody = true;
                         }
                         else
                         {
-                            itemList.Add(new itemEntry(itemName, "none", itemList.Count() + 1, hasFunctionBody));
+                            hasFunctionBody = false;
                         }
+
+                        //Get Item Stack Components
+                        if (GetItemStackComponents(loadedItems, index) != null)
+                        {
+                            itemStackComponent = GetItemStackComponents(loadedItems, index);
+                        }
+
+                        //Get NBT tag
+                        if (GetNBT(loadedItems, index) != null)
+                        {
+                            hasNBT = true;
+                            itemNBT = GetNBT(loadedItems, index);
+                        }
+                        else
+                        {
+                            hasNBT = false;
+                        }
+
+                        //Add item to item list
+                        if (datapackUsesLegacyNBT == true)
+                        {
+                            if (hasNBT == true)
+                            {
+                                itemList.Add(new itemEntry(itemName, itemNBT, itemList.Count() + 1, hasFunctionBody, new List<string>(itemBody)));
+                            }
+                            else
+                            {
+                                itemList.Add(new itemEntry(itemName, "none", itemList.Count() + 1, hasFunctionBody, new List<string>(itemBody)));
+                            }
+                        }
+                        else
+                        {
+                            itemList.Add(new itemEntry(itemName, new List<string>(itemStackComponent), itemList.Count() + 1, hasFunctionBody, new List<string>(itemBody)));
+                        }
+
                     }
                     else
                     {
-                        itemList.Add(new itemEntry(itemName, itemStackComponent, itemList.Count() + 1, hasFunctionBody));
-            }
-
+                        MessageBox.Show($"Fatal error: Could not get item body for item {itemName}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
+
                 index++;
             }
 
@@ -710,6 +489,88 @@ namespace Random_Item_Giver_Updater
             }
         }
 
+        public List<string> GetLootTableStart(string[] file)
+        {
+            List<string> lootTableStart = new List<string>();
+
+            //Get all lines that belong to the start of the loot table
+            foreach (string line in file)
+            {
+                lootTableStart.Add(line);
+                if (line.Contains("\"entries\":"))
+                {
+                    break;
+                }
+            }
+
+            return lootTableStart;
+        }
+
+        public List<string> GetLootTableEnd(string[] file)
+        {
+            List<string> lootTableEnd = new List<string>();
+
+            //Get all lines that belong to the end of the loot table
+            lootTableEnd.Add("      ]");
+            lootTableEnd.Add("    }");
+            lootTableEnd.Add("  ]");
+            lootTableEnd.Add("}");
+
+            return lootTableEnd;
+        }
+
+        public List<string> GetItemBody(string[] file, int itemLine)
+        {
+            //Get start line
+            int bodyStartLine = 0;
+            int indexStartLine = 0;
+            while (true)
+            {
+                if (file[itemLine - indexStartLine].Contains("{"))
+                {
+                    bodyStartLine = itemLine - indexStartLine;
+                    break;
+                }
+                else if (file[itemLine - indexStartLine].Contains("\"entries\":"))
+                {
+                    //Stop if it hits the top of the file
+                    break;
+                }
+                indexStartLine++;
+            }
+
+            if (bodyStartLine != 0)
+            {
+                List<string> itemBody = new List<string>();
+                int openBrackets = 0;
+                int indexItemBody = 0;
+
+                do
+                {
+                    //Go through each line and add it to the item body until all brackets are closed (aka the body ends)
+                    if (file[bodyStartLine + indexItemBody].Contains(" {") || file[bodyStartLine + indexItemBody].Contains(" ["))
+                    {
+                        openBrackets++;
+                    }
+                    else if (file[bodyStartLine + indexItemBody].Contains(" }") || file[bodyStartLine + indexItemBody].Contains(" ]"))
+                    {
+                        openBrackets--;
+                    }
+
+                    itemBody.Add(file[bodyStartLine + indexItemBody]);
+                    indexItemBody++;
+                }
+                while (openBrackets > 0);
+
+                return itemBody;
+
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public string GetNBT(string[] file, int itemLine)
         {
             int index = 1;
@@ -727,7 +588,7 @@ namespace Random_Item_Giver_Updater
                     //Stop if it reaches the next item
                     return null;
                 }
-                else if ((file[itemLine + index].Contains("]") && file[itemLine + index + 1].Contains("}") && file[itemLine + index + 2].Contains("]")))
+                else if ((file[itemLine + index].Contains(" ]") && file[itemLine + index + 1].Contains(" }") && file[itemLine + index + 2].Contains(" ]")))
                 {
                     //Stop if it reaches the bottom of the file
                     return null;
@@ -780,7 +641,7 @@ namespace Random_Item_Giver_Updater
             return version;
         }
 
-        public string GetDatapackMCVersionLegacy(string path)
+        public string GetDatapackMCVersionLegacy(string path) //Please redo this using a switch statement ANYTIME soon
         {
             //Get datapack version
             int datapackVersion = GetDatapackVersionNumberLegacy(path);
@@ -925,7 +786,7 @@ namespace Random_Item_Giver_Updater
                 //Check every item in the loot table
                 foreach (itemEntry item in itemList)
                 {
-                    if (item.isModified == true)
+                    if (item.IsModified() == true)
                     {
                         //If any item is modified, stop and return
                         isModified = true;
@@ -966,7 +827,7 @@ namespace Random_Item_Giver_Updater
             else
             {
                 datapackUsesLegacyNBT = false;
-        }
+            }
         }
 
         private void SetupButtons() //Adds Canvas with image and textblock to button
@@ -1116,21 +977,16 @@ namespace Random_Item_Giver_Updater
         {
             if (sender is Button button && button.DataContext is itemEntry item)
             {
-                if (item.isDeleted == false) //Set state to deleted
+                if (item.IsDeleted() == false) //Set state to deleted
                 {
-                    item.isModified = true;
-                    item.isDeleted = true;
+                    item.changes.Add(itemEntry.changeType.Deleted);
                     button.Content = "Undo deletion";
                     item.SetIndicatorState(sender);
                 }
-                else if (item.isDeleted == true) //If the item has been deleted, set state to undeleted
+                else if (item.IsDeleted() == true) //If the item has been deleted, set state to undeleted
                 {
                     //Check if the item has been modified in some other way before setting the modified state to false
-                    if (item.itemName == item.newName)
-                    {
-                        item.isModified = false;
-                    }
-                    item.isDeleted = false;
+                    item.changes.Remove(itemEntry.changeType.Deleted);
                     button.Content = "Delete";
                     item.SetIndicatorState(sender);
                 }
@@ -1158,59 +1014,29 @@ namespace Random_Item_Giver_Updater
                 //Check if the item name has been changed and change modified state
                 if (item.newName != item.itemName)
                 {
-                    item.isModified = true;
+                    item.changes.Add(itemEntry.changeType.NameChanged);
                     item.SetIndicatorState(sender);
                 }
                 else
                 {
-                    if (item.isDeleted == false && item.itemNBT == item.newNBT)
-                    {
-                        item.isModified = false;
-                    }
+                    item.changes.Remove(itemEntry.changeType.NameChanged);
                     item.SetIndicatorState(sender);
                 }
             }
         }
 
-        private void btnSaveItemNBT_Click(object sender, RoutedEventArgs e)
+        private void btnEditNBT_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is itemEntry item)
             {
-                //Get the parent canvas
-                Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(button);
-
-                //Get the necessary controls
-                TextBlock textblock = canvas.FindName("tblItemNBT") as TextBlock;
-                TextBox textbox = canvas.FindName("tbItemNBT") as TextBox;
-
-                //Hide the controls for editing and show the item NBT
-                textbox.Visibility = Visibility.Hidden;
-                button.Visibility = Visibility.Hidden;
-                textblock.Visibility = Visibility.Visible;
-                item.newNBT = textbox.Text;
-                textblock.Text = item.newNBT;
-                
-
-                //Check if the item NBT has been changed and change modified state
-                if (item.newNBT != item.itemNBT)
-                {
-                    item.isModified = true;
-                    item.SetIndicatorState(sender);
-                }
-                else
-                {
-                    if (item.isDeleted == false && item.itemName == item.newName)
-                    {
-                        item.isModified = false;
-                    }
-                    item.SetIndicatorState(sender);
-                }
+                wndNBTEditor = new wndNBTEditor(item);
+                wndNBTEditor.ShowDialog();
             }
         }
 
         private void tblItemName_MouseDown(object sender, MouseEventArgs e)
         {
-            if (sender is TextBlock textblock && textblock.DataContext is itemEntry item)
+            if (sender is TextBlock textblock)
             {
                 //Get the parent canvas
                 Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(textblock);
@@ -1230,62 +1056,35 @@ namespace Random_Item_Giver_Updater
             }
         }
 
-        private void tblItemNBT_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (sender is TextBlock textblock && textblock.DataContext is itemEntry item)
-            {
-                //Get the parent canvas
-                Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(textblock);
-
-                //Get the necessary controls
-                TextBox textbox = canvas.FindName("tbItemNBT") as TextBox;
-                Button button = canvas.FindName("btnSaveItemNBT") as Button;
-
-                //Show the controls for editing and hide the original NBT
-                textbox.Visibility = Visibility.Visible;
-                button.Visibility = Visibility.Visible;
-                textblock.Visibility = Visibility.Hidden;
-                textbox.Text = textblock.Text;
-            }
-        }
-
-        private void cvsItem_Initialized(object sender, EventArgs e)
-        {
-            if (sender is Canvas canvas && canvas.DataContext is itemEntry item)
-            {
-                //Check if the item has NBT, and show it in that case
-                if (item.itemNBT != "none")
-                {
-                    TextBlock textblock = canvas.FindName("tblItemNBT") as TextBlock;
-                    textblock.Visibility = Visibility.Visible;
-                }
-            }
-        }
 
         private void cvsItem_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (sender is Canvas canvas && canvas.DataContext is itemEntry item)
+            if (sender is Canvas canvas)
             {
                 //Get neccessary controls
                 Button button = canvas.FindName("btnDelete") as Button;
+                Button button2 = canvas.FindName("btnEditNBT") as Button;
                 TextBlock textblock = canvas.FindName("tblIndicator") as TextBlock;
 
                 //Show the button and move the indicator accordingly
                 button.Visibility = Visibility.Visible;
-                Canvas.SetRight(textblock, 225);
+                button2.Visibility = Visibility.Visible;
+                Canvas.SetRight(textblock, 400);
             }
         }
 
         private void cvsItem_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (sender is Canvas canvas && canvas.DataContext is itemEntry item)
+            if (sender is Canvas canvas)
             {
                 //Get neccessary controls
                 Button button = canvas.FindName("btnDelete") as Button;
+                Button button2 = canvas.FindName("btnEditNBT") as Button;
                 TextBlock textblock = canvas.FindName("tblIndicator") as TextBlock;
 
                 //Hide the button and move the indicator accordingly
                 button.Visibility = Visibility.Hidden;
+                button2.Visibility = Visibility.Hidden;
                 Canvas.SetRight(textblock, 90);
             }
         }

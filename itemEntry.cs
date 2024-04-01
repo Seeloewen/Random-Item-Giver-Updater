@@ -15,13 +15,29 @@ namespace Random_Item_Giver_Updater
     public class itemEntry
     {
         //Item attributes
+        public List<string> itemStackComponent;
+        public List<string> itemBody;
         public string itemName { get; set; }
         public string itemNBT { get; set; }
         public string itemIndex { get; set; }
         public string newName;
-        public string newNBT;
-        public bool isModified = false;
-        public bool isDeleted = false;
+
+        public enum changeType
+        {
+            NameChanged,
+            FunctionBodyAdded,
+            ItemStackComponentBodyAdded,
+            ItemStackComponentBodyRemoved,
+            NBTBodyAdded,
+            NBTBodyRemoved,
+            NBTChanged,
+            Deleted
+        }
+        public List<changeType> changes = new List<changeType>();
+        public bool hasLegacyNBT = false;
+        public bool hasItemStackComponent = false;
+        public bool hasFunctionBody = false;
+
 
         //Canvas attributes
         public SolidColorBrush canvasBackColor { get; set; }
@@ -31,15 +47,32 @@ namespace Random_Item_Giver_Updater
 
         //-- Constructor --//
 
-        public itemEntry(string name, string nbt, int index)
+        public itemEntry(string name, string nbt, int index, bool hasFunctionBody, List<string> itemBody)
         {
-
             //Initialize variables
+            this.hasFunctionBody = hasFunctionBody;
+            this.itemBody = itemBody;
             itemName = name.TrimEnd('\r', '\n');
             itemNBT = nbt.TrimEnd('\r', '\n'); ;
             itemIndex = (index + 1).ToString();
             newName = itemName;
-            newNBT = itemNBT;
+            hasLegacyNBT = true;
+
+            //Set the backcolor
+            canvasBackColor = SetBackColor();
+        }
+
+        public itemEntry(string name, List<string> itemStackComponent, int index, bool hasFunctionBody, List<string> itemBody)
+        {
+            //Initialize variables
+            this.itemStackComponent = itemStackComponent;
+            this.hasFunctionBody = hasFunctionBody;
+            this.itemBody = itemBody;
+            itemName = name.TrimEnd('\r', '\n');
+            itemIndex = (index + 1).ToString();
+            newName = itemName;
+            hasItemStackComponent = true;
+
 
             //Set the backcolor
             canvasBackColor = SetBackColor();
@@ -56,22 +89,21 @@ namespace Random_Item_Giver_Updater
 
                 //Get the necessary controls
                 TextBlock textblock = canvas.FindName("tblIndicator") as TextBlock;
-                if (isModified == true && isDeleted == true)
+                if (IsModified() == true && IsDeleted() == true)
                 {
                     //Item deleted, show indicator
                     textblock.Visibility = Visibility.Visible;
                     textblock.Text = "X";
                     textblock.Foreground = new SolidColorBrush(Colors.Red);
                 }
-                else if (isModified == true && isDeleted == false)
+                else if (IsModified() == true && IsDeleted() == false)
                 {
                     //Item modified, show indicator
                     textblock.Visibility = Visibility.Visible;
                     textblock.Text = "#";
                     textblock.Foreground = new SolidColorBrush(Colors.LightBlue);
-
                 }
-                else if (isModified == false && isDeleted == false)
+                else if (IsModified() == false && IsDeleted() == false)
                 {
                     //No changes, hide indicator
                     textblock.Visibility = Visibility.Hidden;
@@ -82,7 +114,7 @@ namespace Random_Item_Giver_Updater
                     textblock.Visibility = Visibility.Hidden;
                 }
             }
-          
+
         }
 
         public SolidColorBrush SetBackColor()
@@ -95,6 +127,33 @@ namespace Random_Item_Giver_Updater
             else
             {
                 return new SolidColorBrush(Color.FromArgb(100, 90, 90, 90));
+            }
+        }
+
+        public bool IsModified()
+        {
+            //Check if the item is modified in any way
+            if (changes.Count != 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        public bool IsDeleted()
+        {
+            //Check if the item was deleted
+            if(changes.Contains(changeType.Deleted))
+            {
+                return true;
+            }
+            else
+            { 
+                return false;
             }
         }
     }
