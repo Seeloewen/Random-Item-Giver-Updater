@@ -23,6 +23,8 @@ using SeeloewenLib;
 using System.Collections.ObjectModel;
 using System.Windows.Media.Converters;
 using System.Reflection;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Random_Item_Giver_Updater
 {
@@ -30,7 +32,7 @@ namespace Random_Item_Giver_Updater
     public partial class MainWindow : Window
     {
         //Lists for items and loot tables
-        public ObservableCollection<itemEntry> itemList { get; set; } = new ObservableCollection<itemEntry>();
+        public ObservableCollection<ItemEntry> itemList { get; set; } = new ObservableCollection<ItemEntry>();
         private List<lootTableCategory> lootTableCategoryList = new List<lootTableCategory>();
         public List<lootTable> lootTableList = new List<lootTable>();
 
@@ -57,7 +59,6 @@ namespace Random_Item_Giver_Updater
         public bool calledNewLootTable;
         public string calledLootTableName;
         public string calledLootTablePath;
-
 
         //Windows
         public static wndAddItem wndAddItem;
@@ -151,7 +152,7 @@ namespace Random_Item_Giver_Updater
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            //tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.20 Dev";
+            tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.20 Dev";
             if ((!string.IsNullOrEmpty(tbDatapack.Text) && Directory.Exists(tbDatapack.Text)))
             {
                 //If the directory exists and is valid and no other datapack with unsaved changes is loaded, try to load the datapack
@@ -234,48 +235,48 @@ namespace Random_Item_Giver_Updater
             }
         }
 
-        private void bgwEditLootTable_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        private void bgwEditLootTable_DoWork(object sender, DoWorkEventArgs e)
         {
-            //Put start of loot table into new list
-            List<string> newFile = [.. lootTableStart];
-
-            //Make sure last construct does not have a comma
-            itemList[itemList.Count() - 1].itemBody[itemList[itemList.Count() - 1].itemBody.Count() - 1].Replace(",", "");
-
-            //Put each item entry into the new list
-            foreach (itemEntry item in itemList)
+            var entriesArray = new JArray();
+            foreach (ItemEntry item in itemList)
             {
-                //Check if the item wasn't deleted and add it to the loot table
-                if (!item.changes.Contains(itemEntry.changeType.Deleted))
+                try
                 {
-                    foreach (string str in item.itemBody)
+                    if(!item.IsDeleted())
                     {
-                        newFile.Add(str);
+                        JObject itemObject = JObject.Parse(item.itemBody);
+                        entriesArray.Add(itemObject);
                     }
                 }
-
-                //Report progress
-                bgwEditLootTable.ReportProgress(0, 100 / Convert.ToDouble(itemList.Count()));
-            }
-
-            //Don't forget the end, put that in as well
-            foreach (string str in lootTableEnd)
-            {
-                newFile.Add(str);
-            }
-
-            //Remove lines that only contain spaces from the file
-            List<string> newFileFinal = new List<string>();
-            foreach (string line in newFile)
-            {
-                if (!string.IsNullOrWhiteSpace(line))
+                catch (JsonException ex)
                 {
-                    newFileFinal.Add(line);
+                    Console.WriteLine($"Error: {ex.Message}");
                 }
             }
 
-            //Finally write the loot table to the file
-            File.WriteAllLines(currentLootTable, newFile);
+            JObject poolObject = new JObject();
+            if (true)
+            {
+                poolObject.Add("rolls", 1);
+            }
+            else //Will later be updated to include a proper check
+            {
+                JObject rollsObject = new JObject()
+                {
+                    { "min", 1 },
+                    { "max", 1 },
+                };
+                poolObject.Add(rollsObject);
+            }
+            poolObject.Add("entries", entriesArray);
+
+            JArray poolArray = new JArray();
+            poolArray.Add(poolObject);
+
+            JObject rootObject = new JObject();
+            rootObject.Add("pools", poolArray);
+
+            File.WriteAllText(currentLootTable, rootObject.ToString(Formatting.Indented));
         }
 
         private async void bgwEditLootTable_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -349,88 +350,16 @@ namespace Random_Item_Giver_Updater
 
             //Get list of content in file, remove all non-item lines so only items remain
             itemList.Clear();
-            string[] loadedItems = File.ReadAllLines(path);
-            List<string> items = new List<string>();
 
-            //Get Loot Table Start
-            lootTableStart = GetLootTableStart(loadedItems);
+            string fileContent = File.ReadAllText(path);
 
-            //Get Loot Table End
-            lootTableEnd = GetLootTableEnd(loadedItems);
+            JObject fileObject = JObject.Parse(fileContent);
+            JArray items = fileObject.SelectToken("pools[0].entries") as JArray;
 
-            items.Clear();
-            int index = 0;
-            foreach (string item in loadedItems)
+            for (int i = 0; i < items.Count; i++)
             {
-                List<string> itemStackComponent = new List<string>();
-                List<string> itemBody = new List<string>();
-                string itemName = "";
-                string itemNBT = "";
-                bool hasNBT = false;
-                bool hasFunctionBody;
-
-                if (item.Contains("\"name\":"))
-                {
-                    //Get the item name
-                    itemName = item.Replace("\"", "").Replace("name:", "").Replace(" ", "").Replace(",", ""); ;
-
-                    //Get entire item body
-                    if (GetItemBody(loadedItems, index) != null)
-                    {
-                        itemBody = GetItemBody(loadedItems, index);
-
-                        //Get if item has function body
-                        if (loadedItems[index + 1].Contains("\"functions\":"))
-                        {
-                            hasFunctionBody = true;
-                        }
-                        else
-                        {
-                            hasFunctionBody = false;
-                        }
-
-                        //Get Item Stack Components
-                        if (GetItemStackComponents(loadedItems, index) != null)
-                        {
-                            itemStackComponent = GetItemStackComponents(loadedItems, index);
-                        }
-
-                        //Get NBT tag
-                        if (GetNBT(loadedItems, index) != null)
-                        {
-                            hasNBT = true;
-                            itemNBT = GetNBT(loadedItems, index);
-                        }
-                        else
-                        {
-                            hasNBT = false;
-                        }
-
-                        //Add item to item list
-                        if (datapackUsesLegacyNBT == true)
-                        {
-                            if (hasNBT == true)
-                            {
-                                itemList.Add(new itemEntry(itemName, itemNBT, itemList.Count() + 1, hasFunctionBody, new List<string>(itemBody)));
-                            }
-                            else
-                            {
-                                itemList.Add(new itemEntry(itemName, "none", itemList.Count() + 1, hasFunctionBody, new List<string>(itemBody)));
-                            }
-                        }
-                        else
-                        {
-                            itemList.Add(new itemEntry(itemName, new List<string>(itemStackComponent), itemList.Count() + 1, hasFunctionBody, new List<string>(itemBody)));
-                        }
-
-                    }
-                    else
-                    {
-                        MessageBox.Show($"Fatal error: Could not get item body for item {itemName}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                }
-
-                index++;
+                ItemEntry entry = new ItemEntry(GetItemBody(fileContent, i), i);
+                itemList.Add(entry);
             }
 
             //Show 'loading' message
@@ -439,163 +368,15 @@ namespace Random_Item_Giver_Updater
             await Task.Delay(5); //Allows the UI to update and show the textblock
         }
 
-        public List<string> GetItemStackComponents(string[] file, int itemLine)
+        public string GetItemBody(string fileContent, int itemIndex)
         {
-            List<string> itemStackComponent = new List<string>();
-            int index = 1;
+            JObject jsonObject = JObject.Parse(fileContent);
 
-            while (true)
-            {
-                //Search for a component, return null if none is found
-                if (file[itemLine + index].Contains("\"components\":"))
-                {
-                    int openBrackets = 1;
-                    int index2 = 0;
+            var items = jsonObject.SelectToken("pools[0].entries") as JArray;
 
-                    //Go through the entire item stack component by checking when the last bracket was closed (aka the item stack component ends)
-                    while (openBrackets > 0)
-                    {
-                        if (file[itemLine + index + index2].Contains("{") || file[itemLine + index + index2].Contains("["))
-                        {
-                            openBrackets++;
-                        }
-                        else if (file[itemLine + index + index2].Contains("}") || file[itemLine + index + index2].Contains("]"))
-                        {
-                            openBrackets--;
-                        }
-
-                        //Add the line to the component
-                        itemStackComponent.Add(file[itemLine + index + index2]);
-                        index2++;
-                    }
-
-                    //Remove the first and last two parts as they are not part of component
-                    itemStackComponent.Remove(itemStackComponent[0]);
-                    itemStackComponent.Remove(itemStackComponent[itemStackComponent.Count - 1]);
-                    itemStackComponent.Remove(itemStackComponent[itemStackComponent.Count - 2]);
-                    return itemStackComponent;
-                }
-                else if (file[itemLine + index].Contains("\"name\":"))
-                {
-                    //Stop if it reaches the next item
-                    return null;
-                }
-                else if ((file[itemLine + index].Contains("]") && file[itemLine + index + 1].Contains("}") && file[itemLine + index + 2].Contains("]")))
-                {
-                    //Stop if it reaches the bottom of the file
-                    return null;
-                }
-                index++;
-            }
+            return items[itemIndex].ToString();
         }
 
-        public List<string> GetLootTableStart(string[] file)
-        {
-            List<string> lootTableStart = new List<string>();
-
-            //Get all lines that belong to the start of the loot table
-            foreach (string line in file)
-            {
-                lootTableStart.Add(line);
-                if (line.Contains("\"entries\":"))
-                {
-                    break;
-                }
-            }
-
-            return lootTableStart;
-        }
-
-        public List<string> GetLootTableEnd(string[] file)
-        {
-            List<string> lootTableEnd = new List<string>();
-
-            //Get all lines that belong to the end of the loot table
-            lootTableEnd.Add("      ]");
-            lootTableEnd.Add("    }");
-            lootTableEnd.Add("  ]");
-            lootTableEnd.Add("}");
-
-            return lootTableEnd;
-        }
-
-        public List<string> GetItemBody(string[] file, int itemLine)
-        {
-            //Get start line
-            int bodyStartLine = 0;
-            int indexStartLine = 0;
-            while (true)
-            {
-                if (file[itemLine - indexStartLine].Contains("{"))
-                {
-                    bodyStartLine = itemLine - indexStartLine;
-                    break;
-                }
-                else if (file[itemLine - indexStartLine].Contains("\"entries\":"))
-                {
-                    //Stop if it hits the top of the file
-                    break;
-                }
-                indexStartLine++;
-            }
-
-            if (bodyStartLine != 0)
-            {
-                List<string> itemBody = new List<string>();
-                int openBrackets = 0;
-                int indexItemBody = 0;
-
-                do
-                {
-                    //Go through each line and add it to the item body until all brackets are closed (aka the body ends)
-                    if (file[bodyStartLine + indexItemBody].Contains(" {") || file[bodyStartLine + indexItemBody].Contains(" ["))
-                    {
-                        openBrackets++;
-                    }
-                    else if (file[bodyStartLine + indexItemBody].Contains(" }") || file[bodyStartLine + indexItemBody].Contains(" ]"))
-                    {
-                        openBrackets--;
-                    }
-
-                    itemBody.Add(file[bodyStartLine + indexItemBody]);
-                    indexItemBody++;
-                }
-                while (openBrackets > 0);
-
-                return itemBody;
-
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public string GetNBT(string[] file, int itemLine)
-        {
-            int index = 1;
-            string nbt;
-            while (true)
-            {
-                if (file[itemLine + index].Contains("\"tag\":"))
-                {
-                    nbt = file[itemLine + index].Replace(" ", "").Replace("\"tag\":", "");
-                    nbt = nbt.Substring(1, nbt.Length - 2);
-                    return nbt;
-                }
-                else if (file[itemLine + index].Contains("\"name\":"))
-                {
-                    //Stop if it reaches the next item
-                    return null;
-                }
-                else if ((file[itemLine + index].Contains(" ]") && file[itemLine + index + 1].Contains(" }") && file[itemLine + index + 2].Contains(" ]")))
-                {
-                    //Stop if it reaches the bottom of the file
-                    return null;
-                }
-                index++;
-            }
-        }
 
         private void GetLootTables(string path)
         {
@@ -784,7 +565,7 @@ namespace Random_Item_Giver_Updater
                 bool isModified = false;
 
                 //Check every item in the loot table
-                foreach (itemEntry item in itemList)
+                foreach (ItemEntry item in itemList)
                 {
                     if (item.IsModified() == true)
                     {
@@ -975,18 +756,18 @@ namespace Random_Item_Giver_Updater
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is itemEntry item)
+            if (sender is Button button && button.DataContext is ItemEntry item)
             {
                 if (item.IsDeleted() == false) //Set state to deleted
                 {
-                    item.changes.Add(itemEntry.changeType.Deleted);
+                    item.changes.Add(ItemEntry.changeType.Deleted);
                     button.Content = "Undo deletion";
                     item.SetIndicatorState(sender);
                 }
                 else if (item.IsDeleted() == true) //If the item has been deleted, set state to undeleted
                 {
                     //Check if the item has been modified in some other way before setting the modified state to false
-                    item.changes.Remove(itemEntry.changeType.Deleted);
+                    item.changes.Remove(ItemEntry.changeType.Deleted);
                     button.Content = "Delete";
                     item.SetIndicatorState(sender);
                 }
@@ -995,7 +776,7 @@ namespace Random_Item_Giver_Updater
 
         private void btnSaveItemName_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is itemEntry item)
+            if (sender is Button button && button.DataContext is ItemEntry item)
             {
                 //Get the parent canvas
                 Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(button);
@@ -1008,26 +789,15 @@ namespace Random_Item_Giver_Updater
                 textbox.Visibility = Visibility.Hidden;
                 button.Visibility = Visibility.Hidden;
                 textblock.Visibility = Visibility.Visible;
-                item.newName = textbox.Text;
-                textblock.Text = item.newName;
 
-                //Check if the item name has been changed and change modified state
-                if (item.newName != item.itemName)
-                {
-                    item.changes.Add(itemEntry.changeType.NameChanged);
-                    item.SetIndicatorState(sender);
-                }
-                else
-                {
-                    item.changes.Remove(itemEntry.changeType.NameChanged);
-                    item.SetIndicatorState(sender);
-                }
+                item.SetName(textbox.Text, sender);
+                textblock.Text = textbox.Text;
             }
         }
 
         private void btnEditNBT_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is itemEntry item)
+            if (sender is Button button && button.DataContext is ItemEntry item)
             {
                 wndNBTEditor = new wndNBTEditor(item);
                 wndNBTEditor.ShowDialog();

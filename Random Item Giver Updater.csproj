@@ -39,6 +39,9 @@
     <StartupObject>Random_Item_Giver_Updater.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -73,6 +76,9 @@
     <Compile Include="wndDuplicateFinder.xaml.cs">
       <DependentUpon>wndDuplicateFinder.xaml</DependentUpon>
     </Compile>
+    <Compile Include="wndNBTEditor.xaml.cs">
+      <DependentUpon>wndNBTEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="wndRemoveItems.xaml.cs">
       <DependentUpon>wndRemoveItems.xaml</DependentUpon>
     </Compile>
@@ -103,12 +109,11 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="addItemEntry.cs" />
-    <Compile Include="addToLootTableEntry.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="itemEntry.cs" />
+    <Compile Include="ItemEntry.cs" />
     <Compile Include="lootTable.cs" />
     <Compile Include="lootTableCategory.cs" />
     <Compile Include="wndAddItem.xaml.cs">
@@ -118,6 +123,10 @@
       <DependentUpon>wndMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="wndNBTEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="wndRemoveItems.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -149,6 +158,7 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

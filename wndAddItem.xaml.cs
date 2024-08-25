@@ -21,6 +21,8 @@ using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using SeeloewenLib;
 using System.Diagnostics;
+using Newtonsoft.Json.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Header;
 
 namespace Random_Item_Giver_Updater
 {
@@ -30,7 +32,6 @@ namespace Random_Item_Giver_Updater
         public bool isOpen;
         public int currentPage = 1;
         public ObservableCollection<addItemEntry> itemEntries { get; set; } = new ObservableCollection<addItemEntry>();
-        public ObservableCollection<addToLootTableEntry> lootTableEntries { get; set; } = new ObservableCollection<addToLootTableEntry>();
         double addItemsWorkerProgress;
         int addItemsWorkerAddedItems;
         int addItemsWorkerAddedItemsLootTables;
@@ -170,7 +171,7 @@ namespace Random_Item_Giver_Updater
         {
             foreach (addItemEntry addItemEntry in itemEntries)
             {
-                if(addItemEntry.lootTableEntry.allLootTablesChecked == false && string.IsNullOrEmpty(addItemEntry.lootTableEntry.lootTableWhiteList))
+                if (addItemEntry.allLootTablesChecked == false && string.IsNullOrEmpty(addItemEntry.lootTableWhiteList))
                 {
                     return false;
                 }
@@ -187,6 +188,7 @@ namespace Random_Item_Giver_Updater
             //Create an entry for every item
             itemEntries.Clear();
             int index = 0;
+
             if (cbIncludesPrefixes.IsChecked == true)
             {
                 //Split the item into prefix and item name if checkbox for prefixes is checked
@@ -220,13 +222,7 @@ namespace Random_Item_Giver_Updater
 
         private void codePage4()
         {
-            //Add a loot table entry to every item
-            lootTableEntries.Clear();
-            foreach (addItemEntry entry in itemEntries)
-            {
-                entry.lootTableEntry = new addToLootTableEntry(string.Format("{0}:{1}", entry.itemPrefix, entry.itemName), entry.itemIndex);
-                lootTableEntries.Add(entry.lootTableEntry);
-            }
+
         }
 
         private void codePage5()
@@ -252,413 +248,40 @@ namespace Random_Item_Giver_Updater
 
         public void AddItems(string lootTable)
         {
-            //Load the file
-            string[] lootTableFile = File.ReadAllLines(lootTable);
-            List<string> fileEnd = new List<string>();
-            bool hasNbtEntry = false;
+            //Get the array of items
+            string lootTableFile = File.ReadAllText(lootTable);
+            JObject fileObject = JObject.Parse(lootTableFile);
+            JArray items = fileObject.SelectToken("pools[0].entries") as JArray;
 
-            //Remove the last 4 lines to allow adding new items by copying the array into a new array that is 5 lines shorter
-            string[] fileWithoutEnd = new string[lootTableFile.Length - 4];
-            Array.Copy(lootTableFile, fileWithoutEnd, lootTableFile.Length - 4);
+            //Create a template item entry and strip the NBT and Components, and possibly the functions part
+            string templateString = items[items.Count - 1].ToString();
+            ItemEntry template = new ItemEntry(templateString, 0);
+            template.RemoveNbtOrComponentBody();
 
-            //Build the file end construct to insert later
-            for (int i = 0; i < 4; i++)
+            foreach (addItemEntry entry in itemEntries)
             {
-                fileEnd.Insert(0, lootTableFile[lootTableFile.Length - i - 1]);
+                if (entry.lootTableWhiteList.Contains(lootTable) || entry.allLootTablesChecked)
+                {
+                    //Create the new item
+                    ItemEntry newItem = new ItemEntry(template.itemBody, 0);
+                    newItem.SetName(entry.itemName, null);
+
+                    if (entry.HasLegacyNBT())
+                    {
+                        newItem.SetNBT(entry.itemNBT);
+                    }
+
+                    if (entry.HasItemStackComponent())
+                    {
+                        newItem.SetNBT(entry.itemStackComponent);
+                    }
+
+                    items.Add(JObject.Parse(newItem.itemBody));
+                }           
             }
 
-            //Add a comma at the last bracket
-            fileWithoutEnd[fileWithoutEnd.Length - 1] = fileWithoutEnd[fileWithoutEnd.Length - 1].Replace("}", "},");
-
-            //Write to file
-            File.WriteAllLines(lootTable, fileWithoutEnd);
-
-            //Copy the last part item construct and paste it at the bottom
-            List<string> itemConstruct = new List<string>();
-            lootTableFile = File.ReadAllLines(lootTable);
-
-            //Remove the comma at the end to avoid corruption
-            lootTableFile[lootTableFile.Length - 1] = lootTableFile[lootTableFile.Length - 1].Replace("},", "}");
-
-            //Start at the end and go through each line until it hits another item
-            bool doLoop = true;
-            int index = 0;
-            while (doLoop == true)
-            {
-                if (!(lootTableFile[lootTableFile.Length - index - 1].Contains("},")))
-                {
-                    //If it contains the item name, replace
-                    if (lootTableFile[lootTableFile.Length - index - 1].Contains("\"name\"") && lootTableFile[lootTableFile.Length - index - 2].Contains("item\""))
-                    {
-                        lootTableFile[lootTableFile.Length - index - 1] = lootTableFile[lootTableFile.Length - index - 1].Replace(GetItemName(lootTableFile[lootTableFile.Length - index - 1]), "{!REPLACE_NAME!}");
-                    }
-                    //If it contains the item NBT, replace
-                    else if (lootTableFile[lootTableFile.Length - index - 1].Contains("\"tag\""))
-                    {
-                        hasNbtEntry = true;
-                        lootTableFile[lootTableFile.Length - index - 1] = lootTableFile[lootTableFile.Length - index - 1].Replace(GetItemNBT(lootTableFile[lootTableFile.Length - index - 1]), "{!REPLACE_NBT!}");
-                    }
-
-                    //Add line to item construct and continue
-                    itemConstruct.Insert(0, lootTableFile[lootTableFile.Length - index - 1]);
-                    index++;
-                }
-                else
-                {
-                    if (lootTableFile[lootTableFile.Length - index - 2].Contains("\"name\": \"RandomItemGiver\"") || lootTableFile[lootTableFile.Length - index - 2].Contains("\"name\": \"out\"") || lootTableFile[lootTableFile.Length - index - 2].Contains("\"count\":") || lootTableFile[lootTableFile.Length - index - 2].Contains("\"tag\":") || lootTableFile[lootTableFile.Length - index - 2].Contains("}"))
-                    {
-                        //If it contains the item name, replace
-                        if (lootTableFile[lootTableFile.Length - index - 1].Contains("\"name\"") && lootTableFile[lootTableFile.Length - index - 2].Contains("item\""))
-                        {
-                            lootTableFile[lootTableFile.Length - index - 1] = lootTableFile[lootTableFile.Length - index - 1].Replace(GetItemName(lootTableFile[lootTableFile.Length - index - 1]), "{!REPLACE_NAME!}");
-                        }
-                        //If it contains the item NBT, replace
-                        else if (lootTableFile[lootTableFile.Length - index - 1].Contains("\"tag\""))
-                        {
-                            hasNbtEntry = true;
-                            lootTableFile[lootTableFile.Length - index - 1] = lootTableFile[lootTableFile.Length - index - 1].Replace(GetItemNBT(lootTableFile[lootTableFile.Length - index - 1]), "{!REPLACE_NBT!}");
-                        }
-
-                        //If it has reached a bracket with comma, but not one that indicates another item, add line continue
-                        itemConstruct.Insert(0, lootTableFile[lootTableFile.Length - index - 1]);
-                        index++;
-                    }
-                    else
-                    {
-                        //Stop if it has reached another item
-                        doLoop = false;
-                    }
-                }
-            }
-            //Add the comma back
-            itemConstruct[itemConstruct.Count - 1] = itemConstruct[itemConstruct.Count - 1] + ",";
-
-            //Add all the items to the loot table
-            foreach (addItemEntry item in itemEntries)
-            {
-                //Only add the item to the loot table if selected
-                if (item.lootTableEntry.allLootTablesChecked == true)
-                {
-                    if (lootTable.Contains("main") || lootTable.Contains("special") || lootTable.Contains("normal"))
-                    {
-                        List<string> temporaryConstruct = new List<string>();
-                        foreach (string line in itemConstruct)
-                        {
-                            //Replace the name placeholder with the actual prefix and name and add to a temporary construct
-                            if (line.Contains("{!REPLACE_NAME!}"))
-                            {
-                                temporaryConstruct.Add(line.Replace("{!REPLACE_NAME!}", string.Format("{0}:{1}", item.itemPrefix, item.itemName)));
-                            }
-
-                            //Just add to the temporary construct
-                            else
-                            {
-                                temporaryConstruct.Add(line);
-                            }
-                        }
-
-                        //If an NBT tag is given
-                        List<string> temporaryFinalConstruct = new List<string>();
-                        if (!string.IsNullOrEmpty(item.itemNBT))
-                        {
-                            //Add nbt entry to construct if a NBT tag is given
-                            if (hasNbtEntry == false)
-                            {
-                                temporaryConstruct = AddNbtEntry(temporaryConstruct);
-                            }
-
-                            foreach (string line in temporaryConstruct)
-                            {
-                                //Replace the NBT placeholder with the actual NBT tag and add to a temporary construct
-                                if (line.Contains("{!REPLACE_NBT!}"))
-                                {
-                                    temporaryFinalConstruct.Add(line.Replace("{!REPLACE_NBT!}", item.itemNBT));
-                                }
-                                else
-                                {
-                                    temporaryFinalConstruct.Add(line);
-                                }
-                            }
-                        }
-                        else
-                        {
-
-                            //Remove nbt entry construct if there is one even though the item has no NBT
-                            if (hasNbtEntry == true)
-                            {
-                                temporaryConstruct = RemoveNbtEntry(temporaryConstruct);
-                            }
-
-                            //Continue without NBT
-                            temporaryFinalConstruct = temporaryConstruct;
-                        }
-
-                        //Write the construct with the item prefix, name and nbt to the file
-                        File.AppendAllText(lootTable, string.Join(Environment.NewLine, temporaryFinalConstruct) + "\n");
-                    }
-                }
-                else if (item.lootTableEntry.allLootTablesChecked == false && item.lootTableEntry.lootTableWhiteList.Contains(lootTable))
-                {
-                    List<string> temporaryConstruct = new List<string>();
-                    foreach (string line in itemConstruct)
-                    {
-                        //Replace the name placeholder with the actual prefix and name and add to a temporary construct
-                        if (line.Contains("{!REPLACE_NAME!}"))
-                        {
-                            temporaryConstruct.Add(line.Replace("{!REPLACE_NAME!}", string.Format("{0}:{1}", item.itemPrefix, item.itemName)));
-                        }
-
-                        //Just add to the temporary construct
-                        else
-                        {
-                            temporaryConstruct.Add(line);
-                        }
-                    }
-
-                    //If an NBT tag is given
-                    List<string> temporaryFinalConstruct = new List<string>();
-                    if (!string.IsNullOrEmpty(item.itemNBT))
-                    {
-                        //Add nbt entry to construct if a NBT tag is given
-                        if (hasNbtEntry == false)
-                        {
-                            temporaryConstruct = AddNbtEntry(temporaryConstruct);
-                        }
-
-                        foreach (string line in temporaryConstruct)
-                        {
-                            //Replace the NBT placeholder with the actual NBT tag and add to a temporary construct
-                            if (line.Contains("{!REPLACE_NBT!}"))
-                            {
-                                temporaryFinalConstruct.Add(line.Replace("{!REPLACE_NBT!}", item.itemNBT));
-                            }
-                            else
-                            {
-                                temporaryFinalConstruct.Add(line);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //Remove nbt entry construct if there is one even though the item has no NBT
-                        if (hasNbtEntry == true)
-                        {
-                            temporaryConstruct = RemoveNbtEntry(temporaryConstruct);
-                        }
-
-                        //Continue without NBT
-                        temporaryFinalConstruct = temporaryConstruct;
-                    }
-
-                    //Write the construct with the item prefix, name and nbt to the file
-                    File.AppendAllText(lootTable, string.Join(Environment.NewLine, temporaryFinalConstruct) + "\n");
-
-                }
-
-                //Report worker progress
-                addItemsWorkerProgress = addItemsWorkerProgress + (100 / (Convert.ToDouble(itemEntries.Count * wndMain.lootTableList.Count)));
-                addItemsWorkerAddedItems++;
-                bgwAddItems.ReportProgress(addItemsWorkerAddedItems, addItemsWorkerProgress);
-
-            }
-            //Remove the comma at the end to avoid corruption
-            lootTableFile = File.ReadAllLines(lootTable);
-            lootTableFile[lootTableFile.Length - 1] = lootTableFile[lootTableFile.Length - 1].Replace("},", "}");
-            File.WriteAllLines(lootTable, lootTableFile);
-
-            //Write the end construct to the file
-            File.AppendAllText(lootTable, string.Join(Environment.NewLine, fileEnd));
-        }
-
-        public string GetItemName(string line)
-        {
-            //Remove strings to only return item name
-            line = line.Replace("\"name\": ", "");
-            line = line.Replace(" ", "");
-            line = line.Replace("\"", "");
-            line = line.Replace(",", "");
-            return line;
-        }
-
-        public string GetItemNBT(string line)
-        {
-            //Remove strings to only return item NBT
-            line = line.Replace("\"tag\": ", "");
-            line = line.Replace(" ", "");
-            line = line.Substring(1, line.Length - 2);
-            return line;
-        }
-
-        public List<string> AddNbtEntry(List<string> construct)
-        {
-            //Check if "functions" entry exists
-            bool functionsExists = false;
-            foreach (string line in construct)
-            {
-                if (line.Contains("\"functions\": ["))
-                {
-                    functionsExists = true;
-                }
-            }
-
-            //If "functions" entry already exists
-            if (functionsExists == true)
-            {
-                construct[construct.Count - 3] = construct[construct.Count - 3].Replace("}", "},");
-                construct.Insert(construct.Count - 2, "                        {");
-                construct.Insert(construct.Count - 2, "                            \"function\": \"set_nbt\",");
-                construct.Insert(construct.Count - 2, "                            \"tag\": \"{!REPLACE_NBT!}\"");
-                construct.Insert(construct.Count - 2, "                        }");
-                return construct;
-            }
-            else //If it doesn't exist
-            {
-                construct[construct.Count - 2] = construct[construct.Count - 2] + ",";
-                construct.Insert(construct.Count - 1, "                    \"functions\": [");
-                construct.Insert(construct.Count - 1, "                        {");
-                construct.Insert(construct.Count - 1, "                            \"function\": \"set_nbt\",");
-                construct.Insert(construct.Count - 1, "                            \"tag\": \"{!REPLACE_NBT!}\"");
-                construct.Insert(construct.Count - 1, "                        }");
-                construct.Insert(construct.Count - 1, "                    ]");
-                return construct;
-            }
-        }
-
-        public List<string> RemoveNbtEntry(List<string> construct)
-        {
-            //Create neccessary temporary variables
-            List<string> tempConstruct = new List<string>();
-            List<string> endConstruct = new List<string>();
-            List<string> endConstruct2 = new List<string>();
-            bool hasCount = false;
-            bool hasCountSpecial = false;
-            tempConstruct = construct;
-
-            for (int i = construct.Count - 1; i >= 0; i--)
-            {
-                //Check if the loot table has a count, and if the count is special
-                if (construct[i].Contains("\"target\":"))
-                {
-                    hasCountSpecial = true;
-                }
-                else if (construct[i].Contains("\"count\":"))
-                {
-                    hasCount = true;
-                    //If it's not special, add the "count" section already to the end construct
-                    if (hasCountSpecial == false)
-                    {
-                        endConstruct.Add(construct[i - 2]);
-                        endConstruct.Add(construct[i - 1]);
-                        endConstruct.Add(construct[i]);
-                    }
-                    break;
-                }
-            }
-
-            if (hasCount == true && hasCountSpecial == false)
-            {
-                //If it has count but isn't special add all brackets (end part) to the a temporary end construct 2 until it hits a count or tag part
-                for (int i = construct.Count - 1; i >= 0; i--)
-                {
-                    if (construct[i].Contains("\"count\":") || construct[i].Contains("\"tag\":"))
-                    {
-                        break;
-                    }
-                    else if (construct[i].Contains("}") || construct[i].Contains("]"))
-                    {
-                        endConstruct2.Add(construct[i]);
-                    }
-                }
-
-                //Reverse the code and add it to the actual end construct
-                endConstruct2.Reverse();
-                foreach (string entry in endConstruct2)
-                {
-                    endConstruct.Add(entry);
-                }
-
-            }
-            else if (hasCount == true && hasCountSpecial == true)
-            {
-                //If the loot table has special count add all the lines at the end to the temporary end construct 2 until it hits the count part
-                for (int i = construct.Count - 1; i >= 0; i--)
-                {
-                    //If it hits the count section add that and stop
-                    if (construct[i].Contains("\"count\":"))
-                    {
-                        endConstruct2.Add(construct[i]);
-                        endConstruct2.Add(construct[i - 1]);
-                        endConstruct2.Add(construct[i - 2]);
-                        break;
-                    }
-                    else
-                    {
-                        endConstruct2.Add(construct[i]);
-                        //If it hits a NBT section skip that
-                        if (construct[i - 1].Contains("\"tag\":"))
-                        {
-                            i = i - 4;
-                        }
-                    }
-                }
-
-                //Reverse the code and add it to the actual end construct
-                endConstruct2.Reverse();
-                foreach (string entry in endConstruct2)
-                {
-                    endConstruct.Add(entry);
-                }
-            }
-            else if (hasCount == false)
-            {
-                //If it hasn't got any count, remove the comma in the name part as it is no longer needed and would cause errors
-                for (int i = construct.Count - 1; i >= 0; i--)
-                {
-                    if (construct[i].Contains("\"name\":"))
-                    {
-                        tempConstruct[i] = tempConstruct[i].Replace(",", "");
-                    }
-                }
-
-                //Simply add the last character (most likely a comma) to the end construct
-                endConstruct.Add(construct.Last());
-            }
-
-            for (int i = construct.Count - 1; i >= 0; i--)
-            {
-                //If it hasn't got a count, remove everything up until the name part
-                if (hasCount == false)
-                {
-                    if (!tempConstruct[i].Contains("\"name\""))
-                    {
-                        tempConstruct.Remove(tempConstruct[i]);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    //If it has got a count, remove everything up until the beginning of the function part
-                    if (!tempConstruct[i].Contains("\"functions\""))
-                    {
-                        tempConstruct.Remove(tempConstruct[i]);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-
-            //Add the end construct to the full construct and return that
-            foreach (string entry in endConstruct)
-            {
-                tempConstruct.Add(entry);
-            }
-            return tempConstruct;
-        }
+            File.WriteAllText(lootTable, fileObject.ToString());
+        }            
 
         private T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
         {
@@ -719,7 +342,7 @@ namespace Random_Item_Giver_Updater
                 //Get the canvas which the button is in
                 Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(button);
 
-                if (canvas.DataContext is addToLootTableEntry item)
+                if (canvas.DataContext is addItemEntry item)
                 {
                     //Open loot table selection window
                     wndSelectLootTables = new wndSelectLootTables(item.lootTableCheckList, "Select the Loot Tables, that you want to add the item to.") { Owner = Application.Current.MainWindow };
@@ -745,7 +368,7 @@ namespace Random_Item_Giver_Updater
                 //Get the canvas which the radiobutton is in
                 Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(radiobutton);
 
-                if (canvas.DataContext is addToLootTableEntry item)
+                if (canvas.DataContext is addItemEntry item)
                 {
                     //Disable edit button
                     Button button = canvas.FindName("btnEditCertainLootTables") as Button;
@@ -764,7 +387,7 @@ namespace Random_Item_Giver_Updater
                 //Get the canvas which the radiobutton is in
                 Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(radiobutton);
 
-                if (canvas.DataContext is addToLootTableEntry item)
+                if (canvas.DataContext is addItemEntry item)
                 {
                     //Enable edit button
                     Button button = canvas.FindName("btnEditCertainLootTables") as Button;
@@ -812,10 +435,13 @@ namespace Random_Item_Giver_Updater
                 if (textbox.DataContext is addItemEntry item)
                 {
 
+                    //TODO: Replace with NBT/Item Stack Components editor
+
+
                     //Set checkstate on variable that gets accessed by the item adding thread
                     item.itemNBT = textbox.Text;
                 }
-            }
+                }
         }
     }
 }

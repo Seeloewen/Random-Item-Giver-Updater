@@ -18,7 +18,7 @@
         <DataTemplate x:Key="LootTableTemplate">
             <Canvas x:Name="cvsItem" Height="40" Background="{Binding canvasBackColor}" >
                 <TextBlock x:Name="tbItemName" Width="140" Height="24" FontSize="15" Foreground="White" Canvas.Top="6" Canvas.Left="20" Text="{Binding itemName}"/>
-                <RadioButton x:Name="rbtnAllLootTables" Width="255" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="175" Padding="5,-3.5,0,0" Content="All normal loot tables" IsChecked="True" Checked="rbtnAllLootTables_Checked"/>
+                <RadioButton x:Name="rbtnAllLootTables" Width="255" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="175" Padding="5,-3.5,0,0" Content="All loot tables" IsChecked="True" Checked="rbtnAllLootTables_Checked"/>
                 <RadioButton x:Name="rbtnCertainLootTables" Width="255" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="350" Content="Only certain loot tables:" Padding="5,-3.5,0,0" Checked="rbtnCertainLootTables_Checked"/>
                 <Button x:Name="btnEditCertainLootTables" Height="25" Width="150" Content="Select loot tables" FontSize="15" Canvas.Top="6" Canvas.Left="550" Click="btnEditCertainLootTables_Click" IsEnabled="False"/>
             </Canvas>
@@ -67,7 +67,7 @@
         <GroupBox x:Name="gbStep4" Header="Step 4: Select Loot Tables" Margin="21,54,0,0" Height="580" Width="742" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16" Foreground="White" UseLayoutRounding="True" Visibility="Hidden">
             <Canvas x:Name="cvsStep4" UseLayoutRounding="True">
                 <TextBlock x:Name="tblSelectLootTables" Canvas.Left="15" TextWrapping="Wrap" Text="Now it's time to select the loot tables you want to add your items too. You can either add it to all normal loot tables or only certain ones" Canvas.Top="12" HorizontalAlignment="Left" VerticalAlignment="Center" Width="703"/>
-                <ListBox x:Name="lbItemsLootTables" ItemsSource="{Binding lootTableEntries}" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="448" Canvas.Top="107" Width="734" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.Left="-2">
+                <ListBox x:Name="lbItemsLootTables" ItemsSource="{Binding itemEntries}" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="448" Canvas.Top="107" Width="734" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.Left="-2">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel/>

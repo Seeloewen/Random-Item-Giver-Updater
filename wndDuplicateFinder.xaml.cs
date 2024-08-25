@@ -15,6 +15,9 @@ using System.IO;
 using SeeloewenLib;
 using System.Runtime.Remoting.Messaging;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json.Linq;
+using System.Windows.Forms.VisualStyles;
+using System.Diagnostics.Eventing.Reader;
 
 namespace Random_Item_Giver_Updater
 {
@@ -52,9 +55,9 @@ namespace Random_Item_Giver_Updater
         {
             //Add the duplicates to a string list
             List<string> duplicates = new List<string>();
-            foreach(duplicateEntry duplicate in duplicateEntries)
+            foreach (duplicateEntry duplicate in duplicateEntries)
             {
-               duplicates.Add(duplicate.itemName);
+                duplicates.Add(duplicate.itemName);
             }
 
             //Open remove item window
@@ -129,64 +132,33 @@ namespace Random_Item_Giver_Updater
 
         private void CheckLootTable(string path, string lootTable)
         {
-            //Load the loot table so it can go through each item
-            //Get list of content in file, remove all non-item lines so only items remain
-            string[] loadedItems = File.ReadAllLines(path);
+            //Get all the item objects in a list
+            JObject fileObject = JObject.Parse(File.ReadAllText(path));
+            JArray itemArray = fileObject.SelectToken("pools[0].entries") as JArray;
             List<string> items = new List<string>();
 
-            items.Clear();
-            foreach (string item in loadedItems)
+            foreach (JObject item in itemArray)
             {
-                if (item.Contains("\"tag\""))
+                string nbt = GetNBT(item);
+                string component = GetItemStackComponents(item);
+
+                //Add a new entry to the list depending on whether it has nbt or component or not
+                if (nbt != null)
                 {
-                    string itemFiltered;
-                    itemFiltered = item.Replace(" ", "");
-                    itemFiltered = itemFiltered.Replace("\"tag\":", "");
-                    itemFiltered = itemFiltered.Substring(1, itemFiltered.Length - 2);
-                    items.Add(itemFiltered + "{isNBT}"); //Add extra NBT marker to let software know it's NBT
+                    items.Add($"{item["name"].ToString()};{nbt}");
                 }
-                else if (!item.Contains("\"tag\"") && !item.Contains("{") && !item.Contains("}") && !item.Contains("[") && !item.Contains("]") && !item.Contains("\"rolls\"") && !item.Contains("\"type\"") && !item.Contains("\"function\"") && item.Contains("\"") && !item.Contains("\"weight\"") && !item.Contains("\"count\"") && !item.Contains("\"min\": 1") && !item.Contains("\"max\": 64")&& !item.Contains("\"RandomItemGiver\"") && !item.Contains("\"out\"") && !item.Contains("\"score\""))
+                else if (component != null)
                 {
-                    string itemFiltered;
-                    itemFiltered = item.Replace("\"", "");
-                    itemFiltered = itemFiltered.Replace("name:", "");
-                    itemFiltered = itemFiltered.Replace(" ", "");
-                    itemFiltered = itemFiltered.Replace("tag:", "");
-                    itemFiltered = itemFiltered.Replace(",", "");
-                    items.Add(itemFiltered);
+                    items.Add($"{item["name"].ToString()};{component}");
                 }
-            }
-            List<string> finalItemList = new List<string>();
-
-            //Check for each item if it has NBT and add it to the string
-            for (int i = 0; i < items.Count; i++)
-            {
-                if (!items[i].Contains("{isNBT}"))
+                else
                 {
-                    if (i < items.Count - 1)
-                    {
-
-                        if (items[i + 1].Contains("{"))
-                        {
-                            finalItemList.Add(string.Format("{0} (NBT: {1})", items[i], items[i + 1].Replace("{isNBT}", "")));
-                        }
-
-                        if (!items[i + 1].Contains("{"))
-                        {
-                            finalItemList.Add(string.Format("{0}", items[i]));
-                        }
-                    }
-                    else
-                    {
-                        {
-                            finalItemList.Add(string.Format("{0}", items[i]));
-                        }
-                    }
+                    items.Add($"{item["name"].ToString()}");
                 }
             }
 
             //Filter the duplicates from the full item list
-            var duplicates = finalItemList
+            var duplicates = items
                 .GroupBy(i => i)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key);
@@ -196,7 +168,7 @@ namespace Random_Item_Giver_Updater
             {
                 bool wasAdded = false;
 
-                //Go through every item in the duplicate list
+                //Go through every item in the existing duplicate entries
                 foreach (duplicateEntry duplicate in duplicateEntries)
                 {
                     //If the item already exists in the duplicate list, update it and stop searching
@@ -215,7 +187,7 @@ namespace Random_Item_Giver_Updater
                     duplicateIndex++;
                     duplicateEntries.Add(new duplicateEntry(item, lootTable, duplicateIndex));
                 }
-            }
+            }       
         }
 
         private void CreateWizard()
@@ -249,6 +221,44 @@ namespace Random_Item_Giver_Updater
             tblNoDuplicatesFound.FontSize = 24;
             tblNoDuplicatesFound.Visibility = Visibility.Hidden;
             cvsStep2.Children.Add(tblNoDuplicatesFound);
+        }
+
+        public string GetItemStackComponents(JObject itemObject)
+        {
+            JArray functionsArray = itemObject["functions"] as JArray;
+
+            if (functionsArray != null)
+            {
+                foreach (JToken function in functionsArray)
+                {
+                    JToken components = function["components"];
+                    if (components != null)
+                    {
+                        return components.ToString();
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public string GetNBT(JObject itemObject)
+        {
+            JArray functions = itemObject["functions"] as JArray;
+
+            if (functions != null)
+            {
+                foreach (JToken function in functions)
+                {
+                    JToken tag = function["tag"];
+                    if (tag != null)
+                    {
+                        return tag.ToString();
+                    }
+                }
+            }
+
+            return null;
         }
 
         private bool pageTwoRequirements()

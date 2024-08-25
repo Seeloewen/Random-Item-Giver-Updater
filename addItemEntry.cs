@@ -13,11 +13,19 @@ namespace Random_Item_Giver_Updater
     public class addItemEntry
     {
         //Attributes
+        public MainWindow wndMain = (MainWindow)Application.Current.MainWindow; //TODO: Use another way to get mainwindow
+
         public string itemName { get; set; }
         public int itemIndex { get; set; }
         public string itemNBT { get; set; }
         public string itemPrefix { get; set; }
-        public addToLootTableEntry lootTableEntry;
+
+        public string itemStackComponent;
+
+        public List<lootTable> lootTableCheckList = new List<lootTable>();
+        public string lootTableWhiteList = "";
+        public bool allLootTablesChecked = true;
+
 
         //Canvas attributes
         public SolidColorBrush canvasBackColor { get; set; }
@@ -31,8 +39,23 @@ namespace Random_Item_Giver_Updater
             itemIndex = index;
             itemPrefix = prefix;
 
+            //Set loot table checklist
+            foreach (lootTable lootTable in wndMain.lootTableList)
+            {
+                lootTableCheckList.Add(new lootTable(lootTable.lootTableName, lootTable.lootTableType, lootTable.lootTablePath));
+            }
+
             //Set the backcolor
             canvasBackColor = SetBackColor();
+        }
+
+        public bool HasLegacyNBT()
+        {
+            return !string.IsNullOrEmpty(itemNBT);
+        }
+        public bool HasItemStackComponent()
+        {
+            return !string.IsNullOrEmpty(itemStackComponent);
         }
 
         public SolidColorBrush SetBackColor()

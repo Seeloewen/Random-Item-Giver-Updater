@@ -9,7 +9,7 @@
     <Window.Resources>
         <DataTemplate x:Key="ItemTemplate">
             <Canvas x:Name="cvsItem" Height="40" Background="Black" >
-                <TextBlock x:Name="tblItemName" Width="155" Height="24" FontSize="15" Foreground="White" Canvas.Top="6" Canvas.Left="15" Text="{Binding fullItemName}" MouseDown="tblItemName_MouseDown"/>
+                <TextBlock x:Name="tblItemName" Width="155" Height="24" FontSize="15" Foreground="White" Canvas.Top="6" Canvas.Left="15" Text="{Binding itemName}" MouseDown="tblItemName_MouseDown"/>
                 <TextBlock x:Name="tblLootTables" Width="300" Height="24" FontSize="15" Foreground="White" Canvas.Top="6" Canvas.Left="200" Text="{Binding lootTablesString}" MouseDown="tblLootTables_MouseDown"/>
                 <Button x:Name="btnEditLootTables" Height="25" Width="150" Content="Select loot tables" FontSize="15" Canvas.Top="6" Canvas.Left="525" IsEnabled="True" Click="btnEditLootTables_Click"/>
                 <Button x:Name="btnRemove" Height="25" Width="25" Content="X" FontSize="15" Canvas.Top="6" Canvas.Left="689" IsEnabled="True" Click="btnRemove_Click"/>

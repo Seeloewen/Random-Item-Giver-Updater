@@ -1,4 +1,5 @@
-﻿using SeeloewenLib;
+﻿using Newtonsoft.Json.Linq;
+using SeeloewenLib;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -46,7 +47,7 @@ namespace Random_Item_Giver_Updater
             InitializeWizard();
             DataContext = this;
             this.hasInput = hasInput;
-            if(hasInput == true)
+            if (hasInput == true)
             {
                 inputItems = items;
             }
@@ -66,7 +67,7 @@ namespace Random_Item_Giver_Updater
             bgwRemoveItems.ProgressChanged += bgwRemoveItems_ProgressChanged;
 
             //Input items if it was called with input
-            if(hasInput == true)
+            if (hasInput == true)
             {
                 if (inputItems.Count > 0)
                 {
@@ -98,7 +99,7 @@ namespace Random_Item_Giver_Updater
                     //If the loot table whitelist of the entry contains the loot table, then remove the item from the loot table
                     if (entry.lootTableWhiteList.Contains(lootTable.fullLootTablePath))
                     {
-                        RemoveItem(entry.itemName, entry.itemNBT, lootTable);
+                        RemoveItem(entry.itemName, lootTable);
                     }
 
                     //Report worker progress
@@ -208,79 +209,50 @@ namespace Random_Item_Giver_Updater
             //Get all items into an array
             string[] itemsToRemove = tbItems.Text.Split('\n');
 
+            //Go through all items to check if a prefix needs to be added
+            for (int i = 0; i < itemsToRemove.Length; i++)
+            {
+                //If custom prefixes is checked but no custom prefix is found OR if custom prefixes is not checked, add the default prefix
+                if ((cbIncludesCustomPrefixes.IsChecked == true && !itemsToRemove[i].Contains(':')) || cbIncludesCustomPrefixes.IsChecked == false)
+                {
+                    itemsToRemove[i] = $"minecraft:{itemsToRemove[i]}";
+                }
+            }
+
             foreach (lootTable lootTable in wndMain.lootTableList)
             {
-                //Load the loot table so it can go through each item
-                //Get list of content in file, remove all non-item lines so only items remain
-                string[] loadedItems = File.ReadAllLines(lootTable.fullLootTablePath);
-                List<string[]> items = new List<string[]>();
+                JObject fileObject = JObject.Parse(File.ReadAllText(lootTable.fullLootTablePath));
+                JArray itemArray = fileObject.SelectToken("pools[0].entries") as JArray;
 
-                items.Clear();
-                foreach (string item in loadedItems)
+                foreach (JObject item in itemArray)
                 {
-                    if (item.Contains("\"tag\""))
+                    string itemName = item["name"].ToString();
+                    if (itemsToRemove.Contains(itemName))
                     {
-                        string nbtFiltered;
-                        nbtFiltered = item.Replace(" ", "");
-                        nbtFiltered = nbtFiltered.Replace("\"tag\":", "");
-                        nbtFiltered = nbtFiltered.Substring(1, nbtFiltered.Length - 2);
-                        items[items.Count - 1][1] = nbtFiltered;
-                    }
-                    else if (!item.Contains("\"tag\"") && !item.Contains("{") && !item.Contains("}") && !item.Contains("[") && !item.Contains("]") && !item.Contains("\"rolls\"") && !item.Contains("\"type\"") && !item.Contains("\"function\"") && item.Contains("\"") && !item.Contains("\"weight\"") && !item.Contains("\"count\"") && !item.Contains("\"min\": 1") && !item.Contains("\"max\": 64") && !item.Contains("\"out\"") && !item.Contains("\"score\""))
-                    {
-                        string[] itemFiltered = ["", ""];
-                        itemFiltered[0] = item.Replace("\"", "");
-                        itemFiltered[0] = itemFiltered[0].Replace("name:", "");
-                        itemFiltered[0] = itemFiltered[0].Replace(" ", "");
-                        itemFiltered[0] = itemFiltered[0].Replace("tag:", "");
-                        itemFiltered[0] = itemFiltered[0].Replace(",", "");
-                        items.Add(itemFiltered);
-                    }
-                }
-
-                //Compare each item in the "Items to remove" list with the items in the loot table
-                foreach (string itemToRemove in itemsToRemove)
-                {
-                    string itemToRemoveFinal;
-
-                    if (cbIncludesCustomPrefixes.IsChecked == false)
-                    {
-                        itemToRemoveFinal = string.Format("minecraft:{0}", itemToRemove).TrimEnd('\r', '\n');
-                    }
-                    else
-                    {
-                        itemToRemoveFinal = itemToRemove.TrimEnd('\r', '\n');
-                    }
-
-                    foreach (string[] item in items)
-                    {
-
-                        //If the items match, create an entry for them
-                        if (item[0] == itemToRemoveFinal)
+                        //Check if the item already has an entry
+                        bool isAdded = false;
+                        foreach (itemRemovalEntry entry in itemRemovalEntries)
                         {
-                            //Check if the item already has an entry
-                            bool isAdded = false;
-                            foreach (itemRemovalEntry entry in itemRemovalEntries)
+                            //If it does, add the loot table to the entry
+                            if (entry.itemName == itemName)
                             {
-                                //If it does, add the loot table to the entry
-                                if (entry.itemName == itemToRemoveFinal && item[1] == entry.itemNBT)
-                                {
-                                    entry.UpdateLootTables(lootTable);
-                                    isAdded = true;
-                                }
+                                entry.UpdateLootTables(lootTable);
+                                isAdded = true;
                             }
+                        }
 
-                            //If it hasn't already been added, create a new entry and add the loot table
-                            if (isAdded == false)
-                            {
-                                itemRemovalEntries.Add(new itemRemovalEntry(itemToRemoveFinal, item[1].TrimEnd('\r', '\n')));
-                                itemRemovalEntries[itemRemovalEntries.Count - 1].UpdateLootTables(lootTable);
-                            }
+                        //If it hasn't already been added, create a new entry and add the loot table
+                        if (!isAdded)
+                        {
+                            itemRemovalEntry newEntry = new itemRemovalEntry(itemName);
+                            newEntry.UpdateLootTables(lootTable);
+                            itemRemovalEntries.Add(newEntry);
                         }
                     }
                 }
             }
         }
+
 
         private void codePage4()
         {
@@ -288,199 +260,25 @@ namespace Random_Item_Giver_Updater
             bgwRemoveItems.RunWorkerAsync();
         }
 
-        private void RemoveItem(string itemName, string itemNBT, lootTable lootTable)
+        private void RemoveItem(string itemName, lootTable lootTable)
         {
-            string[] loadedItems = File.ReadAllLines(lootTable.fullLootTablePath);
-            string itemsDone = "";
+            //Load the item list
+            JObject fileObject = JObject.Parse(File.ReadAllText(lootTable.fullLootTablePath));
+            JArray items = fileObject.SelectToken("pools[0].entries") as JArray;
 
-            if (itemNBT == "") //If the item hasn't got any NBT
+            for (int i = 0; i < items.Count; i++)
             {
-                for (int i = 0; i < loadedItems.Count(); i++)
+                //Go through all objects in the list and check if the name matches, if yes, remove it and break
+                JObject item = items[i] as JObject;
+                if (item["name"].ToString() == itemName)
                 {
-                    bool isAtEnd = false;
-                    bool is01item = false;
-                    if (loadedItems[i].Contains(string.Format("\"{0}\"", itemName)) && !itemsDone.Contains(string.Format("\"{0}\"", itemName)))
-                    {
-
-                        //Check if it's an item in a 01item loot table
-                        if (loadedItems[i - 3].Contains("},") && !loadedItems[i - 4].Contains("]"))
-                        {
-                            is01item = true;
-                        }
-
-                        //Delete the item line
-                        loadedItems[i] = "";
-
-                        //Delete all lines that come after that
-                        int index = 1;
-                        bool doLoop = true;
-                        while (doLoop == true)
-                        {
-                            //Go through every line after the item name
-                            if ((loadedItems[i + index].Contains("}") && loadedItems[i + index + 1].Contains("}") && loadedItems[i + index + 2].Contains("]") && loadedItems[i + index + 3].Contains("}") && loadedItems[i + index + 4].Contains("]")))
-                            {
-                                //Stop if it's about to reach the file end, so it doesn't corrupt the loot table (For special loot tables)
-                                loadedItems[i + index] = "";
-                                loadedItems[i + index + 1] = "";
-                                loadedItems[i + index + 2] = "";
-                                loadedItems[i + index + 3] = "";
-
-                                doLoop = false;
-                                isAtEnd = true;
-
-                            }
-                            else if ((loadedItems[i + index].Contains("]") && loadedItems[i + index + 1].Contains("}") && loadedItems[i + index + 2].Contains("]")))
-                            {
-                                //Stop if it's about to reach the file end, so it doesn't corrupt the loot table
-                                doLoop = false;
-                                isAtEnd = true;
-
-                                if (is01item == false)
-                                {
-                                    loadedItems[i + index] = "";
-                                    loadedItems[i + index + 1] = "";
-                                }
-
-                            }
-                            else if (!(loadedItems[i + index].Contains("{") && loadedItems[i + index + 1].Contains("\"type\"") && !loadedItems[i + index].Contains("count") && !loadedItems[i + index].Contains("target")))
-                            {
-                                //Continue if it hasn't reached the next item yet
-                                loadedItems[i + index] = "";
-                                index++;
-                            }
-
-                            else
-                            {
-                                //Stop if it reaches an item
-                                doLoop = false;
-                            }
-                        }
-
-                        //Delete all lines that come before that
-                        int index2 = 1;
-                        bool doLoop2 = true;
-                        while (doLoop2 == true)
-                        {
-                            if (!(loadedItems[i - index2].Contains("},") || loadedItems[i - index2].Contains("\"entries\": [")))
-                            {
-                                //Continue if it hasn't reached another item or the top of the file
-                                loadedItems[i - index2] = "";
-                                index2++;
-                            }
-                            else if (loadedItems[i - index2].Contains("},") || loadedItems[i - index2].Contains("\"entries\": ["))
-                            {
-                                //Stop if it reaches the top of the file or another item
-                                doLoop2 = false;
-                                if (isAtEnd)
-                                {
-                                    //Remove comma to avoid corruption of the loot table
-                                    loadedItems[i - index2] = loadedItems[i - index2].Replace("},", "}");
-                                }
-                            }
-                        }
-
-                        itemsDone = string.Format("{0};{1}", itemsDone, string.Format("\"{0}\"", itemName));
-                    }
+                    items.Remove(item);
+                    break;
                 }
             }
-            else //If the item has NBT
-            {
-                for (int i = 0; i < loadedItems.Count(); i++)
-                {
-                    bool isAtEnd = false;
-
-                    if (loadedItems[i].Contains(string.Format("\"{0}\"", itemName)) && !itemsDone.Contains(string.Format("\"{0}\"", itemName)))
-                    {
-                        int index = 1;
-                        bool doLoop = true;
-
-                        while (doLoop == true)
-                        {
-                            if ((loadedItems[i + index].Contains("]") && loadedItems[i + index + 1].Contains("}") && loadedItems[i + index + 2].Contains("]")))
-                            {
-                                //Stop if it's about to reach the file end, so it doesn't corrupt the loot table
-                                doLoop = false;
-                            }
-                            else if (loadedItems[i + index].Contains(itemNBT))
-                            {
-                                //Stop the loop
-                                doLoop = false;
-
-                                //Delete the item line
-                                loadedItems[i] = "";
-
-                                //Delete all lines that come after that
-                                int index2 = 1;
-                                bool doLoop2 = true;
-                                while (doLoop2 == true)
-                                {
-
-                                    //Go through every line after the item name
-                                    if ((loadedItems[i + index2].Contains("]") && loadedItems[i + index2 + 1].Contains("}") && loadedItems[i + index2 + 2].Contains("]")))
-                                    {
-                                        //Stop if it's about to reach the file end, so it doesn't corrupt the loot table, but still remove some brackets
-                                        loadedItems[i + index2] = "";
-                                        loadedItems[i + index2 + 1] = "";
-                                        doLoop2 = false;
-                                        isAtEnd = true;
-                                    }
-                                    else if (!(loadedItems[i + index2].Contains("{") && loadedItems[i + index2 + 1].Contains("\"type\"") && !loadedItems[i + index2].Contains("count") && !loadedItems[i + index2].Contains("target")))
-                                    {
-                                        //Continue if it hasn't reached the next item yet
-                                        loadedItems[i + index2] = "";
-                                        index2++;
-                                    }
-
-                                    else
-                                    {
-                                        //Stop if it reaches an item
-                                        doLoop2 = false;
-                                    }
-                                }
-
-                                //Delete all lines that come before that
-                                int index3 = 1;
-                                bool doLoop3 = true;
-                                while (doLoop3 == true)
-                                {
-                                    if (!(loadedItems[i - index3].Contains("},") || loadedItems[i - index3].Contains("\"entries\": [")))
-                                    {
-                                        //Continue if it hasn't reached another item or the top of the file
-                                        loadedItems[i - index3] = "";
-                                        index3++;
-                                    }
-                                    else if (loadedItems[i - index3].Contains("},") || loadedItems[i - index3].Contains("\"entries\": ["))
-                                    {
-                                        //Stop if it reaches another item or the top of the file
-                                        doLoop3 = false;
-                                        if (isAtEnd)
-                                        {
-                                            //If the last item was deleted, remove a comma to avoid corruption
-                                            loadedItems[i - index3] = loadedItems[i - index3].Replace("},", "}");
-                                        }
-                                    }
-                                }
-                            }
-                            else if (loadedItems[i + index].Contains("\"name\""))
-                            {
-                                doLoop = false;
-                            }
-                            else
-                            {
-                                index++;
-                            }
-                        }
-
-                        itemsDone = string.Format("{0};{1}", itemsDone, string.Format("\"{0}\"", itemName));
-                    }
-                }
-            }
-
-            //Remove empty lines
-            loadedItems = loadedItems.Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
             //Write modified content to file
-            File.WriteAllLines(lootTable.fullLootTablePath, loadedItems);
+            File.WriteAllText(lootTable.fullLootTablePath, fileObject.ToString());
         }
 
 
@@ -543,7 +341,7 @@ namespace Random_Item_Giver_Updater
             if (sender is TextBlock textblock && textblock.DataContext is itemRemovalEntry item)
             {
                 //Show the full item name in case it's cut off
-                MessageBox.Show(item.fullItemName, "Full item name", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(item.itemName, "Full item name", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 

@@ -11,14 +11,11 @@ namespace Random_Item_Giver_Updater
 {
     public class itemRemovalEntry
     {
-        //Attributes
         public List<lootTable> lootTableCheckList = new List<lootTable>();
         public List<lootTable> lootTables = new List<lootTable>();
         public string lootTableWhiteList = "";
         public bool allLootTablesChecked = true;
-        public string itemName;
-        public string itemNBT;
-        public string fullItemName { get; set; }
+        public string itemName { get; set; }
         public string lootTablesString { get; set; }
 
 
@@ -30,20 +27,12 @@ namespace Random_Item_Giver_Updater
 
         //-- Constructor --//
 
-        public itemRemovalEntry(string name, string nbt)
+        public itemRemovalEntry(string name)
         {
             //Set attributes
             itemName = name;
-            itemNBT = nbt;
-            if (string.IsNullOrEmpty(itemNBT))
-            {
-                fullItemName = itemName;
-            }
-            else
-            {
-                fullItemName = string.Format("{0} (NBT: {1})", name, nbt);
-            }
         }
+
 
         public void UpdateLootTables(lootTable newLootTable)
         {
