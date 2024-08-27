@@ -50,11 +50,12 @@ namespace Random_Item_Giver_Updater
         //General variables for the software
         public List<string> lootTableStart = new List<string>();
         public List<string> lootTableEnd = new List<string>();
-        public string versionNumber = string.Format("Public Beta 2");
-        public string versionDate = "24.02.2024";
+        public string versionNumber = "Public Beta 3";
+        public string versionDate = "27.08.2024";
         public string currentLootTable = "none";
         public string currentDatapack = "none";
         public bool datapackUsesLegacyNBT = false;
+        public bool datapackUsesOldFolderStructure = false;
         private bool calledClose;
         public bool calledNewLootTable;
         public string calledLootTableName;
@@ -152,7 +153,7 @@ namespace Random_Item_Giver_Updater
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.21 Dev";
+            //tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.21 Dev 2.0";
             if ((!string.IsNullOrEmpty(tbDatapack.Text) && Directory.Exists(tbDatapack.Text)))
             {
                 //If the directory exists and is valid and no other datapack with unsaved changes is loaded, try to load the datapack
@@ -382,11 +383,25 @@ namespace Random_Item_Giver_Updater
         {
             //Get all categories
             lootTableCategoryList.Clear();
-            string[] categories = Directory.GetDirectories(string.Format("{0}/data/randomitemgiver/loot_tables/", path));
-            for (int i = 0; i < categories.Length; i++)
+
+            //Quick fix to support 1.21 folder structure, not sure if it works everywhere
+            if (Directory.Exists(string.Format("{0}/data/randomitemgiver/loot_tables/", path)))
             {
-                lootTableCategoryList.Add(new lootTableCategory(categories[i].Replace(String.Format("{0}/data/randomitemgiver/loot_tables/", path), ""), categories[i]));
+                string[] categories = Directory.GetDirectories(string.Format("{0}/data/randomitemgiver/loot_tables/", path));
+                for (int i = 0; i < categories.Length; i++)
+                {
+                    lootTableCategoryList.Add(new lootTableCategory(categories[i].Replace(String.Format("{0}/data/randomitemgiver/loot_tables/", path), ""), categories[i]));
+                }
             }
+            else
+            {
+                string[] categories = Directory.GetDirectories(string.Format("{0}/data/randomitemgiver/loot_table/", path));
+                for (int i = 0; i < categories.Length; i++)
+                {
+                    lootTableCategoryList.Add(new lootTableCategory(categories[i].Replace(String.Format("{0}/data/randomitemgiver/loot_table/", path), ""), categories[i]));
+                }
+            }
+
 
             //Get each loot table
             lootTableList.Clear();
@@ -800,7 +815,7 @@ namespace Random_Item_Giver_Updater
             if (sender is Button button && button.DataContext is ItemEntry item)
             {
                 //If the datapack still uses legacy nbt, open the nbt editor and set the tag
-                if(datapackUsesLegacyNBT)
+                if (datapackUsesLegacyNBT)
                 {
                     wndNBTEditor editor = new wndNBTEditor();
                     (EditorResult result, string nbt) = editor.GetFromDialog(item.name, item.GetNBT());
