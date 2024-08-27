@@ -92,7 +92,7 @@ namespace Random_Item_Giver_Updater
                     JToken tag = function["tag"];
                     if (tag != null)
                     {
-                        function["tag"] = JToken.Parse(newTag);
+                        function["tag"] = newTag;
                         changedNbt = true;
                         break;
                     }

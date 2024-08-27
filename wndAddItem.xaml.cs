@@ -277,11 +277,11 @@ namespace Random_Item_Giver_Updater
                     }
 
                     items.Add(JObject.Parse(newItem.itemBody));
-                }           
+                }
             }
 
             File.WriteAllText(lootTable, fileObject.ToString());
-        }            
+        }
 
         private T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
         {
@@ -427,21 +427,15 @@ namespace Random_Item_Giver_Updater
             }
         }
 
-        private void tbItemNBT_TextChanged(object sender, TextChangedEventArgs e)
+
+        private void btnNbtComponentEditor_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is TextBox textbox)
+            if (sender is Button btnNbtComponentEditor && btnNbtComponentEditor.DataContext is addItemEntry item)
             {
-
-                if (textbox.DataContext is addItemEntry item)
-                {
-
-                    //TODO: Replace with NBT/Item Stack Components editor
-
-
-                    //Set checkstate on variable that gets accessed by the item adding thread
-                    item.itemNBT = textbox.Text;
-                }
-                }
+                wndNBTEditor editor = new wndNBTEditor();
+                (EditorResult result, string nbt) = editor.GetFromDialog(item.itemName, item.itemNBT);
+                item.itemNBT = nbt;
+            }
         }
     }
 }

@@ -242,7 +242,7 @@ namespace Random_Item_Giver_Updater
             {
                 try
                 {
-                    if(!item.IsDeleted())
+                    if (!item.IsDeleted())
                     {
                         JObject itemObject = JObject.Parse(item.itemBody);
                         entriesArray.Add(itemObject);
@@ -799,8 +799,18 @@ namespace Random_Item_Giver_Updater
         {
             if (sender is Button button && button.DataContext is ItemEntry item)
             {
-                wndNBTEditor = new wndNBTEditor(item);
-                wndNBTEditor.ShowDialog();
+                wndNBTEditor editor = new wndNBTEditor();
+                (EditorResult result, string nbt) = editor.GetFromDialog(item.name, item.GetNBT());
+
+                switch (result)
+                {
+                    case EditorResult.Edited:
+                        item.SetNBT(nbt);
+                        break;
+                    case EditorResult.Deleted:
+                        item.RemoveNbtOrComponentBody();
+                        break;
+                }
             }
         }
 

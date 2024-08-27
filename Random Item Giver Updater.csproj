@@ -64,6 +64,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="RIGU.cs" />
     <Compile Include="duplicateEntry.cs" />
     <Compile Include="itemRemovalEntry.cs" />
     <Compile Include="SeeloewenLib.cs" />
