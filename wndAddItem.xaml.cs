@@ -23,6 +23,7 @@ using SeeloewenLib;
 using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Header;
+using System.Xml.Linq;
 
 namespace Random_Item_Giver_Updater
 {
@@ -72,6 +73,16 @@ namespace Random_Item_Giver_Updater
             bgwAddItems.DoWork += bgwAddItems_DoWork;
             bgwAddItems.RunWorkerCompleted += bgwAddItems_RunWorkerCompleted;
             bgwAddItems.ProgressChanged += bgwAddItems_ProgressChanged;
+
+            //Setup based on whether it uses legacy nbt or not
+            if (wndMain.datapackUsesLegacyNBT)
+            {
+                tblEditCategories.Text = "  Prefix                                  Name                                                   NBT";
+            }
+            else
+            {
+                tblEditCategories.Text = "  Prefix                                  Name                                                   Component";
+            }
         }
 
         private void Window_Unloaded(object sender, RoutedEventArgs e)
@@ -273,7 +284,7 @@ namespace Random_Item_Giver_Updater
 
                     if (entry.HasItemStackComponent())
                     {
-                        newItem.SetNBT(entry.itemStackComponent);
+                        newItem.SetItemStackComponent(entry.itemStackComponent);
                     }
 
                     items.Add(JObject.Parse(newItem.itemBody));
@@ -432,9 +443,21 @@ namespace Random_Item_Giver_Updater
         {
             if (sender is Button btnNbtComponentEditor && btnNbtComponentEditor.DataContext is addItemEntry item)
             {
-                wndNBTEditor editor = new wndNBTEditor();
-                (EditorResult result, string nbt) = editor.GetFromDialog(item.itemName, item.itemNBT);
-                item.itemNBT = nbt;
+                if (wndMain.datapackUsesLegacyNBT)
+                {
+                    //Open the legacy nbt editor
+                    wndNBTEditor editor = new wndNBTEditor();
+                    (EditorResult result, string nbt) = editor.GetFromDialog(item.itemName, item.itemNBT);
+                    item.itemNBT = nbt;
+                }
+                else
+                {
+                    //Open the item stack component editor
+                    wndComponentEditor editor = new wndComponentEditor();
+                    (EditorResult result, string component) = editor.GetFromDialog(item.itemName, item.itemStackComponent);
+                    item.itemStackComponent = component;
+                }
+
             }
         }
     }

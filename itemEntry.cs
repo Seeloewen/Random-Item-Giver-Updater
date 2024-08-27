@@ -146,10 +146,10 @@ namespace Random_Item_Giver_Updater
 
             if (functionsArray != null)
             {
+                bool changedComponent = false;
                 foreach (JToken function in functionsArray)
                 {
                     //Go through all functions to find and edit an existing components object
-                    bool changedComponent = false;
                     JToken components = function["components"];
                     if (components != null)
                     {
@@ -157,16 +157,16 @@ namespace Random_Item_Giver_Updater
                         changedComponent = true;
                         break;
                     }
+                }
 
-                    if(!changedComponent)
-                    {
-                        //If no component object is present, add it
-                        functionsArray.Add(new JObject
+                if (!changedComponent)
+                {
+                    //If no component object is present, add it
+                    functionsArray.Add(new JObject
                         {
-                            {"function", "minecraft:set_nbt" },
-                            {"tag", JToken.Parse(newComponents) }
+                            {"function", "minecraft:set_components" },
+                            {"components", JToken.Parse("{\n" + newComponents + "\n}") }
                         });
-                    }
                 }
             }
             else

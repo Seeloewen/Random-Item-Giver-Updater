@@ -2,13 +2,6 @@
 
 namespace Random_Item_Giver_Updater
 {
-    public enum EditorResult
-    {
-        Unchanged,
-        Deleted,
-        Edited,
-    }
-
     public partial class wndNBTEditor : Window
     {
         public EditorResult result;

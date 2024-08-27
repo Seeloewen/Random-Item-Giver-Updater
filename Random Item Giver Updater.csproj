@@ -77,6 +77,9 @@
     <Compile Include="wndDuplicateFinder.xaml.cs">
       <DependentUpon>wndDuplicateFinder.xaml</DependentUpon>
     </Compile>
+    <Compile Include="wndComponentEditor.xaml.cs">
+      <DependentUpon>wndComponentEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="wndNBTEditor.xaml.cs">
       <DependentUpon>wndNBTEditor.xaml</DependentUpon>
     </Compile>
@@ -124,6 +127,10 @@
       <DependentUpon>wndMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="wndComponentEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="wndNBTEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

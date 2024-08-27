@@ -14,7 +14,7 @@
                 <TextBox x:Name="tbItemName" Width="350" Height="25" FontSize="18" Canvas.Top="10" Canvas.Left="10" Visibility="Hidden"/>
                 <Button x:Name="btnSaveItemName" Height="25" Width="100" Content="Confirm" Canvas.Top="10" Canvas.Left="370" Visibility="Hidden" Click="btnSaveItemName_Click"/>
                 <Button x:Name="btnDelete" Height="25" Width="100" Content="Delete" Canvas.Top="12" Canvas.Right="100" Click="btnDelete_Click" Visibility="Hidden"/>
-                <Button x:Name="btnEditNBT" Height="25" Width="160" Content="Edit NBT Tag" Canvas.Top="12" Canvas.Right="220" Visibility="Hidden" Click="btnEditNBT_Click"/>
+                <Button x:Name="btnEditNBTComponent" Height="25" Width="160" Content="Edit NBT/Component" Canvas.Top="12" Canvas.Right="220" Visibility="Hidden" Click="btnEditNBTComponent_Click"/>
                 <TextBlock x:Name="tblEntryIndex" Text="{Binding index}" FontSize="20" TextAlignment="Left" FontWeight="DemiBold" Foreground="White" Canvas.Top="10" Canvas.Right="40"/>
                 <TextBlock x:Name="tblIndicator" FontWeight="Bold" FontSize="24" Visibility="Hidden" Canvas.Top="8" Canvas.Right="225"/>
             </Canvas>
@@ -43,7 +43,7 @@
                 <Button x:Name="btnDuplicateFinder" Content="Duplicate Finder" Width="170" Height="30" Canvas.Left="814" Canvas.Top="51" Background="#FFDDDDDD" HorizontalAlignment="Right" VerticalAlignment="Top" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,45,126,0" Click="btnDuplicateFinder_Click"/>
                 <Button x:Name="btnAbout" Content="About" Width="102" Height="30" Canvas.Left="1247" Canvas.Top="51" HorizontalAlignment="Right" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="0,45,11,0" Click="btnAbout_Click"/>
                 <Button x:Name="btnRemoveItems" Content="Remove Items" Width="154" Height="30" HorizontalAlignment="Right" VerticalAlignment="Top" Click="btnRemoveItems_Click" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,45,311,0"/>
-                <Button x:Name="btnSettings" Content="Settings" Height="30" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="0,45,796,0" HorizontalAlignment="Right" Width="158" Click="btnSettings_Click"/>
+                <Button x:Name="btnSettings" Content="Settings" Height="30" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="0,45,796,0" HorizontalAlignment="Right" Width="158" Click="btnSettings_Click" Visibility="Hidden"/>
             </Grid>
         </StackPanel>
         <ListBox x:Name="lbItems" ItemsSource="{Binding itemList}" Grid.Column="1" Grid.Row="1" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">

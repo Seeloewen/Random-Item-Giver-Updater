@@ -152,7 +152,7 @@ namespace Random_Item_Giver_Updater
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.20 Dev";
+            tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.21 Dev";
             if ((!string.IsNullOrEmpty(tbDatapack.Text) && Directory.Exists(tbDatapack.Text)))
             {
                 //If the directory exists and is valid and no other datapack with unsaved changes is loaded, try to load the datapack
@@ -795,22 +795,43 @@ namespace Random_Item_Giver_Updater
             }
         }
 
-        private void btnEditNBT_Click(object sender, RoutedEventArgs e)
+        private void btnEditNBTComponent_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is ItemEntry item)
             {
-                wndNBTEditor editor = new wndNBTEditor();
-                (EditorResult result, string nbt) = editor.GetFromDialog(item.name, item.GetNBT());
-
-                switch (result)
+                //If the datapack still uses legacy nbt, open the nbt editor and set the tag
+                if(datapackUsesLegacyNBT)
                 {
-                    case EditorResult.Edited:
-                        item.SetNBT(nbt);
-                        break;
-                    case EditorResult.Deleted:
-                        item.RemoveNbtOrComponentBody();
-                        break;
+                    wndNBTEditor editor = new wndNBTEditor();
+                    (EditorResult result, string nbt) = editor.GetFromDialog(item.name, item.GetNBT());
+
+                    switch (result)
+                    {
+                        case EditorResult.Edited:
+                            item.SetNBT(nbt);
+                            break;
+                        case EditorResult.Deleted:
+                            item.RemoveNbtOrComponentBody();
+                            break;
+                    }
                 }
+                else
+                {
+                    //If it uses the item stack component, open the editor and set the component
+                    wndComponentEditor editor = new wndComponentEditor();
+                    (EditorResult result, string component) = editor.GetFromDialog(item.name, item.GetItemStackComponents());
+
+                    switch (result)
+                    {
+                        case EditorResult.Edited:
+                            item.SetItemStackComponent(component);
+                            break;
+                        case EditorResult.Deleted:
+                            item.RemoveNbtOrComponentBody();
+                            break;
+                    }
+                }
+
             }
         }
 
@@ -843,7 +864,7 @@ namespace Random_Item_Giver_Updater
             {
                 //Get neccessary controls
                 Button button = canvas.FindName("btnDelete") as Button;
-                Button button2 = canvas.FindName("btnEditNBT") as Button;
+                Button button2 = canvas.FindName("btnEditNBTComponent") as Button;
                 TextBlock textblock = canvas.FindName("tblIndicator") as TextBlock;
 
                 //Show the button and move the indicator accordingly
@@ -859,7 +880,7 @@ namespace Random_Item_Giver_Updater
             {
                 //Get neccessary controls
                 Button button = canvas.FindName("btnDelete") as Button;
-                Button button2 = canvas.FindName("btnEditNBT") as Button;
+                Button button2 = canvas.FindName("btnEditNBTComponent") as Button;
                 TextBlock textblock = canvas.FindName("tblIndicator") as TextBlock;
 
                 //Hide the button and move the indicator accordingly
