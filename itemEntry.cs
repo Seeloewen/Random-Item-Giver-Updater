@@ -54,6 +54,7 @@ namespace Random_Item_Giver_Updater
             this.itemBody = itemBody;
             this.index = index.ToString();
             name = GetName();
+            canvasBackColor = SetBackColor();
         }
 
         public string GetNBT()
@@ -78,6 +79,7 @@ namespace Random_Item_Giver_Updater
 
         public void SetNBT(string newTag)
         {
+            //Get the functions array
             JObject itemObject = JObject.Parse(itemBody);
             JArray functionsArray = itemObject["functions"] as JArray;
 
@@ -293,6 +295,7 @@ namespace Random_Item_Giver_Updater
 
             itemBody = itemObject.ToString(Formatting.Indented);
         }
+
         public SolidColorBrush SetBackColor()
         {
             //Set the backcolor depending on the item index
