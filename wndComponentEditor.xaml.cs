@@ -16,7 +16,7 @@ namespace Random_Item_Giver_Updater
         public (EditorResult, string) GetFromDialog(string itemName, string currentComponent)
         {
             //Show the dialog and wait for the result and new nbt
-            tblHeader.Text = $"Editing Item Stack Component of item {itemName}";
+            tblHeader.Text = $"Editing Component of item {itemName}";
             tbComponent.Text = currentComponent;
             oldComponent = currentComponent;
             ShowDialog();
