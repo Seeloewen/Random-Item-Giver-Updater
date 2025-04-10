@@ -1,36 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using SeeloewenLib;
+using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.IO;
-using System.Diagnostics.Eventing.Reader;
-using System.Drawing;
-using System.Reflection;
-using System.ComponentModel;
-using System.Threading;
-using System.Windows.Threading;
-using System.Collections.ObjectModel;
-using SeeloewenLib;
-using System.Diagnostics;
-using Newtonsoft.Json.Linq;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Header;
-using System.Xml.Linq;
 
 namespace Random_Item_Giver_Updater
 {
     public partial class wndAddItem : Window
     {
         //General attributes
-        public bool isOpen;
         public int currentPage = 1;
         public ObservableCollection<addItemEntry> itemEntries { get; set; } = new ObservableCollection<addItemEntry>();
         double addItemsWorkerProgress;
@@ -39,7 +22,6 @@ namespace Random_Item_Giver_Updater
         DateTime startTime;
 
         //Important references
-        public MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
         private wndSelectLootTables wndSelectLootTables;
         public SeeloewenLibTools SeeloewenLibTools = new SeeloewenLibTools();
 
@@ -53,43 +35,12 @@ namespace Random_Item_Giver_Updater
         public wndAddItem()
         {
             InitializeComponent();
-            SetupControls();
-            CreateWizard();
+            InitUI();
+            InitWizard();
             DataContext = this;
         }
 
         //-- Event Handlers --//
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            //Change open state to true
-            isOpen = true;
-
-            //Setup the first page
-            tblCurrentlySelectedDatapack.Text = string.Format("Currently selected Datapack: {0}\n{1}", wndMain.currentDatapack, wndMain.GetDatapackVersionInfo(wndMain.currentDatapack));
-
-            //Setup backgroundworker
-            bgwAddItems.WorkerReportsProgress = true;
-            bgwAddItems.DoWork += bgwAddItems_DoWork;
-            bgwAddItems.RunWorkerCompleted += bgwAddItems_RunWorkerCompleted;
-            bgwAddItems.ProgressChanged += bgwAddItems_ProgressChanged;
-
-            //Setup based on whether it uses legacy nbt or not
-            if (wndMain.datapackUsesLegacyNBT)
-            {
-                tblEditCategories.Text = "  Prefix                                  Name                                                   NBT";
-            }
-            else
-            {
-                tblEditCategories.Text = "  Prefix                                  Name                                                   Component";
-            }
-        }
-
-        private void Window_Unloaded(object sender, RoutedEventArgs e)
-        {
-            //Change open state to false
-            isOpen = false;
-        }
 
         private void btnAddAdditionalItem_Click(object sender, RoutedEventArgs e)
         {
@@ -105,7 +56,7 @@ namespace Random_Item_Giver_Updater
             addItemsWorkerAddedItemsLootTables = 0;
 
             //Go through each loot table and add the items
-            foreach (lootTable lootTable in wndMain.lootTableList)
+            foreach (lootTable lootTable in RIGU.wndMain.lootTableList)
             {
                 AddItems(string.Format("{0}/{1}", lootTable.lootTablePath, lootTable.lootTableName));
                 addItemsWorkerAddedItemsLootTables++;
@@ -125,13 +76,13 @@ namespace Random_Item_Giver_Updater
             pbAddingItems.Value = Convert.ToDouble(progress.UserState);
 
             //Report added items
-            tblAddingItemsProgress.Text = string.Format("Adding items... (Item {0}/{1} - Loot Table {2}/{3})", progress.ProgressPercentage, itemEntries.Count, addItemsWorkerAddedItemsLootTables, wndMain.lootTableList.Count);
+            tblAddingItemsProgress.Text = string.Format("Adding items... (Item {0}/{1} - Loot Table {2}/{3})", progress.ProgressPercentage, itemEntries.Count, addItemsWorkerAddedItemsLootTables, RIGU.wndMain.lootTableList.Count);
         }
 
         //-- Custom Methods --//
 
 
-        private void CreateWizard()
+        private void InitWizard()
         {
             //Create the wizard
             wzdAddItems = new Wizard(6, 580, 742, btnContinue, btnBack, Close, codeFinish, new Thickness(0, 0, 0, 0));
@@ -266,7 +217,7 @@ namespace Random_Item_Giver_Updater
 
             //Create a template item entry and strip the NBT and Components, and possibly the functions part
             string templateString = items[items.Count - 1].ToString();
-            ItemEntry template = new ItemEntry(templateString, 0);
+            ItemEntry template = new ItemEntry(templateString);
             template.RemoveNbtOrComponentBody();
 
             foreach (addItemEntry entry in itemEntries)
@@ -274,8 +225,8 @@ namespace Random_Item_Giver_Updater
                 if (entry.lootTableWhiteList.Contains(lootTable) || entry.allLootTablesChecked)
                 {
                     //Create the new item
-                    ItemEntry newItem = new ItemEntry(template.itemBody, 0);
-                    newItem.SetName(entry.itemName, null);
+                    ItemEntry newItem = new ItemEntry(template.GetItemBody());
+                    newItem.SetName(entry.itemName);
 
                     if (entry.HasLegacyNBT())
                     {
@@ -287,7 +238,7 @@ namespace Random_Item_Giver_Updater
                         newItem.SetItemStackComponent(entry.itemStackComponent);
                     }
 
-                    items.Add(JObject.Parse(newItem.itemBody));
+                    items.Add(JObject.Parse(newItem.GetItemBody()));
                 }
             }
 
@@ -309,20 +260,39 @@ namespace Random_Item_Giver_Updater
             return null;
         }
 
-        private void SetupControls()
+        private void InitUI()
         {
+            //Setup the first page
+            tblCurrentlySelectedDatapack.Text = string.Format("Currently selected Datapack: {0}\n{1}", RIGU.wndMain.currentDatapack, RIGU.wndMain.GetDatapackVersionInfo(RIGU.wndMain.currentDatapack));
+
+            //Setup backgroundworker
+            bgwAddItems.WorkerReportsProgress = true;
+            bgwAddItems.DoWork += bgwAddItems_DoWork;
+            bgwAddItems.RunWorkerCompleted += bgwAddItems_RunWorkerCompleted;
+            bgwAddItems.ProgressChanged += bgwAddItems_ProgressChanged;
+
             //Create 'Loading' text for loading items
             tblLoadingItems.Text = "Processing items, please wait...\nThis may take a few seconds!";
             tblLoadingItems.Foreground = new SolidColorBrush(Colors.White);
             tblLoadingItems.FontSize = 24;
+
+            //Setup based on whether datapack uses legacy nbt or not
+            if (RIGU.wndMain.datapackUsesLegacyNBT)
+            {
+                tblEditCategories.Text = "  Prefix                                  Name                                                   NBT";
+            }
+            else
+            {
+                tblEditCategories.Text = "  Prefix                                  Name                                                   Component";
+            }
         }
 
         private void codeFinish()
         {
             //Reload the currently loaded loot table and close this window
-            if (wndMain.currentLootTable != "none")
+            if (RIGU.wndMain.currentLootTable != "none")
             {
-                wndMain.LoadLootTable(wndMain.currentLootTable);
+                RIGU.wndMain.LoadLootTable(RIGU.wndMain.currentLootTable);
             }
             Close();
         }
@@ -443,18 +413,18 @@ namespace Random_Item_Giver_Updater
         {
             if (sender is Button btnNbtComponentEditor && btnNbtComponentEditor.DataContext is addItemEntry item)
             {
-                if (wndMain.datapackUsesLegacyNBT)
+                if (RIGU.wndMain.datapackUsesLegacyNBT)
                 {
                     //Open the legacy nbt editor
                     wndNBTEditor editor = new wndNBTEditor();
-                    (EditorResult result, string nbt) = editor.GetFromDialog(item.itemName, item.itemNBT);
+                    (ModificationState result, string nbt) = editor.GetFromDialog(item.itemName, item.itemNBT);
                     item.itemNBT = nbt;
                 }
                 else
                 {
                     //Open the item stack component editor
                     wndComponentEditor editor = new wndComponentEditor();
-                    (EditorResult result, string component) = editor.GetFromDialog(item.itemName, item.itemStackComponent);
+                    (ModificationState result, string component) = editor.GetFromDialog(item.itemName, item.itemStackComponent);
                     item.itemStackComponent = component;
                 }
 

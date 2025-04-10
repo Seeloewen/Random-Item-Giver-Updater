@@ -6,16 +6,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Random_Item_Giver_Updater
 {
@@ -32,7 +26,6 @@ namespace Random_Item_Giver_Updater
         private List<string> inputItems = new List<string>();
 
         //Important references
-        MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
         SeeloewenLibTools SeeloewenLibTools = new SeeloewenLibTools();
 
         //Controls
@@ -89,7 +82,7 @@ namespace Random_Item_Giver_Updater
             removeItemsWorkerAddedItemsLootTables = 0;
 
             //Go through each item removal entry and through each loot table in the currently loaded datapack
-            foreach (lootTable lootTable in wndMain.lootTableList)
+            foreach (lootTable lootTable in RIGU.wndMain.lootTableList)
             {
                 removeItemsWorkerAddedItems = 0;
                 removeItemsWorkerAddedItemsLootTables++;
@@ -103,7 +96,7 @@ namespace Random_Item_Giver_Updater
                     }
 
                     //Report worker progress
-                    removeItemsWorkerProgress = removeItemsWorkerProgress + (100 / (Convert.ToDouble(itemRemovalEntries.Count * wndMain.lootTableList.Count)));
+                    removeItemsWorkerProgress = removeItemsWorkerProgress + (100 / (Convert.ToDouble(itemRemovalEntries.Count * RIGU.wndMain.lootTableList.Count)));
                     removeItemsWorkerAddedItems++;
                     bgwRemoveItems.ReportProgress(removeItemsWorkerAddedItems, removeItemsWorkerProgress);
                 }
@@ -127,7 +120,7 @@ namespace Random_Item_Giver_Updater
             pbItemRemoving.Value = Convert.ToDouble(progress.UserState);
 
             //Report added items
-            tblItemRemovingProgress.Text = string.Format("Adding items... (Item {0}/{1} - Loot Table {2}/{3})", progress.ProgressPercentage, itemRemovalEntries.Count, removeItemsWorkerAddedItemsLootTables, wndMain.lootTableList.Count);
+            tblItemRemovingProgress.Text = string.Format("Adding items... (Item {0}/{1} - Loot Table {2}/{3})", progress.ProgressPercentage, itemRemovalEntries.Count, removeItemsWorkerAddedItemsLootTables, RIGU.wndMain.lootTableList.Count);
         }
 
         private void Window_Unloaded(object sender, RoutedEventArgs e)
@@ -219,7 +212,7 @@ namespace Random_Item_Giver_Updater
                 }
             }
 
-            foreach (lootTable lootTable in wndMain.lootTableList)
+            foreach (lootTable lootTable in RIGU.wndMain.lootTableList)
             {
                 JObject fileObject = JObject.Parse(File.ReadAllText(lootTable.fullLootTablePath));
                 JArray itemArray = fileObject.SelectToken("pools[0].entries") as JArray;
@@ -285,9 +278,9 @@ namespace Random_Item_Giver_Updater
         private void codeFinish()
         {
             //Reload the currently loaded loot table and close this window
-            if (wndMain.currentLootTable != "none")
+            if (RIGU.wndMain.currentLootTable != "none")
             {
-                wndMain.LoadLootTable(wndMain.currentLootTable);
+                RIGU.wndMain.LoadLootTable(RIGU.wndMain.currentLootTable);
             }
             Close();
         }
@@ -330,7 +323,7 @@ namespace Random_Item_Giver_Updater
                 string lootTables = "";
                 foreach (lootTable lootTable in item.lootTables)
                 {
-                    lootTables = string.Format("{0}\n{1}", lootTables, lootTable.fullLootTablePath.Replace(wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
+                    lootTables = string.Format("{0}\n{1}", lootTables, lootTable.fullLootTablePath.Replace(RIGU.wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
                 }
                 MessageBox.Show(lootTables, "List of loot tables", MessageBoxButton.OK, MessageBoxImage.Information);
             }

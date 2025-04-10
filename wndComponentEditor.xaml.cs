@@ -4,7 +4,7 @@ namespace Random_Item_Giver_Updater
 {
     public partial class wndComponentEditor : Window
     {
-        public EditorResult result;
+        public ModificationState result;
         public string newComponent = "";
         private string oldComponent;
 
@@ -13,7 +13,7 @@ namespace Random_Item_Giver_Updater
             InitializeComponent();
         }
 
-        public (EditorResult, string) GetFromDialog(string itemName, string currentComponent)
+        public (ModificationState, string) GetFromDialog(string itemName, string currentComponent)
         {
             //Show the dialog and wait for the result and new nbt
             tblHeader.Text = $"Editing Component of item {itemName}";
@@ -32,7 +32,7 @@ namespace Random_Item_Giver_Updater
             if (newComponent == oldComponent)
             {
                 //If the nbt is unchanged
-                result = EditorResult.Unchanged;
+                result = ModificationState.Unchanged;
                 MessageBox.Show("The changes were saved successfully", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else if (newComponent == "")
@@ -42,18 +42,18 @@ namespace Random_Item_Giver_Updater
                 switch (msgResult)
                 {
                     case MessageBoxResult.Yes:
-                        result = EditorResult.Deleted;
+                        result = ModificationState.Deleted;
                         MessageBox.Show("The Item Stack Component was successfully deleted!", "Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
                         newComponent = "";
                         break;
                     case MessageBoxResult.No:
-                        result = EditorResult.Edited;
+                        result = ModificationState.Edited;
                         break;
                 }
             }
             else
             {
-                result = EditorResult.Edited;
+                result = ModificationState.Edited;
                 MessageBox.Show("The changes were saved successfully", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
@@ -63,7 +63,7 @@ namespace Random_Item_Giver_Updater
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             //Close without any changes
-            result = EditorResult.Unchanged;
+            result = ModificationState.Unchanged;
             newComponent = oldComponent;
             Close();
         }
@@ -75,7 +75,7 @@ namespace Random_Item_Giver_Updater
             switch (msgResult)
             {
                 case MessageBoxResult.Yes:
-                    result = EditorResult.Deleted;
+                    result = ModificationState.Deleted;
                     MessageBox.Show("The Item Stack Component was successfully deleted!", "Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
                     newComponent = "";
                     Close();

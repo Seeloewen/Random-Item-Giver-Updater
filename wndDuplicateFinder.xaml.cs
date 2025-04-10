@@ -1,23 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using SeeloewenLib;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.IO;
-using SeeloewenLib;
-using System.Runtime.Remoting.Messaging;
-using System.Collections.ObjectModel;
-using Newtonsoft.Json.Linq;
-using System.Windows.Forms.VisualStyles;
-using System.Diagnostics.Eventing.Reader;
 
 namespace Random_Item_Giver_Updater
 {
@@ -33,7 +23,6 @@ namespace Random_Item_Giver_Updater
         int duplicateIndex = 0;
 
         //Reference to other windows
-        MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
         static wndRemoveItems wndRemoveItems;
 
         //Seeloewen Lib
@@ -66,7 +55,7 @@ namespace Random_Item_Giver_Updater
             if (wndRemoveItems.isOpen == false)
             {
                 //Check if the datapack path exists before opening the window
-                if (Directory.Exists(wndMain.currentDatapack))
+                if (Directory.Exists(RIGU.wndMain.currentDatapack))
                 {
                     wndRemoveItems.ShowDialog();
                 }
@@ -87,7 +76,7 @@ namespace Random_Item_Giver_Updater
             {
                 //Check the current loot table
                 duplicateEntries.Clear();
-                CheckLootTable(wndMain.currentLootTable, wndMain.currentLootTable.Replace(wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
+                CheckLootTable(RIGU.wndMain.currentLootTable, RIGU.wndMain.currentLootTable.Replace(RIGU.wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
 
                 //Show a message with the amount of duplicates and display them in a list
                 MessageBox.Show(string.Format("Successfully searched for duplicates. Found {0} results.", duplicateEntries.Count()), "Search completed", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -106,9 +95,9 @@ namespace Random_Item_Giver_Updater
                 //Check all loot tables in the current datapack
                 duplicateEntries.Clear();
                 duplicateIndex = 0;
-                foreach (lootTable lootTable in wndMain.lootTableList)
+                foreach (lootTable lootTable in RIGU.wndMain.lootTableList)
                 {
-                    CheckLootTable(lootTable.fullLootTablePath, lootTable.fullLootTablePath.Replace(wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
+                    CheckLootTable(lootTable.fullLootTablePath, lootTable.fullLootTablePath.Replace(RIGU.wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
                 }
 
                 //Show a message with the amount of duplicates
@@ -187,7 +176,7 @@ namespace Random_Item_Giver_Updater
                     duplicateIndex++;
                     duplicateEntries.Add(new duplicateEntry(item, lootTable, duplicateIndex));
                 }
-            }       
+            }
         }
 
         private void CreateWizard()
@@ -271,7 +260,7 @@ namespace Random_Item_Giver_Updater
             }
             else if (rbtnCurrent.IsChecked == true)
             {
-                if (wndMain.currentLootTable != "none")
+                if (RIGU.wndMain.currentLootTable != "none")
                 {
                     //If the radiobutton for the current loot table is checked and a loot table is selected, return true
                     return true;

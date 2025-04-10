@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows;
 
 namespace Random_Item_Giver_Updater
 {
@@ -23,10 +18,6 @@ namespace Random_Item_Giver_Updater
         public string lootTablePath;
         public string fullLootTablePath;
         public bool isSelectedForAdding = true;
-
-        //Windows
-        public MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
-
 
         //-- Constructor --//
 
@@ -51,7 +42,7 @@ namespace Random_Item_Giver_Updater
             cvsLootTable.Children.Add(tblLootTable);
 
             //Create checkbox for adding items window
-            cbAddToLootTable.Content = fullLootTablePath.Replace(string.Format("{0}/data/randomitemgiver/loot_tables/", wndMain.currentDatapack), "").Replace(".json", "").Replace("_", "__");
+            cbAddToLootTable.Content = fullLootTablePath.Replace(string.Format("{0}/data/randomitemgiver/loot_tables/", RIGU.wndMain.currentDatapack), "").Replace(".json", "").Replace("_", "__");
             cbAddToLootTable.Foreground = new SolidColorBrush(Colors.White);
             cbAddToLootTable.Margin = new Thickness(20, 15, 0, 0);
             cbAddToLootTable.FontSize = 15;
@@ -66,9 +57,9 @@ namespace Random_Item_Giver_Updater
 
         private void cvsLootTable_MouseDown(object sender, MouseEventArgs e)
         {
-            if (wndMain.currentLootTable != "none")
+            if (RIGU.wndMain.currentLootTable != "none")
             {
-                if (wndMain.lootTableModified() == true)
+                if (RIGU.wndMain.lootTableModified() == true)
                 {
                     //Show warning if there are unsaved changes to the loot table
                     MessageBoxResult result = MessageBox.Show("You still have unsaved modifications in the current loot table.\nDo you want to save the changes before continuing?", "Save changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
@@ -77,15 +68,15 @@ namespace Random_Item_Giver_Updater
                     {
                         case MessageBoxResult.Yes:
                             //Save the current loot table
-                            wndMain.calledNewLootTable = true;
-                            wndMain.calledLootTablePath = lootTablePath;
-                            wndMain.calledLootTableName = lootTableName;
-                            wndMain.SaveCurrentLootTable();
+                            RIGU.wndMain.calledNewLootTable = true;
+                            RIGU.wndMain.calledLootTablePath = lootTablePath;
+                            RIGU.wndMain.calledLootTableName = lootTableName;
+                            RIGU.wndMain.SaveCurrentLootTable();
                             break;
                         case MessageBoxResult.No:
                             //Just load the loot table without saving
-                            wndMain.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
-                            wndMain.LoadLootTable(wndMain.currentLootTable);
+                            RIGU.wndMain.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
+                            RIGU.wndMain.LoadLootTable(RIGU.wndMain.currentLootTable);
                             break;
                         case MessageBoxResult.Cancel:
                             break;
@@ -94,15 +85,15 @@ namespace Random_Item_Giver_Updater
                 else
                 {
                     //Load the loot table
-                    wndMain.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
-                    wndMain.LoadLootTable(wndMain.currentLootTable);
+                    RIGU.wndMain.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
+                    RIGU.wndMain.LoadLootTable(RIGU.wndMain.currentLootTable);
                 }
             }
             else
             {
                 //Load the loot table
-                wndMain.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
-                wndMain.LoadLootTable(wndMain.currentLootTable);
+                RIGU.wndMain.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
+                RIGU.wndMain.LoadLootTable(RIGU.wndMain.currentLootTable);
             }
         }
     }

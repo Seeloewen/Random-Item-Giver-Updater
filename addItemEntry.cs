@@ -1,20 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows;
 
 namespace Random_Item_Giver_Updater
 {
     public class addItemEntry
     {
         //Attributes
-        public MainWindow wndMain = (MainWindow)Application.Current.MainWindow; //TODO: Use another way to get mainwindow
-
         public string itemName { get; set; }
         public int itemIndex { get; set; }
         public string itemNBT { get; set; }
@@ -40,7 +32,7 @@ namespace Random_Item_Giver_Updater
             itemPrefix = prefix;
 
             //Set loot table checklist
-            foreach (lootTable lootTable in wndMain.lootTableList)
+            foreach (lootTable lootTable in RIGU.wndMain.lootTableList)
             {
                 lootTableCheckList.Add(new lootTable(lootTable.lootTableName, lootTable.lootTableType, lootTable.lootTablePath));
             }

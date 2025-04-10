@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Media;
+﻿using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Media;
 
 namespace Random_Item_Giver_Updater
 {
@@ -22,9 +17,6 @@ namespace Random_Item_Giver_Updater
         //Canvas attributes
         public SolidColorBrush canvasBackColor { get; set; }
 
-        //Reference to main window
-        public MainWindow wndMain = (MainWindow)Application.Current.MainWindow;
-
         //-- Constructor --//
 
         public itemRemovalEntry(string name)
@@ -40,11 +32,11 @@ namespace Random_Item_Giver_Updater
             lootTables.Add(newLootTable);
             if (string.IsNullOrEmpty(lootTablesString))
             {
-                lootTablesString = string.Format("{0}", newLootTable.fullLootTablePath.Replace(wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
+                lootTablesString = string.Format("{0}", newLootTable.fullLootTablePath.Replace(RIGU.wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
             }
             else
             {
-                lootTablesString = string.Format("{0}, {1}", lootTablesString, newLootTable.fullLootTablePath.Replace(wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
+                lootTablesString = string.Format("{0}, {1}", lootTablesString, newLootTable.fullLootTablePath.Replace(RIGU.wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
             }
 
             //Set loot table checklist

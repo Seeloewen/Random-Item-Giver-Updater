@@ -1,35 +1,23 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SeeloewenLib;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.IO;
-using System.Security.Policy;
-using System.Diagnostics.Eventing.Reader;
-using System.Windows.Threading;
-using System.ComponentModel;
-using System.Threading;
-using System.Windows.Media.Animation;
-using SeeloewenLib;
-using System.Collections.ObjectModel;
-using System.Windows.Media.Converters;
-using System.Reflection;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+using static System.Windows.Forms.AxHost;
 
 namespace Random_Item_Giver_Updater
 {
 
-    public partial class MainWindow : Window
+    public partial class wndMain : Window
     {
         //Lists for items and loot tables
         public ObservableCollection<ItemEntry> itemList { get; set; } = new ObservableCollection<ItemEntry>();
@@ -92,7 +80,7 @@ namespace Random_Item_Giver_Updater
 
         //-- Constructor --//
 
-        public MainWindow()
+        public wndMain()
         {
             InitializeComponent();
 
@@ -109,17 +97,15 @@ namespace Random_Item_Giver_Updater
             //Open add item window
             wndAddItem = new wndAddItem() { Owner = this };
             wndAddItem.Owner = Application.Current.MainWindow;
-            if (wndAddItem.isOpen == false)
+
+            //Check if the datapack path exists before opening the window
+            if (Directory.Exists(currentDatapack))
             {
-                //Check if the datapack path exists before opening the window
-                if (Directory.Exists(currentDatapack))
-                {
-                    wndAddItem.ShowDialog();
-                }
-                else
-                {
-                    MessageBox.Show("Error: Could not detect datapack. Please make sure the currently selected datapack exists and is valid.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                wndAddItem.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("Error: Could not detect datapack. Please make sure the currently selected datapack exists and is valid.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -153,7 +139,7 @@ namespace Random_Item_Giver_Updater
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            //tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.21 Dev 2.0";
+            tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.21 Dev 2.0";
             if ((!string.IsNullOrEmpty(tbDatapack.Text) && Directory.Exists(tbDatapack.Text)))
             {
                 //If the directory exists and is valid and no other datapack with unsaved changes is loaded, try to load the datapack
@@ -206,7 +192,7 @@ namespace Random_Item_Giver_Updater
         private void btnSettings_Click(object sender, RoutedEventArgs e)
         {
             //Open settings window
-            wndSettings = new wndSettings(this);
+            wndSettings = new wndSettings();
             wndSettings.ShowDialog();
         }
 
@@ -243,11 +229,11 @@ namespace Random_Item_Giver_Updater
             {
                 try
                 {
-                    if (!item.IsDeleted())
+                    /*if (!item.IsDeleted())
                     {
                         JObject itemObject = JObject.Parse(item.itemBody);
                         entriesArray.Add(itemObject);
-                    }
+                    }*/ //TODO: FIX
                 }
                 catch (JsonException ex)
                 {
@@ -359,7 +345,7 @@ namespace Random_Item_Giver_Updater
 
             for (int i = 0; i < items.Count; i++)
             {
-                ItemEntry entry = new ItemEntry(GetItemBody(fileContent, i), i);
+                MainEntry entry = new MainEntry(GetItemBody(fileContent, i), i);
                 itemList.Add(entry);
             }
 
@@ -582,12 +568,12 @@ namespace Random_Item_Giver_Updater
                 //Check every item in the loot table
                 foreach (ItemEntry item in itemList)
                 {
-                    if (item.IsModified() == true)
+                    /*if (item.IsModified() == true)
                     {
                         //If any item is modified, stop and return
                         isModified = true;
                         break;
-                    }
+                    }*/ //TODO: FIX
                 }
 
                 return isModified;
@@ -771,27 +757,26 @@ namespace Random_Item_Giver_Updater
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is ItemEntry item)
+            if (sender is Button button && button.DataContext is MainEntry entry)
             {
-                if (item.IsDeleted() == false) //Set state to deleted
+                if (!entry.isDeleted) //Set state to deleted
                 {
-                    item.changes.Add(ItemEntry.changeType.Deleted);
+                    entry.isDeleted = true;
                     button.Content = "Undo deletion";
-                    item.SetIndicatorState(sender);
                 }
-                else if (item.IsDeleted() == true) //If the item has been deleted, set state to undeleted
+                else if (entry.isDeleted) //If the item has been deleted, set state to undeleted
                 {
-                    //Check if the item has been modified in some other way before setting the modified state to false
-                    item.changes.Remove(ItemEntry.changeType.Deleted);
+                    entry.isDeleted = false;
                     button.Content = "Delete";
-                    item.SetIndicatorState(sender);
                 }
+
+                entry.SetIndicatorState(button, entry.GetModificationState());
             }
         }
 
         private void btnSaveItemName_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is ItemEntry item)
+            if (sender is Button button && button.DataContext is MainEntry entry)
             {
                 //Get the parent canvas
                 Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(button);
@@ -805,28 +790,30 @@ namespace Random_Item_Giver_Updater
                 button.Visibility = Visibility.Hidden;
                 textblock.Visibility = Visibility.Visible;
 
-                item.SetName(textbox.Text, sender);
+                entry.SetName(textbox.Text);
                 textblock.Text = textbox.Text;
+
+                entry.SetIndicatorState(button, entry.GetModificationState());
             }
         }
 
         private void btnEditNBTComponent_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is ItemEntry item)
+            if (sender is Button button && button.DataContext is MainEntry entry)
             {
                 //If the datapack still uses legacy nbt, open the nbt editor and set the tag
                 if (datapackUsesLegacyNBT)
                 {
                     wndNBTEditor editor = new wndNBTEditor();
-                    (EditorResult result, string nbt) = editor.GetFromDialog(item.name, item.GetNBT());
+                    (ModificationState result, string nbt) = editor.GetFromDialog(entry.name, entry.GetNBT());
 
                     switch (result)
                     {
-                        case EditorResult.Edited:
-                            item.SetNBT(nbt);
+                        case ModificationState.Edited:
+                            entry.SetNBT(nbt);
                             break;
-                        case EditorResult.Deleted:
-                            item.RemoveNbtOrComponentBody();
+                        case ModificationState.Deleted:
+                            entry.RemoveNbtOrComponentBody();
                             break;
                     }
                 }
@@ -834,19 +821,20 @@ namespace Random_Item_Giver_Updater
                 {
                     //If it uses the item stack component, open the editor and set the component
                     wndComponentEditor editor = new wndComponentEditor();
-                    (EditorResult result, string component) = editor.GetFromDialog(item.name, item.GetItemStackComponents());
+                    (ModificationState result, string component) = editor.GetFromDialog(entry.name, entry.GetItemStackComponent());
 
                     switch (result)
                     {
-                        case EditorResult.Edited:
-                            item.SetItemStackComponent(component);
+                        case ModificationState.Edited:
+                            entry.SetItemStackComponent(component);
                             break;
-                        case EditorResult.Deleted:
-                            item.RemoveNbtOrComponentBody();
+                        case ModificationState.Deleted:
+                            entry.RemoveNbtOrComponentBody();
                             break;
                     }
                 }
 
+                entry.SetIndicatorState(button, entry.GetModificationState());
             }
         }
 

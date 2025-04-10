@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace Random_Item_Giver_Updater
 {
@@ -45,7 +36,7 @@ namespace Random_Item_Giver_Updater
             cbxScheme.Items.Clear();
             cbxScheme.Items.Add("None");
             foreach (lootTable lootTable in lootTableList)
-            {       
+            {
                 if (!cbxScheme.Items.Contains(lootTable.lootTableName.Replace(".json", "")))
                 {
                     cbxScheme.Items.Add(lootTable.lootTableName.Replace(".json", ""));
@@ -111,19 +102,19 @@ namespace Random_Item_Giver_Updater
 
         private void btnSelectScheme_Click(object sender, RoutedEventArgs e)
         {
-            if(cbxScheme.Text != "None")
-            //Check each checkbox if it matches the scheme and change check state properly
-            foreach(lootTable lootTable in lootTableList)
-            {
-                if(lootTable.lootTableName.Replace(".json", "").ToString().Contains(cbxScheme.Text))
+            if (cbxScheme.Text != "None")
+                //Check each checkbox if it matches the scheme and change check state properly
+                foreach (lootTable lootTable in lootTableList)
                 {
-                    lootTable.cbAddToLootTable.IsChecked = true;
+                    if (lootTable.lootTableName.Replace(".json", "").ToString().Contains(cbxScheme.Text))
+                    {
+                        lootTable.cbAddToLootTable.IsChecked = true;
+                    }
+                    else
+                    {
+                        lootTable.cbAddToLootTable.IsChecked = false;
+                    }
                 }
-                else
-                {
-                    lootTable.cbAddToLootTable.IsChecked= false;
-                }
-            }
         }
     }
 }

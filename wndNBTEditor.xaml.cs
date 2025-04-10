@@ -4,7 +4,7 @@ namespace Random_Item_Giver_Updater
 {
     public partial class wndNBTEditor : Window
     {
-        public EditorResult result;
+        public ModificationState result;
         public string newNbt = "";
         private string oldNbt;
 
@@ -13,7 +13,7 @@ namespace Random_Item_Giver_Updater
             InitializeComponent();
         }
 
-        public (EditorResult, string) GetFromDialog(string itemName, string currentNbt)
+        public (ModificationState, string) GetFromDialog(string itemName, string currentNbt)
         {
             //Show the dialog and wait for the result and new nbt
             tblHeader.Text = $"Editing NBT of item {itemName}";
@@ -32,7 +32,7 @@ namespace Random_Item_Giver_Updater
             if (newNbt == oldNbt)
             {
                 //If the nbt is unchanged
-                result = EditorResult.Unchanged;
+                result = ModificationState.Unchanged;
                 MessageBox.Show("The changes were saved successfully", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else if (newNbt == "")
@@ -42,18 +42,18 @@ namespace Random_Item_Giver_Updater
                 switch (msgResult)
                 {
                     case MessageBoxResult.Yes:
-                        result = EditorResult.Deleted;
+                        result = ModificationState.Deleted;
                         MessageBox.Show("The NBT tag was successfully deleted!", "Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
                         newNbt = "";
                         break;
                     case MessageBoxResult.No:
-                        result = EditorResult.Edited;
+                        result = ModificationState.Edited;
                         break;
                 }
             }
             else
             {
-                result = EditorResult.Edited;
+                result = ModificationState.Edited;
                 MessageBox.Show("The changes were saved successfully", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
@@ -67,7 +67,7 @@ namespace Random_Item_Giver_Updater
             switch (msgResult)
             {
                 case MessageBoxResult.Yes:
-                    result = EditorResult.Deleted;
+                    result = ModificationState.Deleted;
                     MessageBox.Show("The NBT tag was successfully deleted!", "Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
                     newNbt = "";
                     Close();
@@ -78,7 +78,7 @@ namespace Random_Item_Giver_Updater
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             //Close without any changes
-            result = EditorResult.Unchanged;
+            result = ModificationState.Unchanged;
             newNbt = oldNbt;
             Close();
         }
