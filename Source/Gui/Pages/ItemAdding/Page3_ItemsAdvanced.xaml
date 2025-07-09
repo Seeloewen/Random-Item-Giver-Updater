@@ -1,0 +1,44 @@
+﻿<Page x:Class="RandomItemGiverUpdater.Gui.Pages.ItemAdding.Page3_ItemsAdvanced"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:RandomItemGiverUpdater.Gui.Pages.ItemAdding"
+      mc:Ignorable="d" 
+      d:DesignHeight="580" d:DesignWidth="742"
+      Title="Page1_Start">
+    <Page.Resources>
+        <DataTemplate x:Key="ItemTemplate">
+            <Canvas x:Name="cvsItem" Height="40" Background="{Binding canvasBackColor}" >
+                <TextBox x:Name="tbItemName" Width="255" Height="24" FontSize="15" Background="#FF636363" Foreground="White" Canvas.Top="6" Canvas.Left="205" Text="{Binding itemName}" TextChanged="tbItemName_TextChanged"/>
+                <Button x:Name="btnNbtComponentEditor" Width="200" Content="Open Editor" Height="24" FontSize="15" Canvas.Top="6" Canvas.Left="475" Click="btnNbtComponentEditor_Click"/>
+                <TextBox x:Name="tbItemPrefix" Width="175" Height="24" FontSize="15" Background="#FF636363" Foreground="White" Canvas.Top="6" Canvas.Left="15" Text="{Binding itemPrefix}"  TextChanged="tbItemPrefix_TextChanged"/>
+                <Button x:Name="btnRemove" Height="24" Width="20" Content="X" FontSize="15" Canvas.Top="6" Canvas.Left="685" Click="btnRemove_Click"/>
+            </Canvas>
+        </DataTemplate>
+    </Page.Resources>
+    <Canvas x:Name="cvsContent">
+        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="116" Canvas.Left="606" Canvas.Top="540" Click="btnContinue_Click"/>
+        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="116" Canvas.Left="476" Canvas.Top="540" Click="btnBack_Click"/>
+        <Label x:Name="lblHeader" Content="Step 3 - Configure Items" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
+        <TextBlock x:Name="tblEditCategories" TextWrapping="Wrap" Width="704" Height="18" HorizontalAlignment="Center" Canvas.Left="11" Canvas.Top="126" VerticalAlignment="Top" FontWeight="DemiBold" Foreground="White" FontSize="14"><Run Text="  "/><Run Text="Prefix                                  Name                                                   NBT"/></TextBlock>
+        <ListBox x:Name="lbItems" ItemsSource="{Binding itemEntries}" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="374" Canvas.Top="154" Width="704" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="18">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ItemTemplate}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <TextBlock x:Name="tblEditItems" Canvas.Left="14" TextWrapping="Wrap" Text="You can now edit the prefix, name and NBT/Component of your items. To add more items, click the button at the bottom." Canvas.Top="51" HorizontalAlignment="Center" VerticalAlignment="Top" Width="704" FontSize="14" Foreground="White"/>
+        <Button x:Name="btnAddAdditionalItem" Content="Add additional item" Canvas.Left="18" Canvas.Top="540" HorizontalAlignment="Center" VerticalAlignment="Center" Width="171" Height="25" Click="btnAddAdditionalItem_Click"/>
+
+
+    </Canvas>
+</Page>

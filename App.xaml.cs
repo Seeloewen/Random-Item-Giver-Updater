@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 
-namespace Random_Item_Giver_Updater
+namespace RandomItemGiverUpdater
 {
 
     public partial class App : Application

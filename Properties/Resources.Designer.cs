@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Random_Item_Giver_Updater.Properties {
+namespace RandomItemGiverUpdater.Properties {
     using System;
     
     

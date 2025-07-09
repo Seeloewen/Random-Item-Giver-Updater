@@ -1,0 +1,42 @@
+﻿<Page x:Class="RandomItemGiverUpdater.Gui.Pages.ItemAdding.Page4_LootTables"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:RandomItemGiverUpdater.Gui.Pages.ItemAdding"
+      mc:Ignorable="d" 
+      d:DesignHeight="580" d:DesignWidth="742"
+      Title="Page1_Start">
+    <Page.Resources>
+        <DataTemplate x:Key="LootTableTemplate">
+            <Canvas x:Name="cvsItem" Height="40" Background="{Binding canvasBackColor}" >
+                <TextBlock x:Name="tbItemName" Width="140" Height="24" FontSize="15" Foreground="White" Canvas.Top="6" Canvas.Left="20" Text="{Binding itemName}"/>
+                <RadioButton x:Name="rbtnAllLootTables" Width="255" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="175" Padding="5,-3.5,0,0" Content="All loot tables" IsChecked="True" Checked="rbtnAllLootTables_Checked"/>
+                <RadioButton x:Name="rbtnCertainLootTables" Width="255" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="350" Content="Only certain loot tables:" Padding="5,-3.5,0,0" Checked="rbtnCertainLootTables_Checked"/>
+                <Button x:Name="btnEditCertainLootTables" Height="25" Width="150" Content="Select loot tables" FontSize="15" Canvas.Top="6" Canvas.Left="550" Click="btnEditCertainLootTables_Click" IsEnabled="False"/>
+            </Canvas>
+        </DataTemplate>
+    </Page.Resources>
+    <Canvas x:Name="cvsContent">
+        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Center" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="609" Canvas.Top="542" Click="btnContinue_Click"/>
+        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Center" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="479" Canvas.Top="542" Click="btnBack_Click"/>
+        <Label x:Name="lblHeader" Content="Step 4 - Configure Loot Tables" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
+
+        <TextBlock x:Name="tblSelectLootTables" Canvas.Left="15" TextWrapping="Wrap" Text="Now it's time to select the loot tables you want to add your items too. You can either add it to all normal loot tables or only certain ones" Canvas.Top="52" HorizontalAlignment="Left" VerticalAlignment="Center" Width="702" Foreground="White" FontSize="14"/>
+        <ListBox x:Name="lbItemsLootTables" ItemsSource="{Binding itemEntries}" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="394" Canvas.Top="136" Width="703" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Left="22">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource LootTableTemplate}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <TextBlock x:Name="tblLootTableCategories" Canvas.Left="22" TextWrapping="Wrap" Text="Item                         Add to..." Canvas.Top="107" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="DemiBold" FontSize="18" Foreground="White"/>
+    </Canvas>
+</Page>

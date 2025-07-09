@@ -1,0 +1,21 @@
+﻿<Window x:Name="wndAbout1" x:Class="RandomItemGiverUpdater.Gui.Menus.wndAbout"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RandomItemGiverUpdater.Gui.Menus"
+        mc:Ignorable="d"
+        Title="About" Height="527" Width="495" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Background="#FF323232">
+    <Grid>
+        <Canvas>
+            <Image x:Name="imgIcon" HorizontalAlignment="Center" Height="84" VerticalAlignment="Top" Width="77" Source="/Resources/imgIcon.png" Canvas.Left="21" Canvas.Top="17"/>
+            <TextBlock x:Name="tblHeader" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Random Item Giver Updater" VerticalAlignment="Top" FontSize="20" FontWeight="DemiBold" Foreground="White" Canvas.Left="116" Canvas.Top="13"/>
+            <TextBox x:Name="tbLicense" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="441" Height="250" Text="Simple but powerful tool for managing the Random Item Giver Datapack Copyright (C) 2024 Louis/Seeloewen&#xA;&#xA;This program is free software: you can redistribute it and/or modify&#xA;it under the terms of the GNU General Public License as published by&#xA;the Free Software Foundation, either version 3 of the License, or&#xA;(at your option) any later version.&#xA;&#xA;This program is distributed in the hope that it will be useful,&#xA;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA;GNU General Public License for more details.&#xA;&#xA;You should have received a copy of the GNU General Public License&#xA;along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;." Background="#FF444444" Foreground="White" Canvas.Left="20" Canvas.Top="142" IsReadOnly="True"/>
+            <TextBlock x:Name="tblGithub"  FontSize="16" HorizontalAlignment="Left" Width="318" Height="35" VerticalAlignment="Top" Canvas.Left="106" Canvas.Top="401"> <Hyperlink x:Name="hlGithub" NavigateUri="https://github.com/seeloewen/random-item-giver-updater" Click="hlGithub_Click" Foreground="#FF64ACF3"> Random Item Giver Updater on GitHub</Hyperlink></TextBlock>
+            <Button x:Name="btnChangelog" Content="Changelog" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="141" FontSize="15" Canvas.Left="21" Canvas.Top="441" Click="btnChangelog_Click"/>
+            <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="120" FontSize="15" Click="btnOK_Click" Canvas.Left="341" Canvas.Top="441"/>
+            <TextBlock Canvas.Left="60" TextWrapping="Wrap" Text="This software is not affiliated with Mojang Studios!" Canvas.Top="107" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White"/>
+            <Button x:Name="btnThirdPartyLicenses" Content="Third-Party Licenses" Height="30" Width="152" FontSize="15" Canvas.Left="176" Canvas.Top="441" Click="btnThirdPartyLicenses_Click" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        </Canvas>
+    </Grid>
+</Window>

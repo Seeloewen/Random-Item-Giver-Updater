@@ -1,0 +1,16 @@
+﻿<Page x:Class="RandomItemGiverUpdater.Gui.Pages.ItemAdding.Page5_AddingItems"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:RandomItemGiverUpdater.Gui.Pages.ItemAdding"
+      mc:Ignorable="d" 
+      d:DesignHeight="580" d:DesignWidth="742"
+      Title="Page1_Start">
+    <Canvas x:Name="cvsContent">
+        <Label x:Name="lblHeader" Content="Step 5 - Adding items" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
+        <TextBlock x:Name="tblAddingItems" Canvas.Left="16" TextWrapping="Wrap" Text="Congratulations! Your items are now being added to the datapack. You can view the progress down below." Canvas.Top="52" HorizontalAlignment="Left" VerticalAlignment="Top" Width="692" Foreground="White" FontSize="14"/>
+        <TextBlock x:Name="tblAddingItemsProgress" Canvas.Left="16" TextWrapping="Wrap" Text="Adding items... (0/0)" Canvas.Top="98" FontSize="14" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <ProgressBar x:Name="pbAddingItems" Height="19" Canvas.Left="16" Canvas.Top="128" Width="687" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+    </Canvas>
+</Page>

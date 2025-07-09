@@ -1,0 +1,65 @@
+﻿<Window x:Name="wndMain1" x:Class="RandomItemGiverUpdater.Gui.Menus.wndMain"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RandomItemGiverUpdater.Gui.Menus"
+        mc:Ignorable="d"
+        Title="Random Item Giver Updater
+" Height="900" Width="1400" Closing="wndMain_Closing">
+    <Window.Resources>
+        <DataTemplate x:Key="ItemTemplate">
+            <Canvas x:Name="cvsItem" Height="50" Background="{Binding canvasBackColor}" Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" MouseEnter="cvsItem_MouseEnter" MouseLeave="cvsItem_MouseLeave">
+                <TextBlock x:Name ="tblItemName" Text="{Binding name}" Canvas.Left="10" Canvas.Top="10" FontSize="20" Foreground="White" MouseDown="tblItemName_MouseDown"/>
+                <TextBox x:Name="tbItemName" Width="350" Height="25" FontSize="18" Canvas.Top="10" Canvas.Left="10" Visibility="Hidden"/>
+                <Button x:Name="btnSaveItemName" Height="25" Width="100" Content="Confirm" Canvas.Top="10" Canvas.Left="370" Visibility="Hidden" Click="btnSaveItemName_Click"/>
+                <Button x:Name="btnDelete" Height="25" Width="100" Content="Delete" Canvas.Top="12" Canvas.Right="100" Click="btnDelete_Click" Visibility="Hidden"/>
+                <Button x:Name="btnEditNBTComponent" Height="25" Width="160" Content="Edit NBT/Component" Canvas.Top="12" Canvas.Right="220" Visibility="Hidden" Click="btnEditNBTComponent_Click"/>
+                <TextBlock x:Name="tblEntryIndex" Text="{Binding index}" FontSize="20" TextAlignment="Left" FontWeight="DemiBold" Foreground="White" Canvas.Top="10" Canvas.Right="40"/>
+                <TextBlock x:Name="tblIndicator" FontWeight="Bold" FontSize="24" Visibility="Hidden" Canvas.Top="8" Canvas.Right="225"/>
+            </Canvas>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid x:Name="grdWorkspace">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260" />
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="93"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel x:Name="stpSidebar" Background="#FF323232" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
+        <StackPanel x:Name="stpHeader" Background="#FF212121" Grid.ColumnSpan="2">
+            <Grid>
+                <TextBlock x:Name="tblHeader" Text="Random Item Giver Updater" Width="788" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="25" FontWeight="SemiBold" Canvas.Left="96" Canvas.Top="13" Foreground="White" Margin="96,9,0,0"/>
+                <TextBox x:Name="tbDatapack" Canvas.Left="772" Canvas.Top="19" Width="431" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="15" Background="#FF636363" Foreground="White" Margin="0,10,186,0"/>
+                <Button x:Name="btnBrowseDatapack" Canvas.Left="1211" Canvas.Top="19" RenderTransformOrigin="0.631,0.127" HorizontalAlignment="Right" Height="22" Width="94" Content="Browse" Click="btnBrowseDatapack_Click" VerticalAlignment="Top" HorizontalContentAlignment="Center" Margin="0,10,83,0"/>
+                <Button x:Name="btnLoad" Content="Load" Canvas.Left="1314" Canvas.Top="19" Height="22" Width="64" HorizontalAlignment="Right" VerticalAlignment="Top" Click="btnLoad_Click" FontWeight="Bold" Margin="0,10,11,0"/>
+                <Button x:Name="btnSave" Content="Save Loot Table" Height="30" Canvas.Left="1102" Canvas.Top="50" VerticalAlignment="Top" Click="btnSaveLootTable_Click" HorizontalContentAlignment="Left" Margin="0,45,623,0" HorizontalAlignment="Right" Width="158"/>
+                <Button x:Name="btnAddItems" Content="Add Items" Width="130" Height="30" Canvas.Left="958" Canvas.Top="50" HorizontalAlignment="Right" VerticalAlignment="Top" Click="btnAddItem_Click" Background="#FFDDDDDD" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,45,479,0"/>
+                <Image x:Name="imgHeader" Height="74" Canvas.Left="14" Canvas.Top="10" Width="70" HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Resources/imgIcon.png" Margin="10,10,0,0"/>
+                <TextBlock x:Name="tblDatapack" Canvas.Left="629" TextWrapping="Wrap" Text="Selected Datapack:" Canvas.Top="18" FontSize="18" Foreground="White" HorizontalAlignment="Right" Margin="0,8,625,0" Height="24" VerticalAlignment="Top"/>
+                <Button x:Name="btnDuplicateFinder" Content="Duplicate Finder" Width="170" Height="30" Canvas.Left="814" Canvas.Top="51" Background="#FFDDDDDD" HorizontalAlignment="Right" VerticalAlignment="Top" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,45,126,0" Click="btnDuplicateFinder_Click"/>
+                <Button x:Name="btnAbout" Content="About" Width="102" Height="30" Canvas.Left="1247" Canvas.Top="51" HorizontalAlignment="Right" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="0,45,11,0" Click="btnAbout_Click"/>
+                <Button x:Name="btnRemoveItems" Content="Remove Items" Width="154" Height="30" HorizontalAlignment="Right" VerticalAlignment="Top" Click="btnRemoveItems_Click" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="0,45,311,0"/>
+                <Button x:Name="btnSettings" Content="Settings" Height="30" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="0,45,796,0" HorizontalAlignment="Right" Width="158" Click="btnSettings_Click" Visibility="Hidden"/>
+            </Grid>
+        </StackPanel>
+        <ListBox x:Name="lbItems" ItemsSource="{Binding itemList}" Grid.Column="1" Grid.Row="1" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ItemTemplate}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Image x:Name="imgWorkplace" Grid.Column="1" Margin="308,136,308,178" Grid.Row="1" Source="/Resources/imgWorkplace.png"/>
+    </Grid>
+</Window>
