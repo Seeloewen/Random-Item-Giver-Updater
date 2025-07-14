@@ -7,6 +7,8 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
 {
     public partial class Page4_LootTables : Page, IWizardPage
     {
+        private const string EDIT_LOOTTABLES_BUTTON = "btnEditCertainLootTables";
+
         private wndAddItems wndAddItems;
         private wndSelectLootTables wndSelectLootTables;
 
@@ -16,12 +18,23 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             this.wndAddItems = wndAddItems;
         }
 
+        private void ToggleLootTableSelection(RadioButton rbtn)
+        {
+            Canvas cvs = SeeloewenLib.Tools.FindVisualParent<Canvas>(rbtn);
+            AddingEntry item = (AddingEntry)cvs.DataContext;
+
+            //Toggle edit button
+            Button button = (Button)cvs.FindName(EDIT_LOOTTABLES_BUTTON);
+            button.IsEnabled = !button.IsEnabled;
+            item.defaultLootTables = !item.defaultLootTables;
+        }
+
         private void btnBack_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowPreviousPage();
 
         private void btnContinue_Click(object sender, RoutedEventArgs e)
         {
             //Check for each item entry if the selection is invalid
-            foreach (AddingEntry addItemEntry in RIGU.itemAddingCore.itemEntries)
+            foreach (AddingEntry addItemEntry in RIGU.itemAdding.itemEntries)
             {
                 if (!addItemEntry.defaultLootTables && addItemEntry.lootTableWhiteList.Count <= 0)
                 {
@@ -43,7 +56,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             wndSelectLootTables.ShowDialog();
 
             //Get whitelisted loot tables from loot table selection window
-            foreach (lootTable lootTable in wndSelectLootTables.lootTableList)
+            foreach (LootTable lootTable in wndSelectLootTables.lootTableList)
             {
                 if (lootTable.cbAddToLootTable.IsChecked == true)
                 {
@@ -54,12 +67,12 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
 
         private void rbtnAllLootTables_Checked(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            ToggleLootTableSelection((RadioButton)sender);
         }
 
         private void rbtnCertainLootTables_Checked(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            ToggleLootTableSelection((RadioButton)sender);
         }
     }
 }

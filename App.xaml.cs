@@ -1,25 +1,24 @@
 ﻿using System.Windows;
 using System.Windows.Media;
+using System.Windows.Interop;
+using RandomItemGiverUpdater.Core;
 
 namespace RandomItemGiverUpdater
 {
-
     public partial class App : Application
     {
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.Default;
+            RenderOptions.ProcessRenderMode = RenderMode.Default;
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             //Initialize application
-            wndMain wndMain = new wndMain();
+            Main main = new Main();
 
-            RIGU.Initialize(wndMain);
-
-            wndMain.Show();
+            RIGU.Initialize(main);
         }
     }
 }

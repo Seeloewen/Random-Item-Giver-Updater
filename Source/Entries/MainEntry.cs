@@ -4,7 +4,7 @@ using System.Windows.Media;
 
 namespace RandomItemGiverUpdater
 {
-    public class MainEntry : ItemEntry
+    public class MainEntry : Item
     {
         SeeloewenLibTools SeeloewenLibTools = new SeeloewenLibTools();
 

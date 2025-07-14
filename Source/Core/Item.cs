@@ -1,20 +1,20 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace RandomItemGiverUpdater
+namespace RandomItemGiverUpdater.Core
 {
-    public class ItemEntry
+    public class Item
     {
         public string name { get; set; }
         private JObject itemBody;
 
-        public ItemEntry(string itemBody)
+        public Item(string itemBody)
         {
             this.itemBody = JObject.Parse(itemBody);
             name = GetName();
         }
 
-        public ItemEntry(string prefix, string name)
+        public Item(string prefix, string name)
         {
             itemBody = new JObject()
             {

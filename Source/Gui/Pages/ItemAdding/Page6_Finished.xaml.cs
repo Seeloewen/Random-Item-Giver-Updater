@@ -18,14 +18,14 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
         public void Execute()
         {
             //Add all items to the added items list
-            foreach (AddingEntry item in RIGU.itemAddingCore.itemEntries)
+            foreach (AddingEntry item in RIGU.itemAdding.itemEntries)
             {
                 tbAddedItemsList.AppendText($"{item.prefix}:{item.id}\n");
             }
 
             //Show the elapsed time
             //tblElapsedTime.Text = $"Elapsed time: {(DateTime.Now - RIGU.itemAddingCore.startTime).ToString(@"hh\:mm\:ss")}"; 
-            tblElapsedTime.Text = $"Elapsed time: {DateTime.Now - RIGU.itemAddingCore.startTime}";
+            tblElapsedTime.Text = $"Elapsed time: {DateTime.Now - RIGU.itemAdding.startTime}";
         }
 
         private void btnContinue_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowNextPage();

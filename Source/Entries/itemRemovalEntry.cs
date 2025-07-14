@@ -5,8 +5,8 @@ namespace RandomItemGiverUpdater
 {
     public class itemRemovalEntry
     {
-        public List<lootTable> lootTableCheckList = new List<lootTable>();
-        public List<lootTable> lootTables = new List<lootTable>();
+        public List<LootTable> lootTableCheckList = new List<LootTable>();
+        public List<LootTable> lootTables = new List<LootTable>();
         public string lootTableWhiteList = "";
         public bool allLootTablesChecked = true;
         public string itemName { get; set; }
@@ -25,7 +25,7 @@ namespace RandomItemGiverUpdater
         }
 
 
-        public void UpdateLootTables(lootTable newLootTable)
+        public void UpdateLootTables(LootTable newLootTable)
         {
             //Add a new loot table to the loot tables string and display it
             lootTables.Add(newLootTable);
@@ -40,11 +40,11 @@ namespace RandomItemGiverUpdater
 
             //Set loot table checklist
             lootTableCheckList.Clear();
-            foreach (lootTable lootTable in lootTables)
+            foreach (LootTable lootTable in lootTables)
             {
                 //Check if the loot table is already on the list
                 bool isAdded = false;
-                foreach (lootTable lootTableCheck in lootTableCheckList)
+                foreach (LootTable lootTableCheck in lootTableCheckList)
                 {
                     if (lootTableCheck.fullLootTablePath == lootTable.fullLootTablePath)
                     {
@@ -54,7 +54,7 @@ namespace RandomItemGiverUpdater
 
                 if (isAdded == false)
                 {
-                    lootTableCheckList.Add(new lootTable(lootTable.lootTableName, lootTable.lootTableType, lootTable.lootTablePath));
+                    lootTableCheckList.Add(new LootTable(lootTable.lootTableName, lootTable.lootTableType, lootTable.lootTablePath));
                     lootTableWhiteList = string.Format("{0}{1}", lootTableWhiteList, lootTable.fullLootTablePath);
                 }
             }

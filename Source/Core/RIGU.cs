@@ -1,15 +1,20 @@
-﻿namespace RandomItemGiverUpdater
+﻿using RandomItemGiverUpdater.Core;
+
+namespace RandomItemGiverUpdater
 {
     public static class RIGU
     {
-        public static wndMain wndMain;
-        public static ItemAddingCore itemAddingCore;
+        public const string VERSION_NUM = "Public Beta 3";
+        public const string VERSION_DATE = "27.08.2024";
 
-        public static void Initialize(wndMain wndMain)
+        public static Main core;
+        public static ItemAdding itemAdding;
+
+        public static void Initialize(Main core)
         {
             //Initializes the app and makes necessary content available across the code
-            RIGU.wndMain = wndMain;
-            itemAddingCore = new ItemAddingCore();
+            RIGU.core = core;
+            itemAdding = new ItemAdding();
         }
     }
 

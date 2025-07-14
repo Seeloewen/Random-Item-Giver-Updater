@@ -95,7 +95,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
                 //Check all loot tables in the current datapack
                 duplicateEntries.Clear();
                 duplicateIndex = 0;
-                foreach (lootTable lootTable in RIGU.wndMain.lootTableList)
+                foreach (LootTable lootTable in RIGU.wndMain.lootTableList)
                 {
                     CheckLootTable(lootTable.fullLootTablePath, lootTable.fullLootTablePath.Replace(RIGU.wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
                 }

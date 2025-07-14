@@ -1,100 +1,55 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
+﻿using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 
-namespace RandomItemGiverUpdater
+namespace RandomItemGiverUpdater.Core
 {
-    public class lootTable
+    public class LootTable
     {
-        //Controls
-        public Canvas cvsLootTable = new Canvas();
-        public TextBlock tblLootTable = new TextBlock();
-        public CheckBox cbAddToLootTable = new CheckBox();
+        public ObservableCollection<Item> items { get; set; } = new ObservableCollection<Item>();
+        private JObject frame;
 
-        //Attributes
-        public string lootTableName;
-        public string lootTableType;
-        public string lootTablePath;
-        public string fullLootTablePath;
-        public bool isSelectedForAdding = true;
+        public readonly string name;
+        public readonly LootTableCategory category;
+        public readonly string path;
 
-        //-- Constructor --//
-
-        public lootTable(string name, string type, string path)
+        public LootTable(string name, LootTableCategory category, string path)
         {
-            //Set attributes
-            lootTableName = name.Replace("\\", "");
-            lootTableType = type;
-            lootTablePath = path;
-            fullLootTablePath = string.Format("{0}/{1}", lootTablePath, lootTableName);
+            this.name = name;
+            this.category = category;
+            this.path = path;
 
-            //Create canvas
-            cvsLootTable.Height = 35;
-            cvsLootTable.Background = new SolidColorBrush(Color.FromArgb(100, 65, 65, 65));
-
-            //Create text			
-            tblLootTable.Text = name.Replace("\\", "");
-            tblLootTable.FontSize = 15;
-            tblLootTable.Foreground = new SolidColorBrush(Colors.White);
-            tblLootTable.FontSize = 15;
-            tblLootTable.Margin = new Thickness(25, 10, 0, 0);
-            cvsLootTable.Children.Add(tblLootTable);
-
-            //Create checkbox for adding items window
-            cbAddToLootTable.Content = fullLootTablePath.Replace(string.Format("{0}/data/randomitemgiver/loot_tables/", RIGU.wndMain.currentDatapack), "").Replace(".json", "").Replace("_", "__");
-            cbAddToLootTable.Foreground = new SolidColorBrush(Colors.White);
-            cbAddToLootTable.Margin = new Thickness(20, 15, 0, 0);
-            cbAddToLootTable.FontSize = 15;
-            cbAddToLootTable.IsChecked = true;
-
-            //Add mouse down event to load the loot table
-            cvsLootTable.MouseDown += new MouseButtonEventHandler(cvsLootTable_MouseDown);
+            Load();
         }
 
-
-        //-- Event Handlers --//
-
-        private void cvsLootTable_MouseDown(object sender, MouseEventArgs e)
+        public void Load()
         {
-            if (RIGU.wndMain.currentLootTable != "none")
-            {
-                if (RIGU.wndMain.lootTableModified() == true)
-                {
-                    //Show warning if there are unsaved changes to the loot table
-                    MessageBoxResult result = MessageBox.Show("You still have unsaved modifications in the current loot table.\nDo you want to save the changes before continuing?", "Save changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            if (!File.Exists(path)) throw new FileNotFoundException("Could not parse the specified loot table: File does not exist");
 
-                    switch (result)
-                    {
-                        case MessageBoxResult.Yes:
-                            //Save the current loot table
-                            RIGU.wndMain.calledNewLootTable = true;
-                            RIGU.wndMain.calledLootTablePath = lootTablePath;
-                            RIGU.wndMain.calledLootTableName = lootTableName;
-                            RIGU.wndMain.SaveCurrentLootTable();
-                            break;
-                        case MessageBoxResult.No:
-                            //Just load the loot table without saving
-                            RIGU.wndMain.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
-                            RIGU.wndMain.LoadLootTable(RIGU.wndMain.currentLootTable);
-                            break;
-                        case MessageBoxResult.Cancel:
-                            break;
-                    }
-                }
-                else
-                {
-                    //Load the loot table
-                    RIGU.wndMain.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
-                    RIGU.wndMain.LoadLootTable(RIGU.wndMain.currentLootTable);
-                }
-            }
-            else
+            //Get the file content as json object
+            JObject rootObject = JObject.Parse(File.ReadAllText(path));
+            JArray poolsArray = (JArray)rootObject.SelectToken("pools[0].entries");
+
+            //Get all the items
+            foreach(JObject entry in poolsArray)
             {
-                //Load the loot table
-                RIGU.wndMain.currentLootTable = string.Format("{0}/{1}", lootTablePath, lootTableName);
-                RIGU.wndMain.LoadLootTable(RIGU.wndMain.currentLootTable);
+                items.Add(new Item(entry.ToString()));
             }
+
+            //Clear the entries from the frame as it will be reassemabled later
+            poolsArray.Clear();
+            frame = rootObject;
+        }
+
+        public bool IsModified()
+        {
+
+        }
+
+        public bool Save()
+        {
+
         }
     }
 }

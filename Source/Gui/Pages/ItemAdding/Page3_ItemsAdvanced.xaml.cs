@@ -22,42 +22,56 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
                                        + (RIGU.wndMain.datapackUsesLegacyNBT ? "NBT" : "Component");
         }
 
+        private void UpdateItem(TextBox textBox)
+        {
+            AddingEntry item = (AddingEntry)textBox.DataContext;
+
+            //Change the attributes of the item based on the input
+            item.id = textBox.Text;
+            item.name = $"{item.prefix}:{item.id}";
+        }
+
         private void btnBack_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowPreviousPage();
 
         private void btnContinue_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowNextPage();
 
+        private void tbItemName_TextChanged(object sender, TextChangedEventArgs e) => UpdateItem((TextBox)sender);
+
+        private void tbItemPrefix_TextChanged(object sender, TextChangedEventArgs e) => UpdateItem((TextBox)sender);
+
         private void btnAddAdditionalItem_Click(object sender, RoutedEventArgs e)
         {
-            RIGU.itemAddingCore.itemEntries.Add(new AddingEntry("minecraft", "", RIGU.itemAddingCore.itemEntries.Count));
+            RIGU.itemAdding.itemEntries.Add(new AddingEntry("minecraft", "", RIGU.itemAdding.itemEntries.Count));
         }
 
         private void btnNbtComponentEditor_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            AddingEntry item = (AddingEntry)((Button)sender).DataContext;
+
+            if (RIGU.wndMain.datapackUsesLegacyNBT)
+            {
+                //Open the legacy nbt editor
+                wndNBTEditor editor = new wndNBTEditor();
+                (ModificationState result, string nbt) = editor.GetFromDialog(item.name, item.GetNBT());
+                item.SetNBT(nbt);
+            }
+            else
+            {
+                //Open the item stack component editor
+                wndComponentEditor editor = new wndComponentEditor();
+                (ModificationState result, string component) = editor.GetFromDialog(item.name, item.GetItemStackComponent());
+                item.SetItemStackComponent(component);
+            }
         }
 
         private void btnRemove_Click(object sender, RoutedEventArgs e)
         {
             Button btn = (Button)sender;
-
-            //Get the canvas which the button is in
             Canvas canvas = SeeloewenLib.Tools.FindVisualParent<Canvas>(btn);
 
-            if (canvas.DataContext is AddingEntry item)
-            {
-                //Remove the current item from the list
-                RIGU.itemAddingCore.itemEntries.Remove(item);
-            }
-        }
-
-        private void tbItemName_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void tbItemPrefix_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            throw new NotImplementedException();
+            //Remove the current item from the list
+            AddingEntry item = (AddingEntry)canvas.DataContext;
+            RIGU.itemAdding.itemEntries.Remove(item);
         }
     }
 }

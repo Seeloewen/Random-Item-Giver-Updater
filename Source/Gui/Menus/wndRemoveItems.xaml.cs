@@ -82,7 +82,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             removeItemsWorkerAddedItemsLootTables = 0;
 
             //Go through each item removal entry and through each loot table in the currently loaded datapack
-            foreach (lootTable lootTable in RIGU.wndMain.lootTableList)
+            foreach (LootTable lootTable in RIGU.wndMain.lootTableList)
             {
                 removeItemsWorkerAddedItems = 0;
                 removeItemsWorkerAddedItemsLootTables++;
@@ -212,7 +212,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
                 }
             }
 
-            foreach (lootTable lootTable in RIGU.wndMain.lootTableList)
+            foreach (LootTable lootTable in RIGU.wndMain.lootTableList)
             {
                 JObject fileObject = JObject.Parse(File.ReadAllText(lootTable.fullLootTablePath));
                 JArray itemArray = fileObject.SelectToken("pools[0].entries") as JArray;
@@ -253,7 +253,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             bgwRemoveItems.RunWorkerAsync();
         }
 
-        private void RemoveItem(string itemName, lootTable lootTable)
+        private void RemoveItem(string itemName, LootTable lootTable)
         {
             //Load the item list
             JObject fileObject = JObject.Parse(File.ReadAllText(lootTable.fullLootTablePath));
@@ -303,7 +303,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
                     //Get loot tables string from loot table selection window
                     item.lootTableWhiteList = "";
-                    foreach (lootTable lootTable in wndSelectLootTables.lootTableList)
+                    foreach (LootTable lootTable in wndSelectLootTables.lootTableList)
                     {
                         if (lootTable.cbAddToLootTable.IsChecked == true)
                         {
@@ -321,7 +321,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             {
                 //Add all loot tables that the item is in to a list and display that list
                 string lootTables = "";
-                foreach (lootTable lootTable in item.lootTables)
+                foreach (LootTable lootTable in item.lootTables)
                 {
                     lootTables = string.Format("{0}\n{1}", lootTables, lootTable.fullLootTablePath.Replace(RIGU.wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
                 }

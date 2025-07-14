@@ -20,7 +20,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             string[] items = tbItemName.Text.Split('\n');
 
             //Create an entry for every item
-            RIGU.itemAddingCore.itemEntries.Clear();
+            RIGU.itemAdding.itemEntries.Clear();
             int index = 0;
 
             for (int i = 0; i < items.Length; i++)
@@ -30,11 +30,11 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
                 if (cbIncludesPrefixes.IsChecked == true)
                 {
                     string[] entry = items[i].Split(':');
-                    RIGU.itemAddingCore.itemEntries.Add(new AddingEntry(entry.Length != 2 ? "minecraft" : entry[0], entry.Length != 2 ? entry[0] : entry[1], index));
+                    RIGU.itemAdding.itemEntries.Add(new AddingEntry(entry.Length != 2 ? "minecraft" : entry[0], entry.Length != 2 ? entry[0] : entry[1], index));
                 }
                 else
                 {
-                    RIGU.itemAddingCore.itemEntries.Add(new AddingEntry("minecraft", items[i], index));
+                    RIGU.itemAdding.itemEntries.Add(new AddingEntry("minecraft", items[i], index));
                 }
             }
         }

@@ -9,7 +9,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
 {
     public partial class wndAddItems : Window
     {
-        private ItemAddingCore itemAddingCore;
+        private ItemAdding itemAddingCore;
         private int currentPage = 1;
 
         private TextBlock tblLoadingItems = new TextBlock();
@@ -21,10 +21,11 @@ namespace RandomItemGiverUpdater.Gui.Menus
         public wndAddItems()
         {
             InitializeComponent();
-            InitUI();
 
-            itemAddingCore = RIGU.itemAddingCore;
+            itemAddingCore = RIGU.itemAdding;
             DataContext = itemAddingCore;
+
+            InitUI();
         }
 
         private void InitUI()
@@ -64,88 +65,5 @@ namespace RandomItemGiverUpdater.Gui.Menus
         }
 
         private void wndAddItem1_Closing(object sender, CancelEventArgs e) => RIGU.wndMain.ReloadLootTable();
-
-
-        //-- Add To Loot Table Entry Event Handlers --//
-
-        private void rbtnAllLootTables_Checked(object sender, RoutedEventArgs e)
-        {
-            if (sender is RadioButton radiobutton)
-            {
-                //Get the canvas which the radiobutton is in
-                Canvas canvas = SeeloewenLib.Tools.FindVisualParent<Canvas>(radiobutton);
-
-                if (canvas.DataContext is AddingEntry item)
-                {
-                    //Disable edit button
-                    Button button = canvas.FindName("btnEditCertainLootTables") as Button;
-                    button.IsEnabled = false;
-
-                    //Set checkstate on variable that gets accessed by the item adding thread
-                    item.defaultLootTables = true;
-                }
-            }
-        }
-
-        private void rbtnCertainLootTables_Checked(object sender, RoutedEventArgs e)
-        {
-            if (sender is RadioButton radiobutton)
-            {
-                //Get the canvas which the radiobutton is in
-                Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(radiobutton);
-
-                if (canvas.DataContext is AddingEntry item)
-                {
-                    //Enable edit button
-                    Button button = canvas.FindName("btnEditCertainLootTables") as Button;
-                    button.IsEnabled = true;
-
-                    //Set checkstate on variable that gets accessed by the item adding thread
-                    item.defaultLootTables = false;
-                }
-            }
-        }
-
-        private void tbItemName_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (sender is TextBox textbox && textbox.DataContext is AddingEntry item)
-            {
-                //Set checkstate on variable that gets accessed by the item adding thread
-                item.id = textbox.Text;
-                item.name = $"{item.prefix}:{item.id}";
-            }
-        }
-
-        private void tbItemPrefix_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (sender is TextBox textbox && textbox.DataContext is AddingEntry item)
-            {
-                //Set checkstate on variable that gets accessed by the item adding thread
-                item.id = textbox.Text;
-                item.name = $"{item.prefix}:{item.id}";
-            }
-        }
-
-        private void btnNbtComponentEditor_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btnNbtComponentEditor && btnNbtComponentEditor.DataContext is AddingEntry item)
-            {
-                if (RIGU.wndMain.datapackUsesLegacyNBT)
-                {
-                    //Open the legacy nbt editor
-                    wndNBTEditor editor = new wndNBTEditor();
-                    (ModificationState result, string nbt) = editor.GetFromDialog(item.itemName, item.itemNBT);
-                    item.itemNBT = nbt;
-                }
-                else
-                {
-                    //Open the item stack component editor
-                    wndComponentEditor editor = new wndComponentEditor();
-                    (ModificationState result, string component) = editor.GetFromDialog(item.itemName, item.itemStackComponent);
-                    item.itemStackComponent = component;
-                }
-
-            }
-        }
     }
 }

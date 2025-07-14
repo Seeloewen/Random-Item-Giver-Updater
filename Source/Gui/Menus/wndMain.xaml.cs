@@ -1,5 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RandomItemGiverUpdater.Source.Core;
+using RandomItemGiverUpdater.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,43 +14,14 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using RandomItemGiverUpdater.Gui.Components;
 
 namespace RandomItemGiverUpdater.Gui.Menus
 {
-
     public partial class wndMain : Window
     {
-        //Lists for items and loot tables
-        public ObservableCollection<ItemEntry> itemList { get; set; } = new ObservableCollection<ItemEntry>();
-        private List<lootTableCategory> lootTableCategoryList = new List<lootTableCategory>();
-        public List<lootTable> lootTableList = new List<lootTable>();
+        private Main core;
 
-        //Controls
-        private ScrollViewer svLootTables = new ScrollViewer();
-        private StackPanel stpLootTables = new StackPanel();
-        private System.Windows.Forms.FolderBrowserDialog fbdDatapack = new System.Windows.Forms.FolderBrowserDialog();
-        private TextBlock tblLoadingItems = new TextBlock();
-        private Canvas cvsLootTableStats = new Canvas();
-        private TextBlock tblLootTableStats = new TextBlock();
-        private BackgroundWorker bgwEditLootTable = new BackgroundWorker();
-        private ProgressBar pbSavingItems = new ProgressBar();
-        private TextBlock tblNoDatapackLoaded = new TextBlock();
-
-        //General variables for the software
-        public List<string> lootTableStart = new List<string>();
-        public List<string> lootTableEnd = new List<string>();
-        public string versionNumber = "Public Beta 3";
-        public string versionDate = "27.08.2024";
-        public string currentLootTable = "none";
-        public string currentDatapack = "none";
-        public bool datapackUsesLegacyNBT = false;
-        public bool datapackUsesOldFolderStructure = false;
-        private bool calledClose;
-        public bool calledNewLootTable;
-        public string calledLootTableName;
-        public string calledLootTablePath;
-
-        //Windows
         public static wndAddItems wndAddItem;
         public static wndRemoveItems wndRemoveItems;
         public static wndAbout wndAbout;
@@ -55,7 +29,15 @@ namespace RandomItemGiverUpdater.Gui.Menus
         public static wndSettings wndSettings;
         public wndNBTEditor wndNBTEditor;
 
-        //Buttons
+        private ScrollViewer svLootTables = new ScrollViewer();
+        private StackPanel stpLootTables = new StackPanel();
+        private OpenFolderDialog fbdDatapack = new OpenFolderDialog();
+        private TextBlock tblLoadingItems = new TextBlock();
+        private Canvas cvsLootTableStats = new Canvas();
+        private TextBlock tblLootTableStats = new TextBlock();
+        private ProgressBar pbSavingItems = new ProgressBar();
+        private TextBlock tblNoDatapackLoaded = new TextBlock();
+
         private Canvas cvsBtnAddItems = new Canvas();
         private Image imgBtnAddItems = new Image();
         private TextBlock tblBtnAddItems = new TextBlock();
@@ -72,37 +54,55 @@ namespace RandomItemGiverUpdater.Gui.Menus
         private Image imgBtnRemoveItems = new Image();
         private TextBlock tblBtnRemoveItems = new TextBlock();
 
-        //SeeloewenLib
-        SeeloewenLibTools SeeloewenLibTools = new SeeloewenLibTools();
-
-
-        //-- Constructor --//
-
-        public wndMain()
+        public wndMain(Main core)
         {
             InitializeComponent();
-
-            //Setup controls
-            DataContext = this;
             SetupControls();
             SetupButtons();
+
+            this.core = core;
         }
 
-        //-- Event Handlers --//
-
-        public void ReloadLootTable()
+        public void Reload() //Should be called when a new datapack is loaded
         {
-            //TODO
+            ReloadWorkspace();
+            ReloadSidebar();
+        }
+
+        public void ReloadWorkspace()
+        {
+            //Toggle workplace backgroundimage
+            imgWorkplace.Visibility = RIGU.core.currentDatapack == null ? Visibility.Visible : Visibility.Hidden;
+
+           //TODO
+        }
+
+        public void ReloadSidebar()
+        {
+            if (RIGU.core.currentDatapack == null) return;
+
+            //Create the sidebar entries by going through each loot table and category
+            foreach (LootTableCategory category in RIGU.core.currentDatapack.lootTableCategories)
+            {
+                LootTableCategoryVisual catVis = new LootTableCategoryVisual(category);
+
+                //Add all the loot table displays to the category display
+                foreach (LootTable lootTable in category.lootTables)
+                {
+                    LootTableSidebarVisual lootVis = new LootTableSidebarVisual(lootTable.name) { DataContext = lootTable };
+                    catVis.Children.Add(lootVis);
+                }
+
+                stpSidebar.Children.Add(catVis);
+            }
         }
 
         private void btnAddItem_Click(object sender, RoutedEventArgs e)
         {
-            //Open add item window
-            wndAddItem = new wndAddItems() { Owner = this };
-            wndAddItem.Owner = Application.Current.MainWindow;
+            wndAddItem = new wndAddItems();
 
             //Check if the datapack path exists before opening the window
-            if (Directory.Exists(currentDatapack))
+            if (core.DatapackIsValid(core.currentDatapack))
             {
                 wndAddItem.ShowDialog();
             }
@@ -114,21 +114,16 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
         private void btnRemoveItems_Click(object sender, RoutedEventArgs e)
         {
-            //Open remove item window
-            wndRemoveItems = new wndRemoveItems(false, null) { Owner = this };
-            wndRemoveItems.Owner = Application.Current.MainWindow;
-            if (wndRemoveItems.isOpen == false)
-            {
-                //Check if the datapack path exists before opening the window
+            wndRemoveItems = new wndRemoveItems(false, null);
 
-                if (Directory.Exists(currentDatapack))
-                {
-                    wndRemoveItems.ShowDialog();
-                }
-                else
-                {
-                    MessageBox.Show("Error: Could not detect datapack. Please make sure the currently selected datapack exists and is valid.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+            //Check if the datapack path exists before opening the window
+            if (core.DatapackIsValid(core.currentDatapack))
+            {
+                wndRemoveItems.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("Error: Could not detect datapack. Please make sure the currently selected datapack exists and is valid.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -137,184 +132,61 @@ namespace RandomItemGiverUpdater.Gui.Menus
         {
             //Open folder browser dialog to get datapack path
             fbdDatapack.ShowDialog();
-            tbDatapack.Text = fbdDatapack.SelectedPath;
+            tbDatapack.Text = fbdDatapack.FolderName;
         }
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
             tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.21 Dev 2.0";
-            if ((!string.IsNullOrEmpty(tbDatapack.Text) && Directory.Exists(tbDatapack.Text)))
-            {
-                //If the directory exists and is valid and no other datapack with unsaved changes is loaded, try to load the datapack
-                if (lootTableModified() == false)
-                {
-                    currentLootTable = "none";
-                    currentDatapack = tbDatapack.Text;
-                    GetLootTables(currentDatapack);
-                    CheckForLegacyNBT();
-                }
-                else
-                {
 
-                    MessageBoxResult result = MessageBox.Show("You have changes in your current loot table, that have not been saved yet. Loading a new loot table will discard all unsaved changes. Do you really want to continue?", "Load new loot table", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                    switch (result)
-                    {
-                        case MessageBoxResult.Yes:
-                            //Discard the current loot table and load a new datapack
-                            currentLootTable = "none";
-                            currentDatapack = tbDatapack.Text;
-                            GetLootTables(currentDatapack);
-                            CheckForLegacyNBT();
-                            break;
-                    }
-                }
-            }
-            else
-            {
-                //Otherwise don't even attempt to load the datapack
-                MessageBox.Show("Could not load datapack. Please select a valid datapack folder!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            core.LoadDatapack(tbDatapack.Text);
         }
 
         private void btnSaveLootTable_Click(object sender, RoutedEventArgs e)
         {
-            //Check if a loot table is loaded
-            if (currentLootTable != "none")
+            //Check if a loot table is loaded and save it
+            if (core.DatapackIsValid(core.currentDatapack))
             {
-                //Save the current loot table
                 SaveCurrentLootTable();
             }
             else
             {
-                //Show an error
                 MessageBox.Show("Please load a loot table before saving!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void btnSettings_Click(object sender, RoutedEventArgs e)
         {
-            //Open settings window
             wndSettings = new wndSettings();
             wndSettings.ShowDialog();
         }
 
-        private void wndMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void wndMain_Closing(object sender, CancelEventArgs e)
         {
-            if (currentLootTable != "none")
-            {
-                if (lootTableModified() == true)
-                {
-                    //Show warning if there are unsaved changes to the loot table
-                    MessageBoxResult result = MessageBox.Show("You still have unsaved modifications in the current loot table.\nDo you want to save the changes before quitting?", "Save changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-
-                    switch (result)
-                    {
-                        case MessageBoxResult.Yes:
-                            //Save the current loot table
-                            SaveCurrentLootTable();
-                            e.Cancel = true;
-                            calledClose = true;
-                            break;
-                        case MessageBoxResult.Cancel:
-                            //Stop the quitting
-                            e.Cancel = true;
-                            break;
-                    }
-                }
-            }
+            //Try exiting and cancel if the core denies it
+            e.Cancel = core.Exit();
         }
 
-        private void bgwEditLootTable_DoWork(object sender, DoWorkEventArgs e)
+        public void UpdateEditProgress(double progress)
         {
-            var entriesArray = new JArray();
-            foreach (ItemEntry item in itemList)
-            {
-                try
-                {
-                    /*if (!item.IsDeleted())
-                    {
-                        JObject itemObject = JObject.Parse(item.itemBody);
-                        entriesArray.Add(itemObject);
-                    }*/ //TODO: FIX
-                }
-                catch (JsonException ex)
-                {
-                    Console.WriteLine($"Error: {ex.Message}");
-                }
-            }
-
-            JObject poolObject = new JObject();
-            if (true)
-            {
-                poolObject.Add("rolls", 1);
-            }
-            else //Will later be updated to include a proper check
-            {
-                JObject rollsObject = new JObject()
-                {
-                    { "min", 1 },
-                    { "max", 1 },
-                };
-                poolObject.Add(rollsObject);
-            }
-            poolObject.Add("entries", entriesArray);
-
-            JArray poolArray = new JArray();
-            poolArray.Add(poolObject);
-
-            JObject rootObject = new JObject();
-            rootObject.Add("pools", poolArray);
-
-            File.WriteAllText(currentLootTable, rootObject.ToString(Formatting.Indented));
+            pbSavingItems.Value = progress;
         }
 
-        private async void bgwEditLootTable_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        public void SetSaveButtonState(bool saving)
         {
-            pbSavingItems.Value += Convert.ToDouble(e.UserState);
-            await Task.Delay(5);
+            //Set the state of the button depending on whether the software is saving or not
+            btnSave.IsEnabled = !saving;
+            tblBtnSave.Text = saving ? "Saving..." : "Save Loot Table";
         }
 
-        private void bgwEditLootTable_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (calledClose == true)
-            {
-                //Close the app without showing any confirmation
-                lootTableModified();
-                Close();
-            }
-            else if (calledNewLootTable == true)
-            {
-                //Load the loot table
-                currentLootTable = string.Format("{0}/{1}", calledLootTablePath, calledLootTableName);
-                LoadLootTable(currentLootTable);
-
-                //Show save confirmation
-                tblBtnSave.Text = "Saved!";
-                MessageBox.Show("Successfully saved the current loot table!", "Save Loot Table", MessageBoxButton.OK, MessageBoxImage.Information);
-                btnSave.IsEnabled = true;
-                tblBtnSave.Text = "Save Loot Table";
-            }
-            else if (calledClose == false && calledNewLootTable == false)
-            {
-                //Reload loot table
-                LoadLootTable(currentLootTable);
-
-                //Show save confirmation
-                tblBtnSave.Text = "Saved!";
-                MessageBox.Show("Successfully saved the current loot table!", "Save Loot Table", MessageBoxButton.OK, MessageBoxImage.Information);
-                btnSave.IsEnabled = true;
-                tblBtnSave.Text = "Save Loot Table";
-            }
-        }
 
         private void btnDuplicateFinder_Click(object sender, RoutedEventArgs e)
         {
+            wndDuplicateFinder = new wndDuplicateFinder();
+
             //Show duplicate finder window if a datapack is loaded
-            if (currentDatapack != "none")
+            if (core.DatapackIsValid(core.currentDatapack))
             {
-                wndDuplicateFinder = new wndDuplicateFinder();
-                wndDuplicateFinder.Owner = Application.Current.MainWindow;
                 wndDuplicateFinder.ShowDialog();
             }
             else
@@ -325,38 +197,13 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
         private void btnAbout_Click(object sender, RoutedEventArgs e)
         {
-            //Show about window
             wndAbout = new wndAbout();
-            wndAbout.Owner = Application.Current.MainWindow;
             wndAbout.ShowDialog();
         }
 
         //-- Custom Methods --//
 
-        public async void LoadLootTable(string path)
-        {
-            //Hide workplace image
-            imgWorkplace.Visibility = Visibility.Hidden;
 
-            //Get list of content in file, remove all non-item lines so only items remain
-            itemList.Clear();
-
-            string fileContent = File.ReadAllText(path);
-
-            JObject fileObject = JObject.Parse(fileContent);
-            JArray items = fileObject.SelectToken("pools[0].entries") as JArray;
-
-            for (int i = 0; i < items.Count; i++)
-            {
-                MainEntry entry = new MainEntry(GetItemBody(fileContent, i), i);
-                itemList.Add(entry);
-            }
-
-            //Show 'loading' message
-            tblLoadingItems.Margin = new Thickness(lbItems.ActualWidth / 2 - 150, lbItems.ActualHeight / 2 - 75, 0, 0);
-            tblLoadingItems.Text = "Loading items, please wait...\nThis may take a few seconds!";
-            await Task.Delay(5); //Allows the UI to update and show the textblock
-        }
 
         public string GetItemBody(string fileContent, int itemIndex)
         {
@@ -368,52 +215,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
         }
 
 
-        private void GetLootTables(string path)
-        {
-            //Get all categories
-            lootTableCategoryList.Clear();
 
-            //Quick fix to support 1.21 folder structure, not sure if it works everywhere
-            if (Directory.Exists(string.Format("{0}/data/randomitemgiver/loot_tables/", path)))
-            {
-                string[] categories = Directory.GetDirectories(string.Format("{0}/data/randomitemgiver/loot_tables/", path));
-                for (int i = 0; i < categories.Length; i++)
-                {
-                    lootTableCategoryList.Add(new lootTableCategory(categories[i].Replace(String.Format("{0}/data/randomitemgiver/loot_tables/", path), ""), categories[i]));
-                }
-            }
-            else
-            {
-                string[] categories = Directory.GetDirectories(string.Format("{0}/data/randomitemgiver/loot_table/", path));
-                for (int i = 0; i < categories.Length; i++)
-                {
-                    lootTableCategoryList.Add(new lootTableCategory(categories[i].Replace(String.Format("{0}/data/randomitemgiver/loot_table/", path), ""), categories[i]));
-                }
-            }
-
-
-            //Get each loot table
-            lootTableList.Clear();
-            foreach (lootTableCategory category in lootTableCategoryList)
-            {
-                string[] lootTables = Directory.GetFiles(category.categoryPath);
-                for (int i = 0; i < lootTables.Length; i++)
-                {
-                    //Add the loot table to the total loot table list
-                    lootTableList.Add(new lootTable(lootTables[i].Replace(category.categoryPath, ""), "loottable", category.categoryPath));
-
-                    //Add the loot table to the list of the category
-                    category.lootTableList.Add(lootTableList[lootTableList.Count - 1]);
-                }
-            }
-
-            //Add all loot tables to sidebar display
-            stpLootTables.Children.Clear();
-            foreach (lootTableCategory category in lootTableCategoryList)
-            {
-                stpLootTables.Children.Add(category.stpCategory);
-            }
-        }
 
         public int GetDatapackVersionNumberLegacy(string path)
         {
@@ -569,7 +371,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
                 bool isModified = false;
 
                 //Check every item in the loot table
-                foreach (ItemEntry item in itemList)
+                foreach (Item item in itemList)
                 {
                     /*if (item.IsModified() == true)
                     {

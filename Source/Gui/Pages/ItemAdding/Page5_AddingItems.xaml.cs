@@ -15,7 +15,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
 
         public void Execute()
         {
-            RIGU.itemAddingCore.AddItems();
+            RIGU.itemAdding.AddItems();
         }
 
         public void UpdateProgress(double pbValue, int percentage, int totalItems, int finishedLootTables)

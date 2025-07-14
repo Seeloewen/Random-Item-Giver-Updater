@@ -1,19 +1,20 @@
-﻿using System;
+﻿using RandomItemGiverUpdater.Core;
+using System;
 using System.Collections.Generic;
 using System.Windows.Media;
 
 namespace RandomItemGiverUpdater
 {
-    public class AddingEntry : ItemEntry
+    public class AddingEntry : Item
     {
         //Id and prefix are stored seperately to make up the name
         public string id;
         public string prefix;
         public int index { get; set; }
 
-        public List<lootTable> lootTableCheckList = new List<lootTable>();
+        public List<LootTable> lootTableCheckList = new List<LootTable>();
 
-        public List<string> lootTableWhiteList = new List<string>();
+        public List<LootTable> lootTableWhiteList = new List<LootTable>();
 
         public bool defaultLootTables = true;
 
@@ -30,9 +31,9 @@ namespace RandomItemGiverUpdater
             canvasBackColor = SetBackColor();
 
             //Set loot table checklist
-            foreach (lootTable lootTable in RIGU.wndMain.lootTableList)
+            foreach (LootTable lootTable in RIGU.wndMain.lootTableList)
             {
-                lootTableCheckList.Add(new lootTable(lootTable.lootTableName, lootTable.lootTableType, lootTable.lootTablePath));
+                lootTableCheckList.Add(new LootTable(lootTable.lootTableName, lootTable.lootTableType, lootTable.lootTablePath));
             }
         }
 
