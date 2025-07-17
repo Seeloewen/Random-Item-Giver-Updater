@@ -1,4 +1,5 @@
-﻿using RandomItemGiverUpdater.Gui.Menus;
+﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Gui.Menus;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -15,9 +16,9 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             this.wndAddItems = wndAddItems;
         }
 
-        public void SetDatapack(string datapack)
+        public void SetDatapack(Datapack datapack)
         {
-            tblCurrentlySelectedDatapack.Text = $"Currently selected Datapack: {datapack}\n{RIGU.wndMain.GetDatapackVersionInfo(datapack)}";
+            tblCurrentlySelectedDatapack.Text = $"Currently selected Datapack: {datapack}\n{datapack.GetVersionString(datapack.directory)}";
         }
 
         private void btnContinue_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowNextPage();

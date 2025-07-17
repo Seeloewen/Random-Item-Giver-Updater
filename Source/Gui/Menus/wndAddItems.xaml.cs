@@ -7,16 +7,9 @@ using System.Windows.Controls;
 
 namespace RandomItemGiverUpdater.Gui.Menus
 {
-    public partial class wndAddItems : Window
+    public partial class wndAddItems : Wizard
     {
         private ItemAdding itemAddingCore;
-        private int currentPage = 1;
-
-        private TextBlock tblLoadingItems = new TextBlock();
-
-        private IWizardPage[] pages = new IWizardPage[6];
-
-        //-- Constructor --//
 
         public wndAddItems()
         {
@@ -38,32 +31,14 @@ namespace RandomItemGiverUpdater.Gui.Menus
             pages[4] = new Page5_AddingItems(this);
             pages[5] = new Page6_Finished(this);
 
-            GetPage<Page1_Start>(1).SetDatapack(RIGU.wndMain.currentDatapack);
+            GetPage<Page1_Start>(1).SetDatapack(RIGU.core.currentDatapack);
         }
-
-        public void ShowNextPage()
-        {
-            if (currentPage == 6) Close();
-
-            frWizard.Content = pages[++currentPage];
-        }
-
-        public void ShowPreviousPage()
-        {
-            if (currentPage == 1) Close();
-
-            frWizard.Content = pages[--currentPage];
-        }
-
-        //Basically a wrapper so I can use numbers from 1 to 6.
-        //You need to specify the specific page class to use it properly
-        public T GetPage<T>(int i) where T : IWizardPage => (T)pages[i + 1];
 
         public void UpdateProgress(double pbValue, int percentage, int totalItems, int finishedLootTables)
         {
             GetPage<Page5_AddingItems>(5).UpdateProgress(pbValue, percentage, totalItems, finishedLootTables);
         }
 
-        private void wndAddItem1_Closing(object sender, CancelEventArgs e) => RIGU.wndMain.ReloadLootTable();
+        private void wndAddItem1_Closing(object sender, CancelEventArgs e) => RIGU.core.wndMain.ReloadWorkspace();
     }
 }

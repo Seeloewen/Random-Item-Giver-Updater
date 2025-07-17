@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
+using System.Windows;
 
 namespace RandomItemGiverUpdater.Core
 {
@@ -9,6 +10,9 @@ namespace RandomItemGiverUpdater.Core
     {
         public ObservableCollection<Item> items { get; set; } = new ObservableCollection<Item>();
         private JObject frame;
+
+        private BackgroundWorker bgwEditLootTable = new BackgroundWorker();
+        private double workerProgress = 0;
 
         public readonly string name;
         public readonly LootTableCategory category;
@@ -19,6 +23,11 @@ namespace RandomItemGiverUpdater.Core
             this.name = name;
             this.category = category;
             this.path = path;
+
+            bgwEditLootTable.DoWork += bgwEditLootTable_DoWork;
+            bgwEditLootTable.ProgressChanged += bgwEditLootTable_ProgressChanged;
+            bgwEditLootTable.RunWorkerCompleted += bgwEditLootTable_RunWorkerCompleted;
+            bgwEditLootTable.WorkerReportsProgress = true;
 
             Load();
         }
@@ -44,12 +53,46 @@ namespace RandomItemGiverUpdater.Core
 
         public bool IsModified()
         {
+            //Check for each item if it is modified => if at least one item is modified, the loot table counts as modified
+            foreach(Item item in items)
+            {
+                if(item.IsModified()) return true;
+            }
 
+            return false;
         }
 
-        public bool Save()
-        {
+        public void Save() => bgwEditLootTable.RunWorkerAsync();
+        public string GetIdentifier() => $"{category.name}/{name}";
 
+        private void bgwEditLootTable_DoWork(object sender, DoWorkEventArgs e)
+        {
+            RIGU.core.wndMain.SetSaveButtonState(false);
+
+            //Reconstruct the full json object by adding the items to the frame
+            JArray poolsArray = (JArray)frame.SelectToken("pools[0].entries");
+            foreach(Item item in items)
+            {
+                poolsArray.Add(item.GetItemBodyObject());
+            }
+
+            File.WriteAllText(path, frame.ToString());
+            poolsArray.Clear (); //Clear the frame again after the adding process
+        }
+
+        private void bgwEditLootTable_ProgressChanged(object sender, ProgressChangedEventArgs e) //TODO Probably not even needed anymore
+        {
+            //Pass the progress to the main window
+            workerProgress += (double)e.UserState;
+            RIGU.core.wndMain.UpdateEditProgress(workerProgress);
+        }
+
+        private void bgwEditLootTable_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            //When the editing is finished, reload the workspace to show changes
+            RIGU.core.wndMain.ReloadWorkspace();
+            RIGU.core.wndMain.SetSaveButtonState(false);
+            MessageBox.Show("Successfully saved the loot table!", "Save Loot Table", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

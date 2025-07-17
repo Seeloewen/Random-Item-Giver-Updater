@@ -14,7 +14,7 @@ namespace RandomItemGiverUpdater
 
         public List<LootTable> lootTableCheckList = new List<LootTable>();
 
-        public List<LootTable> lootTableWhiteList = new List<LootTable>();
+        //public List<LootTable> lootTableWhiteList = new List<LootTable>();
 
         public bool defaultLootTables = true;
 
@@ -31,9 +31,12 @@ namespace RandomItemGiverUpdater
             canvasBackColor = SetBackColor();
 
             //Set loot table checklist
-            foreach (LootTable lootTable in RIGU.wndMain.lootTableList)
+            foreach (LootTableCategory category in RIGU.core.currentDatapack.lootTableCategories)
             {
-                lootTableCheckList.Add(new LootTable(lootTable.lootTableName, lootTable.lootTableType, lootTable.lootTablePath));
+                foreach(LootTable lootTable in category.lootTables)
+                {
+                    lootTableCheckList.Add(new LootTable(lootTable.name, lootTable.category, lootTable.path));
+                }
             }
         }
 

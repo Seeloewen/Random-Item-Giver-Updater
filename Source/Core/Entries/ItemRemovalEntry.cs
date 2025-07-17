@@ -1,27 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Media;
 
-namespace RandomItemGiverUpdater
+namespace RandomItemGiverUpdater.Core.Entries
 {
-    public class itemRemovalEntry
+    public class ItemRemovalEntry : Item
     {
         public List<LootTable> lootTableCheckList = new List<LootTable>();
         public List<LootTable> lootTables = new List<LootTable>();
         public string lootTableWhiteList = "";
         public bool allLootTablesChecked = true;
-        public string itemName { get; set; }
         public string lootTablesString { get; set; }
 
-
-        //Canvas attributes
         public SolidColorBrush canvasBackColor { get; set; }
 
-        //-- Constructor --//
-
-        public itemRemovalEntry(string name)
+        public ItemRemovalEntry(string name) : base(name, name)
         {
-            //Set attributes
-            itemName = name;
+            SetName(name);
         }
 
 
@@ -31,11 +25,11 @@ namespace RandomItemGiverUpdater
             lootTables.Add(newLootTable);
             if (string.IsNullOrEmpty(lootTablesString))
             {
-                lootTablesString = string.Format("{0}", newLootTable.fullLootTablePath.Replace(RIGU.wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
+                lootTablesString = string.Format("{0}", newLootTable.path.Replace(RIGU.core.currentDatapack.directory, "").Replace("/data/randomitemgiver/loot_tables/", ""));
             }
             else
             {
-                lootTablesString = string.Format("{0}, {1}", lootTablesString, newLootTable.fullLootTablePath.Replace(RIGU.wndMain.currentDatapack, "").Replace("/data/randomitemgiver/loot_tables/", ""));
+                lootTablesString = string.Format("{0}, {1}", lootTablesString, newLootTable.path.Replace(RIGU.core.currentDatapack.directory, "").Replace("/data/randomitemgiver/loot_tables/", ""));
             }
 
             //Set loot table checklist
@@ -46,7 +40,7 @@ namespace RandomItemGiverUpdater
                 bool isAdded = false;
                 foreach (LootTable lootTableCheck in lootTableCheckList)
                 {
-                    if (lootTableCheck.fullLootTablePath == lootTable.fullLootTablePath)
+                    if (lootTableCheck.path == lootTable.path)
                     {
                         isAdded = true;
                     }
@@ -54,8 +48,8 @@ namespace RandomItemGiverUpdater
 
                 if (isAdded == false)
                 {
-                    lootTableCheckList.Add(new LootTable(lootTable.lootTableName, lootTable.lootTableType, lootTable.lootTablePath));
-                    lootTableWhiteList = string.Format("{0}{1}", lootTableWhiteList, lootTable.fullLootTablePath);
+                    lootTableCheckList.Add(new LootTable(lootTable.name, lootTable.category, lootTable.path));
+                    lootTableWhiteList = string.Format("{0}{1}", lootTableWhiteList, lootTable.path);
                 }
             }
         }

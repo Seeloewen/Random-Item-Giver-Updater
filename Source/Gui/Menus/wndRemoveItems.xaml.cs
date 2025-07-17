@@ -16,7 +16,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
     public partial class wndRemoveItems : Window
     {
         //General attributes
-        public ObservableCollection<itemRemovalEntry> itemRemovalEntries { get; set; } = new ObservableCollection<itemRemovalEntry>();
+        public ObservableCollection<ItemRemovalEntry> itemRemovalEntries { get; set; } = new ObservableCollection<ItemRemovalEntry>();
         public wndSelectLootTables wndSelectLootTables;
         private double removeItemsWorkerProgress = 0;
         private int removeItemsWorkerAddedItems = 0;
@@ -87,7 +87,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
                 removeItemsWorkerAddedItems = 0;
                 removeItemsWorkerAddedItemsLootTables++;
 
-                foreach (itemRemovalEntry entry in itemRemovalEntries)
+                foreach (ItemRemovalEntry entry in itemRemovalEntries)
                 {
                     //If the loot table whitelist of the entry contains the loot table, then remove the item from the loot table
                     if (entry.lootTableWhiteList.Contains(lootTable.fullLootTablePath))
@@ -108,7 +108,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             //Go to the next page
             wzdRemoveItems.ShowNextPage();
 
-            foreach (itemRemovalEntry entry in itemRemovalEntries)
+            foreach (ItemRemovalEntry entry in itemRemovalEntries)
             {
                 tbRemovedItems.AppendText(entry.itemName + "\n");
             }
@@ -179,7 +179,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             //Checks if any items to remove were found and only let's you continue if thats the case
             if (itemRemovalEntries.Count() != 0)
             {
-                foreach (itemRemovalEntry itemRemovalEntry in itemRemovalEntries)
+                foreach (ItemRemovalEntry itemRemovalEntry in itemRemovalEntries)
                 {
                     if (string.IsNullOrEmpty(itemRemovalEntry.lootTableWhiteList))
                     {
@@ -224,7 +224,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
                     {
                         //Check if the item already has an entry
                         bool isAdded = false;
-                        foreach (itemRemovalEntry entry in itemRemovalEntries)
+                        foreach (ItemRemovalEntry entry in itemRemovalEntries)
                         {
                             //If it does, add the loot table to the entry
                             if (entry.itemName == itemName)
@@ -237,7 +237,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
                         //If it hasn't already been added, create a new entry and add the loot table
                         if (!isAdded)
                         {
-                            itemRemovalEntry newEntry = new itemRemovalEntry(itemName);
+                            ItemRemovalEntry newEntry = new ItemRemovalEntry(itemName);
                             newEntry.UpdateLootTables(lootTable);
                             itemRemovalEntries.Add(newEntry);
                         }
@@ -294,7 +294,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
                 //Get the canvas which the button is in
                 Canvas canvas = SeeloewenLibTools.FindVisualParent<Canvas>(button);
 
-                if (canvas.DataContext is itemRemovalEntry item)
+                if (canvas.DataContext is ItemRemovalEntry item)
                 {
                     //Open loot table selection window
                     wndSelectLootTables = new wndSelectLootTables(item.lootTableCheckList, "Select the Loot Tables, that you want to remove the item from.") { Owner = Application.Current.MainWindow };
@@ -317,7 +317,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
         private void tblLootTables_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (sender is TextBlock textblock && textblock.DataContext is itemRemovalEntry item)
+            if (sender is TextBlock textblock && textblock.DataContext is ItemRemovalEntry item)
             {
                 //Add all loot tables that the item is in to a list and display that list
                 string lootTables = "";
@@ -331,7 +331,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
         private void tblItemName_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (sender is TextBlock textblock && textblock.DataContext is itemRemovalEntry item)
+            if (sender is TextBlock textblock && textblock.DataContext is ItemRemovalEntry item)
             {
                 //Show the full item name in case it's cut off
                 MessageBox.Show(item.itemName, "Full item name", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -340,7 +340,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
         private void btnRemove_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is itemRemovalEntry item)
+            if (sender is Button button && button.DataContext is ItemRemovalEntry item)
             {
                 //Remove the item from the item removal list
                 itemRemovalEntries.Remove(item);
@@ -348,3 +348,4 @@ namespace RandomItemGiverUpdater.Gui.Menus
         }
     }
 }
+

@@ -1,4 +1,5 @@
 ﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Entries;
 
 namespace RandomItemGiverUpdater
 {
@@ -9,6 +10,7 @@ namespace RandomItemGiverUpdater
 
         public static Main core;
         public static ItemAdding itemAdding;
+        public static DuplicateFinder duplicateFinder;
 
         public static void Initialize(Main core)
         {

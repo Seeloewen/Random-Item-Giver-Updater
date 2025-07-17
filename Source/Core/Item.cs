@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Windows.Navigation;
 
 namespace RandomItemGiverUpdater.Core
 {
@@ -8,13 +10,16 @@ namespace RandomItemGiverUpdater.Core
         public string name { get; set; }
         private JObject itemBody;
 
+        private readonly JObject originalItemBody; //Used for identifying if the item body was modified
+
         public Item(string itemBody)
         {
             this.itemBody = JObject.Parse(itemBody);
+            originalItemBody = JObject.Parse(itemBody);
             name = GetName();
         }
 
-        public Item(string prefix, string name)
+        public Item(string name, string prefix = "minecraft")
         {
             itemBody = new JObject()
             {
@@ -192,5 +197,16 @@ namespace RandomItemGiverUpdater.Core
         }
 
         public string GetName() => itemBody["name"].ToString();
+
+        public bool IsModified() => itemBody != originalItemBody;
+
+        public string GetTag() //Warning: This should only be used if you don't care whether it's NBT or Item Stack Component
+        {
+            if (GetNBT() != null) return GetNBT();
+            else if (GetItemStackComponent() != null) return GetItemStackComponent();
+            else return null;
+        }
+
+        public bool HasTag() => GetNBT() != null || GetItemStackComponent != null;
     }
 }

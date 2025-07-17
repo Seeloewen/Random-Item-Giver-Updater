@@ -1,27 +1,19 @@
 ﻿using System.Linq;
 
-namespace RandomItemGiverUpdater
+namespace RandomItemGiverUpdater.Core.Entries
 {
-    public class duplicateEntry
+    public class DuplicateEntry
     {
-        //Item attributes
-        public string itemName { get; set; }
+        public string identifier;
         public string lootTables { get; set; }
         public int amount { get; set; }
 
-
-        //-- Constructor --//
-
-        public duplicateEntry(string name, string location, int index)
+        public DuplicateEntry(string identifier, string location, int index)
         {
-
-            //Initialize variables
-            itemName = name.TrimEnd('\r', '\n');
+            this.identifier = identifier;
             lootTables = location;
             amount = 1;
         }
-
-        //-- Custom Methods --//
 
         public void UpdateAmount()
         {
@@ -34,7 +26,7 @@ namespace RandomItemGiverUpdater
         public void UpdateLootTables(string newLootTable)
         {
             //Add a new loot table to the loot tables string and display it
-            lootTables = string.Format("{0}, {1}", lootTables, newLootTable);
+            lootTables = $"{lootTables}, {newLootTable}";
             //tblLootTables.Text = lootTables;
         }
     }

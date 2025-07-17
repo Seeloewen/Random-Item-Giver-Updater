@@ -7,7 +7,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="580" d:DesignWidth="742"
       Title="Page1_Start">
-    <Canvas x:Name="cvsContent">
+    <Canvas >
         <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click"/>
         <Button x:Name="btnBack" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="480" Canvas.Top="538" Click="btnBack_Click"/>
         <Label x:Name="lblHeader" Content="Step 1 - Welcome" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>

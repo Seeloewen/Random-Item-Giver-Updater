@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using RandomItemGiverUpdater.Gui.Menus;
-using System.ComponentModel;
+﻿using RandomItemGiverUpdater.Gui.Menus;
 using System.IO;
 using System.Windows;
 
@@ -9,8 +7,6 @@ namespace RandomItemGiverUpdater.Core
     public class Main
     {
         public wndMain wndMain;
-        //private BackgroundWorker bgwEditLootTable = new BackgroundWorker(); TODO: Move to somewhere else? or get rid of it entirely
-        private double workerProgress = 0;
 
         public Datapack currentDatapack;
         public LootTable currentLootTable;
@@ -76,26 +72,6 @@ namespace RandomItemGiverUpdater.Core
             currentLootTable = lootTable;
             wndMain.DataContext = currentLootTable;
             wndMain.ReloadWorkspace();
-        }
-
-        private void bgwEditLootTable_DoWork(object sender, DoWorkEventArgs e)
-        {
-            currentLootTable.Save();
-        }
-
-        private void bgwEditLootTable_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            //Pass the progress to the main window
-            workerProgress += (double)e.UserState;
-            wndMain.UpdateEditProgress(workerProgress);
-        }
-
-        private void bgwEditLootTable_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            //When the editing is finished, reload the workspace to show changes
-            wndMain.ReloadWorkspace();
-            wndMain.SetSaveButtonState(false);
-            MessageBox.Show("Successfully saved the loot table!", "Save Loot Table", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }
