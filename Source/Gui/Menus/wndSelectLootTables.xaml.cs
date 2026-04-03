@@ -20,7 +20,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
             foreach (LootTable lootTable in lootTables)
             {
-                LootTableSelectionEntry entry = new LootTableSelectionEntry(lootTable.name, lootTable.type, lootTable.prePath);
+                LootTableSelectionEntry entry = new LootTableSelectionEntry(lootTable.name, lootTable.category, lootTable.path);
                 this.lootTables.Add(entry); //Set up loot table list
                 stpLootTables.Children.Add(entry.visual); //Display the checkboxes for the entries
 

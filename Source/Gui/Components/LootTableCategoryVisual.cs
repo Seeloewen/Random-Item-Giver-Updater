@@ -36,6 +36,8 @@ namespace RandomItemGiverUpdater
             tblCategoryHeader.FontWeight = FontWeights.SemiBold;
             tblCategoryHeader.Foreground = new SolidColorBrush(Colors.White);
             tblCategoryHeader.Margin = new Thickness(10, 10, 0, 0);
+
+            Children.Add(cvsCategoryHeader);
         }
 
         private void cvsCategoryHeader_MouseDown(object sender, MouseEventArgs e)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace RandomItemGiverUpdater.Core
 {
@@ -20,20 +21,22 @@ namespace RandomItemGiverUpdater.Core
             usesLegacyNBT = packFormat < 41;
         }
 
+        public static Datapack Get() => RIGU.core.currentDatapack;
+
         public bool IsValid() => Directory.Exists(directory); //TODO: could probably implement a better check if the datapack is actually valid
 
         private void Load()
         {
             //Get the rootpath depending on the version
             string rootPath = "";
-            if (Directory.Exists($"{directory}/data/randomitemgiver/loot_tables/")) //1.20 and before
+            if (Directory.Exists($"{directory}\\data\\randomitemgiver\\loot_tables\\")) //1.20 and before
             {
-                rootPath = $"{directory}/data/randomitemgiver/loot_tables/";
+                rootPath = $"{directory}\\data\\randomitemgiver\\loot_tables\\";
                 usesOldFolderStructure = true;
             }
-            else if (Directory.Exists($"{directory}/data/randomitemgiver/loot_table/")) //1.21 and above
+            else if (Directory.Exists($"{directory}\\data\\randomitemgiver\\loot_table\\")) //1.21 and above
             {
-                rootPath = $"{directory}/data/randomitemgiver/loot_table/";
+                rootPath = $"{directory}\\data\\randomitemgiver\\loot_table\\";
             }
 
             //Get the different loot table categories
@@ -46,10 +49,10 @@ namespace RandomItemGiverUpdater.Core
             //Get all the loot tables and add them to their categories
             foreach (LootTableCategory category in lootTableCategories)
             {
-                string[] lootTables = Directory.GetFiles(rootPath + "/" + category.name);
+                string[] lootTables = Directory.GetFiles($"{rootPath}\\{category.name}");
                 foreach (string lootTable in lootTables)
                 {
-                    string name = lootTable.Replace(rootPath + "/", "");
+                    string name = lootTable.Replace($"{rootPath}\\{category.name}\\", "").Replace(".json", "");
                     category.lootTables.Add(new LootTable(name, category, lootTable));
                 }
             }
@@ -134,6 +137,35 @@ namespace RandomItemGiverUpdater.Core
             string versionString = File.ReadAllLines($"{directory}/pack.mcmeta")[2];
             versionString = versionString.Replace("    \"pack_format\":", "").Replace(",", "");
             return int.Parse(versionString);
+        }
+
+        public int GetLootTableAmount()
+        {
+            int i = 0;
+
+            //Count the loot tables of all the categories
+            foreach (LootTableCategory category in lootTableCategories)
+            {
+                foreach (LootTable lootTable in category.lootTables)
+                {
+                    i++;
+                }
+            }
+
+            return i;
+        }
+
+        public List<LootTable> GetLootTables()
+        {
+            //Puts all loot tables into a unified list without needing to go through all categories individually
+
+            List<LootTable> lootTables = new List<LootTable>();
+            foreach (LootTableCategory category in lootTableCategories)
+            {
+                lootTables.AddRange(category.lootTables);
+            }
+
+            return lootTables;
         }
     }
 }

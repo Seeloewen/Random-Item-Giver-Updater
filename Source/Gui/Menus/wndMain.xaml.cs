@@ -2,6 +2,7 @@
 using RandomItemGiverUpdater.Core;
 using RandomItemGiverUpdater.Gui.Components;
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,12 +16,11 @@ namespace RandomItemGiverUpdater.Gui.Menus
     {
         private Main core;
 
-        public wndAddItems wndAddItem;
-        public wndRemoveItems wndRemoveItems;
         public wndAbout wndAbout;
-        public wndDuplicateFinder wndDuplicateFinder;
         public wndSettings wndSettings;
         public wndNBTEditor wndNBTEditor;
+
+        public ObservableCollection<MainEntry> itemEntries { get; set; } = new ObservableCollection<MainEntry>();
 
         private ScrollViewer svLootTables = new ScrollViewer() { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalAlignment = VerticalAlignment.Stretch, HorizontalAlignment = HorizontalAlignment.Stretch, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Background = new SolidColorBrush(Color.FromArgb(100, 50, 50, 50)) };
         private StackPanel stpLootTables = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
@@ -39,6 +39,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             SetupControls();
             SetupButtons();
 
+            DataContext = this;
             this.core = core;
         }
 
@@ -51,12 +52,28 @@ namespace RandomItemGiverUpdater.Gui.Menus
         public void ReloadWorkspace()
         {
             //Toggle workplace backgroundimage
-            imgWorkplace.Visibility = RIGU.core.currentDatapack == null ? Visibility.Visible : Visibility.Hidden;
+            imgWorkplace.Visibility = Datapack.Get() == null ? Visibility.Visible : Visibility.Hidden;
+            itemEntries.Clear();
+
+            if (LootTable.Get() == null) return;
+
+            int i = 0;
+            foreach (Item item in LootTable.Get().items)
+            {
+                itemEntries.Add(new MainEntry(item, i));
+                i++;
+            }
         }
 
         public void ReloadSidebar()
         {
-            if (core.currentDatapack == null) return;
+            stpLootTables.Children.Clear();
+
+            if (core.currentDatapack == null)
+            {
+                stpLootTables.Children.Add(tblNoDatapackLoaded);
+                return;
+            }
 
             //Create the sidebar entries by going through each loot table and category
             foreach (LootTableCategory category in RIGU.core.currentDatapack.lootTableCategories)
@@ -67,21 +84,24 @@ namespace RandomItemGiverUpdater.Gui.Menus
                 foreach (LootTable lootTable in category.lootTables)
                 {
                     LootTableSidebarVisual lootVis = new LootTableSidebarVisual(lootTable.name) { DataContext = lootTable };
-                    catVis.Children.Add(lootVis);
+                    catVis.lootTableEntries.Add(lootVis);
                 }
 
-                stpSidebar.Children.Add(catVis);
+                stpLootTables.Children.Add(catVis);
             }
+        }
+
+        public void DisplayLootTable()
+        {
+
         }
 
         private void btnAddItem_Click(object sender, RoutedEventArgs e)
         {
-            wndAddItem = new wndAddItems();
-
             //Check if the datapack path exists before opening the window
             if (core.DatapackIsValid(core.currentDatapack))
             {
-                wndAddItem.ShowDialog();
+                RIGU.itemAdding.BeginSession();
             }
             else
             {
@@ -91,12 +111,10 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
         private void btnRemoveItems_Click(object sender, RoutedEventArgs e)
         {
-            //wndRemoveItems = new wndRemoveItems(false, null);
-
             //Check if the datapack path exists before opening the window
             if (core.DatapackIsValid(core.currentDatapack))
             {
-                wndRemoveItems.ShowDialog();
+                RIGU.itemRemover.BeginSession();
             }
             else
             {
@@ -117,6 +135,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.21 Dev 2.0"; //Debug
 
             core.LoadDatapack(tbDatapack.Text);
+            Reload();
         }
 
         private void btnSaveLootTable_Click(object sender, RoutedEventArgs e)
@@ -158,12 +177,10 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
         private void btnDuplicateFinder_Click(object sender, RoutedEventArgs e)
         {
-            wndDuplicateFinder = new wndDuplicateFinder();
-
             //Show duplicate finder window if a datapack is loaded
             if (core.DatapackIsValid(core.currentDatapack))
             {
-                wndDuplicateFinder.ShowDialog();
+                RIGU.duplicateFinder.BeginSession();
             }
             else
             {
@@ -278,7 +295,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             btn.Visibility = Visibility.Hidden;
             tbl.Visibility = Visibility.Visible;
 
-            entry.SetName(tb.Text);
+            entry.item.SetName(tb.Text);
             tbl.Text = tb.Text;
 
             entry.SetIndicatorState(btn, entry.GetModificationState());
@@ -293,15 +310,15 @@ namespace RandomItemGiverUpdater.Gui.Menus
             {
                 //If the datapack still uses legacy nbt, open the nbt editor and set the tag
                 wndNBTEditor editor = new wndNBTEditor();
-                (ModificationState result, string nbt) = editor.GetFromDialog(entry.name, entry.GetNBT());
+                (ModificationState result, string nbt) = editor.GetFromDialog(entry.item.name, entry.item.GetNBT());
 
                 switch (result)
                 {
                     case ModificationState.Edited:
-                        entry.SetNBT(nbt);
+                        entry.item.SetNBT(nbt);
                         break;
                     case ModificationState.Deleted:
-                        entry.RemoveNbtOrComponentBody();
+                        entry.item.RemoveNbtOrComponentBody();
                         break;
                 }
             }
@@ -309,15 +326,15 @@ namespace RandomItemGiverUpdater.Gui.Menus
             {
                 //If it uses the item stack component, open the editor and set the component
                 wndComponentEditor editor = new wndComponentEditor();
-                (ModificationState result, string component) = editor.GetFromDialog(entry.name, entry.GetItemStackComponent());
+                (ModificationState result, string component) = editor.GetFromDialog(entry.item.name, entry.item.GetItemStackComponent());
 
                 switch (result)
                 {
                     case ModificationState.Edited:
-                        entry.SetItemStackComponent(component);
+                        entry.item.SetItemStackComponent(component);
                         break;
                     case ModificationState.Deleted:
-                        entry.RemoveNbtOrComponentBody();
+                        entry.item.RemoveNbtOrComponentBody();
                         break;
                 }
             }

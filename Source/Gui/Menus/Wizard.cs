@@ -1,4 +1,5 @@
 ﻿using RandomItemGiverUpdater.Gui.Pages;
+using SeeloewenLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,8 +30,14 @@ namespace RandomItemGiverUpdater.Gui.Menus
             frame.Content = pages[--currentPage];
         }
 
+        public void ShowPage(int page)
+        {
+            frame.Content = pages[page - 1];
+        }
+
+
         //Basically a wrapper so I can use numbers from 1 to 6.
         //You need to specify the specific page class to use it properly
-        public T GetPage<T>(int i) where T : IWizardPage => (T)pages[i + 1];
+        public T GetPage<T>(int i) where T : IWizardPage => (T)pages[i - 1];
     }
 }

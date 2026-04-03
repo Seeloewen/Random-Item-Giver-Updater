@@ -2,6 +2,8 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Net.Mail;
 using System.Windows;
 
 namespace RandomItemGiverUpdater.Core
@@ -32,6 +34,8 @@ namespace RandomItemGiverUpdater.Core
             Load();
         }
 
+        public static LootTable Get() => RIGU.core.currentLootTable;
+
         public void Load()
         {
             if (!File.Exists(path)) throw new FileNotFoundException("Could not parse the specified loot table: File does not exist");
@@ -41,7 +45,7 @@ namespace RandomItemGiverUpdater.Core
             JArray poolsArray = (JArray)rootObject.SelectToken("pools[0].entries");
 
             //Get all the items
-            foreach(JObject entry in poolsArray)
+            foreach (JObject entry in poolsArray)
             {
                 items.Add(new Item(entry.ToString()));
             }
@@ -54,30 +58,51 @@ namespace RandomItemGiverUpdater.Core
         public bool IsModified()
         {
             //Check for each item if it is modified => if at least one item is modified, the loot table counts as modified
-            foreach(Item item in items)
+            foreach (Item item in items)
             {
-                if(item.IsModified()) return true;
+                if (item.IsModified()) return true;
             }
 
             return false;
         }
 
-        public void Save() => bgwEditLootTable.RunWorkerAsync();
+        public void AddItem(string name)
+        {
+
+        }
+
+        public void RemoveItem(string name)
+        {
+            //Go through all items and remove the one with the name -- only removes ONE instance of the item
+            for (int i = items.Count; i > 0; i--)
+            {
+                Item item = items[i];
+                if (name == item.name)
+                {
+                    items.Remove(item);
+                    break;
+                }
+            }
+        }
+
+        public void Save()
+        {
+            RIGU.core.wndMain.SetSaveButtonState(true);
+            bgwEditLootTable.RunWorkerAsync();
+        }
         public string GetIdentifier() => $"{category.name}/{name}";
 
         private void bgwEditLootTable_DoWork(object sender, DoWorkEventArgs e)
         {
-            RIGU.core.wndMain.SetSaveButtonState(false);
-
             //Reconstruct the full json object by adding the items to the frame
             JArray poolsArray = (JArray)frame.SelectToken("pools[0].entries");
-            foreach(Item item in items)
+            foreach (Item item in items)
             {
                 poolsArray.Add(item.GetItemBodyObject());
             }
 
             File.WriteAllText(path, frame.ToString());
-            poolsArray.Clear (); //Clear the frame again after the adding process
+            poolsArray.Clear(); //Clear the frame again after the adding process
         }
 
         private void bgwEditLootTable_ProgressChanged(object sender, ProgressChangedEventArgs e) //TODO Probably not even needed anymore

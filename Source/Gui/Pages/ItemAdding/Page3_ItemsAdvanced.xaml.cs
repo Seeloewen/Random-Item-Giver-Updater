@@ -19,7 +19,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             //Setup based on whether datapack uses legacy nbt or not
             tblEditCategories.Text = "  Prefix                                  " +
                                        "Name                                                   "
-                                       + (RIGU.wndMain.datapackUsesLegacyNBT ? "NBT" : "Component");
+                                       + (RIGU.core.currentDatapack.usesLegacyNBT ? "NBT" : "Component");
         }
 
         private void UpdateItem(TextBox textBox)
@@ -48,7 +48,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
         {
             AddingEntry item = (AddingEntry)((Button)sender).DataContext;
 
-            if (RIGU.wndMain.datapackUsesLegacyNBT)
+            if (RIGU.core.currentDatapack.usesLegacyNBT)
             {
                 //Open the legacy nbt editor
                 wndNBTEditor editor = new wndNBTEditor();

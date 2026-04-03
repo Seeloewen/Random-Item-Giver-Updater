@@ -25,7 +25,7 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Random_Item_Giver_Updater.App</StartupObject>
+    <StartupObject>RandomItemGiverUpdater.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Resource Include="Resources\imgAddItems.png" />

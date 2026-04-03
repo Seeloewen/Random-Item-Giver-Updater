@@ -19,6 +19,8 @@ namespace RandomItemGiverUpdater
             Main main = new Main();
 
             RIGU.Initialize(main);
+
+            main.wndMain.Show();
         }
     }
 }

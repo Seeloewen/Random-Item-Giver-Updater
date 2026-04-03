@@ -10,7 +10,7 @@
     <Window.Resources>
         <DataTemplate x:Key="ItemTemplate">
             <Canvas x:Name="cvsItem" Height="50" Background="{Binding canvasBackColor}" Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" MouseEnter="cvsItem_MouseEnter" MouseLeave="cvsItem_MouseLeave">
-                <TextBlock x:Name ="tblItemName" Text="{Binding name}" Canvas.Left="10" Canvas.Top="10" FontSize="20" Foreground="White" MouseDown="tblItemName_MouseDown"/>
+                <TextBlock x:Name ="tblItemName" Text="{Binding item.name}" Canvas.Left="10" Canvas.Top="10" FontSize="20" Foreground="White" MouseDown="tblItemName_MouseDown"/>
                 <TextBox x:Name="tbItemName" Width="350" Height="25" FontSize="18" Canvas.Top="10" Canvas.Left="10" Visibility="Hidden"/>
                 <Button x:Name="btnSaveItemName" Height="25" Width="100" Content="Confirm" Canvas.Top="10" Canvas.Left="370" Visibility="Hidden" Click="btnSaveItemName_Click"/>
                 <Button x:Name="btnDelete" Height="25" Width="100" Content="Delete" Canvas.Top="12" Canvas.Right="100" Click="btnDelete_Click" Visibility="Hidden"/>
@@ -46,7 +46,7 @@
                 <Button x:Name="btnSettings" Content="Settings" Height="30" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="0,45,796,0" HorizontalAlignment="Right" Width="158" Click="btnSettings_Click" Visibility="Hidden"/>
             </Grid>
         </StackPanel>
-        <ListBox x:Name="lbItems" ItemsSource="{Binding itemList}" Grid.Column="1" Grid.Row="1" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <ListBox x:Name="lbItems" ItemsSource="{Binding itemEntries}" Grid.Column="1" Grid.Row="1" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel/>

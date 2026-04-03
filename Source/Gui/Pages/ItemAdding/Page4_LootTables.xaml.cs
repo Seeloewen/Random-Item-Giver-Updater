@@ -1,4 +1,6 @@
-﻿using RandomItemGiverUpdater.Gui.Menus;
+﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Entries;
+using RandomItemGiverUpdater.Gui.Menus;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -52,15 +54,15 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             Canvas cvsParent = SeeloewenLib.Tools.FindVisualParent<Canvas>((Button)sender);
             AddingEntry item = (AddingEntry)cvsParent.DataContext;
 
-            wndSelectLootTables = new wndSelectLootTables(item.lootTableCheckList, "Select the Loot Tables, that you want to add the item to.") { Owner = Application.Current.MainWindow };
+            wndSelectLootTables = new wndSelectLootTables(item.lootTableCheckList, "Select the Loot Tables, that you want to add the item to.");
             wndSelectLootTables.ShowDialog();
 
             //Get whitelisted loot tables from loot table selection window
-            foreach (LootTable lootTable in wndSelectLootTables.lootTableList)
+            foreach (LootTableSelectionEntry lootTable in wndSelectLootTables.lootTables)
             {
-                if (lootTable.cbAddToLootTable.IsChecked == true)
+                if (lootTable.isSelected == true)
                 {
-                    item.lootTableWhiteList.Add(lootTable.fullLootTablePath);
+                    item.lootTableWhiteList.Add(lootTable);
                 }
             }
         }

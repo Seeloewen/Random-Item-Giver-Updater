@@ -18,8 +18,6 @@ namespace RandomItemGiverUpdater.Core
         private SaveFileDialog sfdDuplicateList = new SaveFileDialog() { Title = "Export duplicate list...", Filter = "Text (*.txt)|*.txt|All (*.*)|*.*" };
 
         public ObservableCollection<DuplicateEntry> duplicateEntries { get; set; } = new ObservableCollection<DuplicateEntry>();
-        private LootTable lootTable;
-        private Datapack datapack;
 
         public bool? checkEntireDatapack = true;
 
@@ -32,17 +30,14 @@ namespace RandomItemGiverUpdater.Core
                 duplicates.Add(duplicate.identifier);
             }
 
-            //Open remove item window
-            wndRemoveItems wndRemoveItems = new wndRemoveItems(true, duplicates);
-            wndRemoveItems.ShowDialog();
+            RIGU.itemRemover.BeginSession(duplicates);
         }
 
-        public void SetActiveEnvironment(wndDuplicateFinder wnd, Datapack datapack, LootTable lootTable)
+        public void BeginSession()
         {
             //Creates links for the current session
-            wndDuplicateFinder = wnd;
-            this.lootTable = lootTable;
-            this.datapack = datapack;
+            wndDuplicateFinder = new wndDuplicateFinder();
+            wndDuplicateFinder.ShowDialog();
         }
 
         public void Run(bool entireDatapack)
@@ -51,19 +46,17 @@ namespace RandomItemGiverUpdater.Core
 
             if (!entireDatapack) //Only check the current loot table
             {
-                CheckLootTable(lootTable);
+                CheckLootTable(RIGU.core.currentLootTable);
             }
             else //Check all loot tables in the current datapack
             {
                 duplicateEntries.Clear();
                 nextIndex = 0;
-                foreach (LootTableCategory category in datapack.lootTableCategories)
+                foreach (LootTable lootTable in RIGU.core.currentDatapack.GetLootTables())
                 {
-                    foreach (LootTable lootTable in category.lootTables)
-                    {
-                        CheckLootTable(lootTable);
-                    }
+                    CheckLootTable(lootTable);
                 }
+
             }
 
             MessageBox.Show($"Successfully searched for duplicates. Found {duplicateEntries.Count()} results.", "Search completed", MessageBoxButton.OK, MessageBoxImage.Information);

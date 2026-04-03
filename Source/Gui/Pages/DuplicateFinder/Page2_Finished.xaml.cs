@@ -1,19 +1,9 @@
 ﻿using RandomItemGiverUpdater.Core.Entries;
 using RandomItemGiverUpdater.Gui.Menus;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RandomItemGiverUpdater.Gui.Pages.DuplicateFinder
 {
@@ -30,7 +20,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.DuplicateFinder
         }
 
         public void Execute()
-        {            
+        {
             RIGU.duplicateFinder.Run((bool)RIGU.duplicateFinder.checkEntireDatapack);
         }
 
@@ -57,9 +47,25 @@ namespace RandomItemGiverUpdater.Gui.Pages.DuplicateFinder
 
         private void btnBack_Click(object sender, RoutedEventArgs e) => wndDuplicateFinder.ShowPreviousPage();
 
-        private void btnExportList_Click(object sender, RoutedEventArgs e)
-        {
+        private void btnExportList_Click(object sender, RoutedEventArgs e) => RIGU.duplicateFinder.Export();
 
+        private void btnViewAll_Click(object sender, RoutedEventArgs e)
+        {
+            Canvas cvs = SeeloewenLib.Tools.FindVisualParent<Canvas>((Button)sender);
+            DuplicateEntry entry = (DuplicateEntry)cvs.DataContext;
+
+            //Show a message in which loot tables the duplicate occurs
+            MessageBox.Show($"The duplicate occurs in the following loot tables:\n{entry.lootTables.Replace(", ", "\n")}", "View all Loot Tables", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e) => RIGU.duplicateFinder.DisplayItemRemover();
+
+        private void tblItemName_MouseDown(object sender, MouseEventArgs e)
+        {
+            TextBlock tb = (TextBlock)sender;
+
+            //Show the controls for editing and hide the original name
+            MessageBox.Show($"Full name of the item:\n{tb.Text}", "Full item name", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

@@ -5,14 +5,16 @@ using System.Windows.Media;
 
 namespace RandomItemGiverUpdater
 {
-    public class MainEntry : Item
+    public class MainEntry
     {
+        public Item item { get; set; }
         public SolidColorBrush canvasBackColor { get; set; }
         public string index { get; set; }
         public bool isDeleted = false;
 
-        public MainEntry(string itemBody, int index) : base(itemBody)
+        public MainEntry(Item item, int index)
         {
+            this.item = item;
             this.index = index.ToString();
             canvasBackColor = SetBackColor();
         }
@@ -55,7 +57,7 @@ namespace RandomItemGiverUpdater
             {
                 return ModificationState.Deleted;
             }
-            else if (IsModified())
+            else if (item.IsModified())
             {
                 return ModificationState.Edited;
             }

@@ -13,7 +13,7 @@ namespace RandomItemGiverUpdater.Core
 
         public Main()
         {
-            wndMain = new wndMain(this) { DataContext = this };
+            wndMain = new wndMain(this);
         }
 
         public bool DatapackIsValid(Datapack datapack) => datapack != null && datapack.IsValid();
@@ -25,7 +25,7 @@ namespace RandomItemGiverUpdater.Core
                 //If a datapack is currently loaded and has pending modifications, ask the user whether to overwrite them
                 if (RIGU.core.currentLootTable != null
                     && RIGU.core.currentLootTable.IsModified()
-                    && PromptUnsavedChanges() == MessageBoxResult.No) 
+                    && PromptUnsavedChanges() == MessageBoxResult.No)
                     return;
 
                 currentLootTable = null;
@@ -42,7 +42,7 @@ namespace RandomItemGiverUpdater.Core
             //Show warning if there are unsaved changes to the loot table
             if (RIGU.core.currentLootTable != null
                 && RIGU.core.currentLootTable.IsModified()
-                && PromptUnsavedChanges() == MessageBoxResult.No) 
+                && PromptUnsavedChanges() == MessageBoxResult.No)
                 return false;
 
             return true;
@@ -65,12 +65,11 @@ namespace RandomItemGiverUpdater.Core
             //Show warning if there are unsaved changes to the loot table
             if (RIGU.core.currentLootTable != null
                 && RIGU.core.currentLootTable.IsModified()
-                && PromptUnsavedChanges() == MessageBoxResult.No) 
+                && PromptUnsavedChanges() == MessageBoxResult.No)
                 return;
 
             //Set the current loot table, also as datacontext for the main window, and reload the main window's workspace
             currentLootTable = lootTable;
-            wndMain.DataContext = currentLootTable;
             wndMain.ReloadWorkspace();
         }
     }

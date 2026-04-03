@@ -13,7 +13,6 @@ namespace RandomItemGiverUpdater.Core
         private BackgroundWorker bgwAddItems = new BackgroundWorker();
 
         private wndAddItems wndAddItems;
-        private string lootTable;
 
         public DateTime startTime;
         private double workerProgress;
@@ -28,7 +27,13 @@ namespace RandomItemGiverUpdater.Core
             bgwAddItems.RunWorkerCompleted += bgwAddItems_RunWorkerCompleted;
         }
 
-        public void RunWorker()
+        public void BeginSession()
+        {
+            wndAddItems = new wndAddItems();
+            wndAddItems.ShowDialog();
+        }
+
+        public void Run()
         {
             //Reset worker progress
             workerProgress = 0;
@@ -43,7 +48,7 @@ namespace RandomItemGiverUpdater.Core
         public void AddItems(LootTable lootTable)
         {
             //Get the array of items
-            JObject fileObject = JObject.Parse(File.ReadAllText(lootTable));
+            JObject fileObject = JObject.Parse(File.ReadAllText(lootTable.path));
             JArray items = fileObject.SelectToken("pools[0].entries") as JArray;
 
             //Create a template item entry and strip the NBT and Components, and possibly the functions part
@@ -66,13 +71,7 @@ namespace RandomItemGiverUpdater.Core
                 }
             }
 
-            File.WriteAllText(lootTable, fileObject.ToString());
-        }
-
-        public void SetActiveEnvironment(wndAddItems wnd, string lootTable)
-        {
-            wndAddItems = wnd;
-            this.lootTable = lootTable;
+            File.WriteAllText(lootTable.path, fileObject.ToString());
         }
 
         private void bgwAddItems_RunWorkerCompleted(object s, RunWorkerCompletedEventArgs args) => wndAddItems.ShowNextPage();
@@ -80,9 +79,9 @@ namespace RandomItemGiverUpdater.Core
         private void bgwAddItems_DoWork(object s, DoWorkEventArgs args)
         {
             //Go through each loot table and add the items
-            foreach (LootTable lootTable in RIGU.wndMain.lootTableList)
+            foreach (LootTable lootTable in RIGU.core.currentDatapack.GetLootTables())
             {
-                AddItems($"{lootTable.lootTablePath}/{lootTable.lootTableName}");
+                AddItems(lootTable);
                 finishedLootTables++;
                 finishedItems = 0;
             }

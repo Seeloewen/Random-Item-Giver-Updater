@@ -12,14 +12,11 @@ namespace RandomItemGiverUpdater
         public string prefix;
         public int index { get; set; }
 
+        //TODO: Possible subject for improvement
         public List<LootTable> lootTableCheckList = new List<LootTable>();
-
-        //public List<LootTable> lootTableWhiteList = new List<LootTable>();
+        public List<LootTable> lootTableWhiteList = new List<LootTable>();
 
         public bool defaultLootTables = true;
-
-
-        //Canvas attributes
         public SolidColorBrush canvasBackColor { get; set; }
 
         //-- Constructor --//

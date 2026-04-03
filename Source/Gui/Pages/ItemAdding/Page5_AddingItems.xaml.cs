@@ -15,14 +15,14 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
 
         public void Execute()
         {
-            RIGU.itemAdding.AddItems();
+            RIGU.itemAdding.Run();
         }
 
         public void UpdateProgress(double pbValue, int percentage, int totalItems, int finishedLootTables)
         {
             //Report status of worker
             pbAddingItems.Value = pbValue;
-            tblAddingItemsProgress.Text = $"Adding items... (Item {percentage}/{totalItems} - Loot Table {finishedLootTables}/{RIGU.wndMain.lootTableList.Count})";
+            tblAddingItemsProgress.Text = $"Adding items... (Item {percentage}/{totalItems} - Loot Table {finishedLootTables}/{RIGU.core.currentDatapack.GetLootTableAmount()})";
         }
     }
 }
