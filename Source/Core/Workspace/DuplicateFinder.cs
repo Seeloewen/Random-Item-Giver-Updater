@@ -87,7 +87,7 @@ namespace RandomItemGiverUpdater.Core.Workspace
                     //If the item already exists in the duplicate list, update it and stop searching
                     if (duplicate.name == item)
                     {
-                        duplicate.UpdateLootTables(lootTable.GetIdentifier());
+                        duplicate.UpdateLootTables(lootTable.identifier);
                         duplicate.UpdateAmount();
                         wasAdded = true;
                         break;
@@ -95,7 +95,7 @@ namespace RandomItemGiverUpdater.Core.Workspace
                 }
 
                 //Add the item as a new entry if it hasn't been added yet
-                if (!wasAdded) duplicateEntries.Add(new DuplicateEntry(item, lootTable.GetIdentifier(), nextIndex++));
+                if (!wasAdded) duplicateEntries.Add(new DuplicateEntry(item, lootTable.identifier, nextIndex++));
             }
         }
 

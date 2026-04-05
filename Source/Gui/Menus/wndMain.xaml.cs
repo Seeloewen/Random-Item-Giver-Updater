@@ -5,8 +5,10 @@ using RandomItemGiverUpdater.Core.Workspace;
 using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Components;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -65,19 +67,40 @@ namespace RandomItemGiverUpdater.Gui.Menus
                 return;
             }
 
-            //Create the sidebar entries by going through each loot table and category
-            foreach (LootTableCategory category in RIGU.core.currentDatapack.lootTableCategories)
+            CreateSidebarEntries($"{Datapack.Get().lootTablesDirectory}", 0, stpLootTables);
+        }
+
+        public void CreateSidebarEntries(string path, int depth, StackPanel e) //Recursively goes through the directories and creates entries
+        {
+            string[] directories = Directory.GetDirectories(path);
+            foreach (string dir in directories) //Create a new category for each directory
             {
-                LootTableCategoryVisual catVis = new LootTableCategoryVisual(category);
+                LootTableCategoryVisual vis = new LootTableCategoryVisual(dir.Replace(path, ""), depth);
 
-                //Add all the loot table displays to the category display
-                foreach (LootTable lootTable in category.lootTables)
+                if (e.GetType() == typeof(LootTableCategoryVisual))
                 {
-                    LootTableSidebarVisual lootVis = new LootTableSidebarVisual(lootTable.name) { DataContext = lootTable };
-                    catVis.lootTableEntries.Add(lootVis);
+                    ((LootTableCategoryVisual)e).entries.Add(vis);
                 }
+                else
+                {
+                    e.Children.Add(vis);
+                }
+                CreateSidebarEntries(dir, depth + 1, vis);
+            }
 
-                stpLootTables.Children.Add(catVis);
+            string[] files = Directory.GetFiles(path);
+            foreach (string file in files) //Create a new loot table entry for each file
+            {
+                if (!file.Contains(".json")) continue;
+
+                if (e.GetType() == typeof(LootTableCategoryVisual))
+                {
+                    ((LootTableCategoryVisual)e).entries.Add(new LootTableSidebarVisual(Datapack.Get().GetLootTable(file), depth));
+                }
+                else
+                {
+                    e.Children.Add(new LootTableSidebarVisual(Datapack.Get().GetLootTable(file), depth));
+                }
             }
         }
 
@@ -117,8 +140,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.21 Dev 2.0"; //Debug
-
+            //tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.21 Dev 2.0"; //Debug
             core.LoadDatapack(tbDatapack.Text);
             Reload();
         }

@@ -103,30 +103,26 @@ namespace RandomItemGiverUpdater.Core.Workspace
         private void bgwRemoveItems_DoWork(object s, DoWorkEventArgs args)
         {
             //Go through each item removal entry and through each loot table in the currently loaded datapack
-            foreach (LootTableCategory category in RIGU.core.currentDatapack.lootTableCategories)
+            foreach (LootTable lootTable in Datapack.Get().GetLootTables())
             {
-                foreach (LootTable lootTable in category.lootTables)
+                processedItems = 0;
+                processedLootTables++;
+
+                foreach (RemovalEntry entry in removalEntries)
                 {
-                    processedItems = 0;
-                    processedLootTables++;
-
-                    foreach (RemovalEntry entry in removalEntries)
+                    //If the loot table whitelist of the entry contains the loot table, then remove the item from the loot table
+                    if (entry.lootTableWhiteList.Contains(lootTable))
                     {
-                        //If the loot table whitelist of the entry contains the loot table, then remove the item from the loot table
-                        if (entry.lootTableWhiteList.Contains(lootTable))
-                        {
-                            lootTable.RemoveItem(entry.name);
-                        }
-
-                        //Report worker progress
-                        workerProgress += 100 / Convert.ToDouble(removalEntries.Count * RIGU.core.currentDatapack.GetLootTableAmount());
-                        bgwRemoveItems.ReportProgress(++processedItems, workerProgress);
+                        lootTable.RemoveItem(entry.name);
                     }
 
-                    lootTable.Save();
+                    //Report worker progress
+                    workerProgress += 100 / Convert.ToDouble(removalEntries.Count * RIGU.core.currentDatapack.GetLootTableAmount());
+                    bgwRemoveItems.ReportProgress(++processedItems, workerProgress);
                 }
-            }
 
+                lootTable.Save();
+            }
         }
 
         private void bgwRemoveItems_ProgressChanged(object s, ProgressChangedEventArgs progress)

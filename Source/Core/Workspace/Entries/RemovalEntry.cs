@@ -34,11 +34,11 @@ namespace RandomItemGiverUpdater.Core.Workspace.Entries
 
             if (string.IsNullOrEmpty(lootTableCheckListStr))
             {
-                lootTableCheckListStr = lootTable.GetIdentifier();
+                lootTableCheckListStr = lootTable.identifier;
             }
             else
             {
-                lootTableCheckListStr = $"{lootTableCheckListStr}\n{lootTable.GetIdentifier()}";
+                lootTableCheckListStr = $"{lootTableCheckListStr}\n{lootTable.identifier}";
             }
         }
 

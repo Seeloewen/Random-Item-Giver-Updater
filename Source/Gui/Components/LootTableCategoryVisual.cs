@@ -1,7 +1,5 @@
-﻿using RandomItemGiverUpdater.Core;
-using RandomItemGiverUpdater.Core.Data;
-using RandomItemGiverUpdater.Gui.Components;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,14 +14,14 @@ namespace RandomItemGiverUpdater
 
         private Canvas cvsCategoryHeader = new Canvas();
         private TextBlock tblCategoryHeader = new TextBlock();
-        public List<LootTableSidebarVisual> lootTableEntries = new List<LootTableSidebarVisual>();
+        public List<UIElement> entries = new List<UIElement>();
 
         private bool isCollapsed = true;
-        private LootTableCategory category;
+        private string category;
 
-        public LootTableCategoryVisual(LootTableCategory category)
+        public LootTableCategoryVisual(string category, int depth)
         {
-            this.category = category;
+            this.category = category.Replace("\\", "");
 
             //Category header canvas
             cvsCategoryHeader.Height = 35;
@@ -32,7 +30,14 @@ namespace RandomItemGiverUpdater
             cvsCategoryHeader.Children.Add(tblCategoryHeader);
 
             //Category header
-            tblCategoryHeader.Text = $"{COLLAPSED_SYMBOL} {category.name}";
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < depth; i++)
+            {
+                sb.Append("   ");
+            }
+            sb.Append($"{COLLAPSED_SYMBOL} {this.category}");
+
+            tblCategoryHeader.Text = sb.ToString();
             tblCategoryHeader.FontSize = 15;
             tblCategoryHeader.FontWeight = FontWeights.SemiBold;
             tblCategoryHeader.Foreground = new SolidColorBrush(Colors.White);
@@ -46,13 +51,13 @@ namespace RandomItemGiverUpdater
             if (isCollapsed)
             {
                 //Show the different loot tables
-                foreach (LootTableSidebarVisual lootTable in lootTableEntries)
+                foreach (UIElement lootTable in entries)
                 {
                     Children.Add(lootTable);
                 }
 
                 isCollapsed = false;
-                tblCategoryHeader.Text = $"{EXPANDED_SYMBOL} {category.name}";
+                tblCategoryHeader.Text = tblCategoryHeader.Text.Replace(COLLAPSED_SYMBOL, EXPANDED_SYMBOL);
             }
             else
             {
@@ -60,7 +65,7 @@ namespace RandomItemGiverUpdater
                 Children.Clear();
                 Children.Add(cvsCategoryHeader);
                 isCollapsed = true;
-                tblCategoryHeader.Text = $"{COLLAPSED_SYMBOL} {category.name}";
+                tblCategoryHeader.Text = tblCategoryHeader.Text.Replace(EXPANDED_SYMBOL, COLLAPSED_SYMBOL);
             }
         }
     }

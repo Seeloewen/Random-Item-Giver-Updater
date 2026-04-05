@@ -17,7 +17,7 @@ namespace RandomItemGiverUpdater.Gui.Components
             Height = 35;
 
             //Checkbox for ItemAdding
-            cbAddToLootTable.Content = $"{entry.lootTable.category.name}\\{entry.lootTable.name}";
+            cbAddToLootTable.Content = entry.lootTable.identifier;
             cbAddToLootTable.Foreground = new SolidColorBrush(Colors.White);
             cbAddToLootTable.Margin = new Thickness(20, 15, 0, 0);
             cbAddToLootTable.FontSize = 15;

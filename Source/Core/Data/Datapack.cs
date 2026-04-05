@@ -1,21 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace RandomItemGiverUpdater.Core.Data
 {
     public class Datapack
     {
-        public List<LootTableCategory> lootTableCategories = new List<LootTableCategory>();
+        private List<LootTable> lootTables = new List<LootTable>();
 
-        public string directory;
-        public bool usesLegacyNBT = false; //TODO: Why is this even here
+        public string rootDirectory;
+        public string lootTablesDirectory;
+        public bool usesLegacyNBT = false;
         public bool usesOldFolderStructure = false;
         public int packFormat = 0;
 
         public Datapack(string path)
         {
-            directory = path;
+            rootDirectory = path;
             Load();
             packFormat = GetPackFormat();
             usesLegacyNBT = packFormat < 41;
@@ -23,52 +23,58 @@ namespace RandomItemGiverUpdater.Core.Data
 
         public static Datapack Get() => RIGU.core.currentDatapack;
 
-        public bool IsValid() => Directory.Exists(directory); //TODO: could probably implement a better check if the datapack is actually valid
+        public bool IsValid() => Directory.Exists(rootDirectory); //TODO: could probably implement a better check if the datapack is actually valid
 
-        public void Save() => GetLootTables().ForEach(t => t.Save());
+        public void Save() => lootTables.ForEach(t => t.Save());
 
         private void Load()
         {
             //Get the rootpath depending on the version
-            string rootPath = "";
-            if (Directory.Exists($"{directory}\\data\\randomitemgiver\\loot_tables\\")) //1.20 and before
+            if (Directory.Exists($"{rootDirectory}\\data\\randomitemgiver\\loot_tables")) //1.20 and before
             {
-                rootPath = $"{directory}\\data\\randomitemgiver\\loot_tables\\";
+                lootTablesDirectory = $"{rootDirectory}\\data\\randomitemgiver\\loot_tables";
                 usesOldFolderStructure = true;
             }
-            else if (Directory.Exists($"{directory}\\data\\randomitemgiver\\loot_table\\")) //1.21 and above
+            else if (Directory.Exists($"{rootDirectory}\\data\\randomitemgiver\\loot_table")) //1.21 and above
             {
-                rootPath = $"{directory}\\data\\randomitemgiver\\loot_table\\";
+                lootTablesDirectory = $"{rootDirectory}\\data\\randomitemgiver\\loot_table";
             }
 
-            //Get the different loot table categories
-            string[] categories = Directory.GetDirectories(rootPath);
-            foreach (string category in categories)
-            {
-                lootTableCategories.Add(new LootTableCategory(category.Replace(rootPath, "")));
-            }
+            lootTables.AddRange(ScanForLootTables(lootTablesDirectory));
+        }
 
-            //Get all the loot tables and add them to their categories
-            foreach (LootTableCategory category in lootTableCategories)
+        private List<LootTable> ScanForLootTables(string path) //Recursively goes through all folders in this path
+        {
+            List<LootTable> lootTables = new List<LootTable>();
+
+            //Go through each file in the path and check whether it's a loot table
+            string[] files = Directory.GetFiles(path);
+            foreach (string file in files)
             {
-                string[] lootTables = Directory.GetFiles($"{rootPath}\\{category.name}");
-                foreach (string lootTable in lootTables)
+                if (file.Contains(".json")) //Assumes every json file in the scanned folder is a loot table (which should be the case)
                 {
-                    string name = lootTable.Replace($"{rootPath}\\{category.name}\\", "").Replace(".json", "");
-                    category.lootTables.Add(new LootTable(name, category, lootTable));
+                    string name = file.Replace($"{path}\\", "").Replace(".json", "");
+                    string identifier = file.Replace($"{lootTablesDirectory}\\", "").Replace(".json", "");
+                    lootTables.Add(new LootTable(name, identifier, file));
                 }
             }
+
+            //Go through the remaining directories and check them too
+            string[] directories = Directory.GetDirectories(path);
+            foreach (string directory in directories)
+            {
+                lootTables.AddRange(ScanForLootTables(directory));
+            }
+
+            return lootTables;
         }
 
         public LootTable GetLootTable(string path)
         {
             //Get the corresponding loot table
-            foreach (LootTableCategory category in lootTableCategories)
+            foreach (LootTable lootTable in lootTables)
             {
-                foreach (LootTable lootTable in category.lootTables)
-                {
-                    if (lootTable.path == path) return lootTable;
-                }
+                if (lootTable.path == path) return lootTable;
             }
 
             return null;
@@ -136,38 +142,13 @@ namespace RandomItemGiverUpdater.Core.Data
         private int GetPackFormat()
         {
             //Read the pack format from the file and remove unnecessary characters
-            string versionString = File.ReadAllLines($"{directory}/pack.mcmeta")[2];
+            string versionString = File.ReadAllLines($"{rootDirectory}/pack.mcmeta")[2];
             versionString = versionString.Replace("    \"pack_format\":", "").Replace(",", "");
             return int.Parse(versionString);
         }
 
-        public int GetLootTableAmount()
-        {
-            int i = 0;
+        public int GetLootTableAmount() => lootTables.Count;
 
-            //Count the loot tables of all the categories
-            foreach (LootTableCategory category in lootTableCategories)
-            {
-                foreach (LootTable lootTable in category.lootTables)
-                {
-                    i++;
-                }
-            }
-
-            return i;
-        }
-
-        public List<LootTable> GetLootTables()
-        {
-            //Puts all loot tables into a unified list without needing to go through all categories individually
-
-            List<LootTable> lootTables = new List<LootTable>();
-            foreach (LootTableCategory category in lootTableCategories)
-            {
-                lootTables.AddRange(category.lootTables);
-            }
-
-            return lootTables;
-        }
+        public List<LootTable> GetLootTables() => lootTables;
     }
 }

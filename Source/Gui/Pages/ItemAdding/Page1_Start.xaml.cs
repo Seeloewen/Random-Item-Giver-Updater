@@ -19,7 +19,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
 
         public void SetDatapack(Datapack datapack)
         {
-            tblCurrentlySelectedDatapack.Text = $"Currently selected Datapack:\n{datapack.directory}\n{datapack.GetVersionString(datapack.directory)}";
+            tblCurrentlySelectedDatapack.Text = $"Currently selected Datapack:\n{datapack.rootDirectory}\n{datapack.GetVersionString(datapack.rootDirectory)}";
         }
 
         private void btnContinue_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowNextPage();

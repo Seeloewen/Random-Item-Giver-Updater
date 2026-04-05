@@ -16,13 +16,13 @@ namespace RandomItemGiverUpdater.Core.Data
         private JObject frame;
 
         public readonly string name;
-        public readonly LootTableCategory category;
+        public readonly string identifier;
         public readonly string path;
 
-        public LootTable(string name, LootTableCategory category, string path)
+        public LootTable(string name, string identifier, string path)
         {
             this.name = name;
-            this.category = category;
+            this.identifier = identifier;
             this.path = path;
 
             Load();
@@ -100,7 +100,5 @@ namespace RandomItemGiverUpdater.Core.Data
                 if (items[i].isDeleted) items.RemoveAt(i);
             }
         }
-
-        public string GetIdentifier() => $"{category.name}/{name}";
     }
 }
