@@ -3,7 +3,7 @@
     <TargetFramework>net9.0-windows</TargetFramework>
     <LangVersion>latest</LangVersion>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Random_Item_Giver_Updater</RootNamespace>
+    <RootNamespace>RandomItemGiverUpdater</RootNamespace>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>

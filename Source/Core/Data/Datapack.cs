@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace RandomItemGiverUpdater.Core
+namespace RandomItemGiverUpdater.Core.Data
 {
     public class Datapack
     {
@@ -24,6 +24,8 @@ namespace RandomItemGiverUpdater.Core
         public static Datapack Get() => RIGU.core.currentDatapack;
 
         public bool IsValid() => Directory.Exists(directory); //TODO: could probably implement a better check if the datapack is actually valid
+
+        public void Save() => GetLootTables().ForEach(t => t.Save());
 
         private void Load()
         {

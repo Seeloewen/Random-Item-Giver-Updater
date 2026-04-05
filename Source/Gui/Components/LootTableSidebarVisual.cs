@@ -1,4 +1,5 @@
 ﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;

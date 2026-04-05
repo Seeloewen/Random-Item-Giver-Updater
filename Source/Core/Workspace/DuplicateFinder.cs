@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
-using RandomItemGiverUpdater.Core.Entries;
+using RandomItemGiverUpdater.Core.Data;
+using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Menus;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 
-namespace RandomItemGiverUpdater.Core
+namespace RandomItemGiverUpdater.Core.Workspace
 {
     public class DuplicateFinder
     {
@@ -19,7 +20,7 @@ namespace RandomItemGiverUpdater.Core
 
         public ObservableCollection<DuplicateEntry> duplicateEntries { get; set; } = new ObservableCollection<DuplicateEntry>();
 
-        public bool? checkEntireDatapack = true;
+        public bool checkEntireDatapack = false;
 
         public void DisplayItemRemover()
         {
@@ -27,7 +28,7 @@ namespace RandomItemGiverUpdater.Core
             List<string> duplicates = new List<string>();
             foreach (DuplicateEntry duplicate in duplicateEntries)
             {
-                duplicates.Add(duplicate.identifier);
+                duplicates.Add(duplicate.name);
             }
 
             RIGU.itemRemover.BeginSession(duplicates);
@@ -40,11 +41,11 @@ namespace RandomItemGiverUpdater.Core
             wndDuplicateFinder.ShowDialog();
         }
 
-        public void Run(bool entireDatapack)
+        public void Run()
         {
             duplicateEntries.Clear();
 
-            if (!entireDatapack) //Only check the current loot table
+            if (!checkEntireDatapack) //Only check the current loot table
             {
                 CheckLootTable(RIGU.core.currentLootTable);
             }
@@ -64,20 +65,16 @@ namespace RandomItemGiverUpdater.Core
 
         private void CheckLootTable(LootTable lootTable)
         {
+            HashSet<string> passedItems = new HashSet<string>();
             HashSet<string> duplicateItems = new HashSet<string>();
-
-            //Construct a list of all items as string
             foreach (Item item in lootTable.items)
             {
-                //Add a new entry to the list depending on whether it has nbt or component or not
-                if (item.HasTag())
-                {
-                    duplicateItems.Add($"{item.GetName()};{item.GetTag()}");
-                }
-                else
-                {
-                    duplicateItems.Add(item.GetName());
-                }
+                //Go through all items and add them to a list. When an item that is already in the list is found, it's a duplicate.
+                string str = item.HasTag() ? $"{item.GetName()};{item.GetTag()}" : item.GetName();
+
+                if (passedItems.Contains(str)) duplicateItems.Add(str);
+
+                passedItems.Add(str);
             }
 
             foreach (string item in duplicateItems)
@@ -88,7 +85,7 @@ namespace RandomItemGiverUpdater.Core
                 foreach (DuplicateEntry duplicate in duplicateEntries)
                 {
                     //If the item already exists in the duplicate list, update it and stop searching
-                    if (duplicate.identifier == item)
+                    if (duplicate.name == item)
                     {
                         duplicate.UpdateLootTables(lootTable.GetIdentifier());
                         duplicate.UpdateAmount();
@@ -108,7 +105,7 @@ namespace RandomItemGiverUpdater.Core
             List<string> fileConstruct = ["Item Name - Amount - Loot Table(s)"];
             foreach (DuplicateEntry duplicate in duplicateEntries)
             {
-                fileConstruct.Add($"{duplicate.identifier} - {duplicate.amount} - {duplicate.lootTables}");
+                fileConstruct.Add($"{duplicate.name} - {duplicate.amount} - {duplicate.lootTables}");
             }
 
             sfdDuplicateList.FileName = "Random_Item_Giver_Updater_Duplicate_List.txt";

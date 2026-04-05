@@ -5,11 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RandomItemGiverUpdater.Gui.Menus"
         mc:Ignorable="d"
-        Title="Add Item" Height="723" Width="802" Background="#FF323232" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Closing="wndAddItem1_Closing">
-    <Grid x:Name="grdAddItems" Margin="0,0,0,-6" RenderTransformOrigin="0.5,0.5">
-        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" Margin="661,645,0,0" VerticalAlignment="Top" Width="99" Height="27" FontSize="16"/>
-        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Left" Margin="553,645,0,0" VerticalAlignment="Top" Width="99" Height="27" FontSize="16"/>
+        Title="Add Item" Height="685" Width="798" Background="#FF323232" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Closing="wndAddItem1_Closing">
+    <Canvas x:Name="grdAddItems" Margin="0,0,0,-6" RenderTransformOrigin="0.5,0.5">
         <TextBlock x:Name="tblHeader" TextWrapping="Wrap" Text="Add Items" Margin="16,11,0,0" HorizontalAlignment="Left" Width="123" Height="41" VerticalAlignment="Top" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
-        <Frame x:Name="frWizard" Content="" Margin="21,57,23,79" Height="580" Width="742"/>
-    </Grid>
+        <GroupBox Header="" Foreground="White" HorizontalAlignment="Center" Width="753" Height="591" VerticalAlignment="Top" Canvas.Left="16" Canvas.Top="43"/>
+        <Frame x:Name="frWizard" Content="" Height="600" Canvas.Left="28" Canvas.Top="52" Width="729" HorizontalAlignment="Center" VerticalAlignment="Top" NavigationUIVisibility="Hidden"/>
+    </Canvas>
 </local:Wizard>

@@ -10,8 +10,8 @@
     <Page.Resources>
         <DataTemplate x:Key="LootTableTemplate">
             <Canvas x:Name="cvsItem" Height="40" Background="{Binding canvasBackColor}" >
-                <TextBlock x:Name="tbItemName" Width="140" Height="24" FontSize="15" Foreground="White" Canvas.Top="6" Canvas.Left="20" Text="{Binding itemName}"/>
-                <RadioButton x:Name="rbtnAllLootTables" Width="255" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="175" Padding="5,-3.5,0,0" Content="All loot tables" IsChecked="True" Checked="rbtnAllLootTables_Checked"/>
+                <TextBlock x:Name="tbItemName" Width="140" Height="24" FontSize="15" Foreground="White" Canvas.Top="6" Canvas.Left="20" Text="{Binding name}"/>
+                <RadioButton x:Name="rbtnAllLootTables" Width="255" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="175" Padding="5,-3.5,0,0" Content="Default loot tables" IsChecked="True" Checked="rbtnAllLootTables_Checked"/>
                 <RadioButton x:Name="rbtnCertainLootTables" Width="255" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="350" Content="Only certain loot tables:" Padding="5,-3.5,0,0" Checked="rbtnCertainLootTables_Checked"/>
                 <Button x:Name="btnEditCertainLootTables" Height="25" Width="150" Content="Select loot tables" FontSize="15" Canvas.Top="6" Canvas.Left="550" Click="btnEditCertainLootTables_Click" IsEnabled="False"/>
             </Canvas>

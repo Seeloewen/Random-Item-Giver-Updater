@@ -1,4 +1,6 @@
-﻿using RandomItemGiverUpdater.Gui.Menus;
+﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Workspace.Entries;
+using RandomItemGiverUpdater.Gui.Menus;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,7 +22,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             //Add all items to the added items list
             foreach (AddingEntry item in RIGU.itemAdding.itemEntries)
             {
-                tbAddedItemsList.AppendText($"{item.prefix}:{item.id}\n");
+                tbAddedItemsList.AppendText($"{item.Prefix}:{item.Id}\n");
             }
 
             //Show the elapsed time
@@ -28,7 +30,11 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             tblElapsedTime.Text = $"Elapsed time: {DateTime.Now - RIGU.itemAdding.startTime}";
         }
 
-        private void btnContinue_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowNextPage();
+        private void btnContinue_Click(object sender, RoutedEventArgs e)
+        {
+            RIGU.core.ReloadLootTable();
+            wndAddItems.ShowNextPage();
+        }
 
         private void btnBack_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowNextPage();
     }

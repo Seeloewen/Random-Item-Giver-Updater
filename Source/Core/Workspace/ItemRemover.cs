@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
-using RandomItemGiverUpdater.Core.Entries;
+using RandomItemGiverUpdater.Core.Data;
+using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Menus;
 using System;
 using System.Collections.Generic;
@@ -7,12 +8,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 
-namespace RandomItemGiverUpdater.Core
+namespace RandomItemGiverUpdater.Core.Workspace
 {
     public class ItemRemover
     {
         private wndRemoveItems wndRemoveItems;
-        public ObservableCollection<ItemRemovalEntry> removalEntries { get; set; } = new ObservableCollection<ItemRemovalEntry>();
+        public ObservableCollection<RemovalEntry> removalEntries { get; set; } = new ObservableCollection<RemovalEntry>();
 
         private BackgroundWorker bgwRemoveItems = new BackgroundWorker();
         private double workerProgress = 0;
@@ -76,7 +77,7 @@ namespace RandomItemGiverUpdater.Core
                     {
                         //Check if the item already has an entry
                         bool isAdded = false;
-                        foreach (ItemRemovalEntry entry in removalEntries)
+                        foreach (RemovalEntry entry in removalEntries)
                         {
                             //If it does, add the loot table to the entry
                             if (entry.name == item.name)
@@ -89,7 +90,7 @@ namespace RandomItemGiverUpdater.Core
                         //If it hasn't already been added, create a new entry and add the loot table
                         if (!isAdded)
                         {
-                            ItemRemovalEntry newEntry = new ItemRemovalEntry(item.name, j);
+                            RemovalEntry newEntry = new RemovalEntry(item.name, j);
                             newEntry.UpdateLootTables(lootTable);
                             removalEntries.Add(newEntry);
                             j++;
@@ -109,7 +110,7 @@ namespace RandomItemGiverUpdater.Core
                     processedItems = 0;
                     processedLootTables++;
 
-                    foreach (ItemRemovalEntry entry in removalEntries)
+                    foreach (RemovalEntry entry in removalEntries)
                     {
                         //If the loot table whitelist of the entry contains the loot table, then remove the item from the loot table
                         if (entry.lootTableWhiteList.Contains(lootTable))

@@ -1,8 +1,11 @@
-﻿using RandomItemGiverUpdater.Gui.Menus;
+﻿using RandomItemGiverUpdater.Core.Data;
+using RandomItemGiverUpdater.Core.Workspace.Entries;
+using RandomItemGiverUpdater.Gui.Menus;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 
-namespace RandomItemGiverUpdater.Core
+namespace RandomItemGiverUpdater.Core.Workspace
 {
     public class Main
     {
@@ -11,9 +14,11 @@ namespace RandomItemGiverUpdater.Core
         public Datapack currentDatapack;
         public LootTable currentLootTable;
 
+        public ObservableCollection<MainEntry> itemEntries { get; set; } = new ObservableCollection<MainEntry>();
+
         public Main()
         {
-            wndMain = new wndMain(this);
+            wndMain = new wndMain(this) { DataContext = this };
         }
 
         public bool DatapackIsValid(Datapack datapack) => datapack != null && datapack.IsValid();
@@ -68,8 +73,37 @@ namespace RandomItemGiverUpdater.Core
                 && PromptUnsavedChanges() == MessageBoxResult.No)
                 return;
 
-            //Set the current loot table, also as datacontext for the main window, and reload the main window's workspace
             currentLootTable = lootTable;
+
+            itemEntries.Clear();
+            if (currentLootTable != null)
+            {
+                int i = 0;
+                foreach (Item item in currentLootTable.items) //Create a main entry for each item
+                {
+                    item.Refresh(); //Overwrite any previous modification markers
+                    itemEntries.Add(new MainEntry(item, i));
+                    i++;
+                }
+            }
+
+            wndMain.ReloadWorkspace();
+        }
+
+        public void ReloadLootTable()
+        {
+            itemEntries.Clear();
+            if (currentLootTable != null)
+            {
+                int i = 0;
+                foreach (Item item in currentLootTable.items) //Create a main entry for each item
+                {
+                    item.Refresh(); //Overwrite any previous modification markers
+                    itemEntries.Add(new MainEntry(item, i));
+                    i++;
+                }
+            }
+
             wndMain.ReloadWorkspace();
         }
     }

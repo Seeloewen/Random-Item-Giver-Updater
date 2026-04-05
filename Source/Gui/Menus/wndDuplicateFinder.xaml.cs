@@ -1,4 +1,5 @@
 ﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Workspace;
 using RandomItemGiverUpdater.Gui.Pages.DuplicateFinder;
 using System.Windows;
 
@@ -14,7 +15,10 @@ namespace RandomItemGiverUpdater.Gui.Menus
             duplicateFinder = RIGU.duplicateFinder;
             DataContext = duplicateFinder;
 
+            Init(frWizard, 2);
             InitUI();
+
+            ShowPage(1);
         }
 
         private void InitUI()
@@ -22,6 +26,8 @@ namespace RandomItemGiverUpdater.Gui.Menus
             //Setup pages
             pages[0] = new Page1_Start(this);
             pages[1] = new Page2_Finished(this);
+
+            GetPage<Page2_Finished>(2).DataContext = DataContext;
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)

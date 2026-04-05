@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using RandomItemGiverUpdater.Core;
+using System.Windows;
 
 namespace RandomItemGiverUpdater.Gui.Menus
 {
@@ -47,13 +48,13 @@ namespace RandomItemGiverUpdater.Gui.Menus
                         newNbt = "";
                         break;
                     case MessageBoxResult.No:
-                        result = ModificationState.Edited;
+                        result = ModificationState.Modified;
                         break;
                 }
             }
             else
             {
-                result = ModificationState.Edited;
+                result = ModificationState.Modified;
                 MessageBox.Show("The changes were saved successfully", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 

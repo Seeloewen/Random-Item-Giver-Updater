@@ -1,11 +1,14 @@
 ﻿using Newtonsoft.Json.Linq;
+using RandomItemGiverUpdater.Core.Data;
+using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Menus;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 
-namespace RandomItemGiverUpdater.Core
+namespace RandomItemGiverUpdater.Core.Workspace
 {
     public class ItemAdding
     {
@@ -33,7 +36,27 @@ namespace RandomItemGiverUpdater.Core
             wndAddItems.ShowDialog();
         }
 
-        public void Run()
+        public void ConstructEntries(string[] items, bool customPrefixes = false)
+        {
+            //Clear previous content
+            itemEntries.Clear();
+
+            //Go through all items to check if a prefix needs to be added
+            for (int i = 0; i < items.Length; i++)
+            {
+                //If custom prefixes is checked but no custom prefix is found OR if custom prefixes is not checked, add the default prefix
+                if ((customPrefixes && !items[i].Contains(':')) || !customPrefixes)
+                {
+                    items[i] = $"minecraft:{items[i]}";
+                }
+
+                string[] split = items[i].Split(':');
+
+                itemEntries.Add(new AddingEntry(split[0], split[1].TrimEnd('\r', '\n'), i));
+            }
+        }
+
+        public void AddItems()
         {
             //Reset worker progress
             workerProgress = 0;
@@ -45,7 +68,7 @@ namespace RandomItemGiverUpdater.Core
             bgwAddItems.RunWorkerAsync();
         }
 
-        public void AddItems(LootTable lootTable)
+        public void WriteToLootTable(LootTable lootTable)
         {
             //Get the array of items
             JObject fileObject = JObject.Parse(File.ReadAllText(lootTable.path));
@@ -56,19 +79,24 @@ namespace RandomItemGiverUpdater.Core
             Item template = new Item(templateString);
             template.RemoveNbtOrComponentBody();
 
+            int i = 1;
             foreach (AddingEntry entry in itemEntries)
             {
                 if (entry.lootTableWhiteList.Contains(lootTable) || entry.defaultLootTables) //TODO: This still counts as all loot tables, not default ones
                 {
                     //Create the new item and add NBT/Item Stack Component if available
                     Item newItem = new Item(template.GetItemBody());
-                    newItem.SetName(entry.id);
+                    newItem.SetName(entry.name);
 
                     if (entry.HasNBT()) newItem.SetNBT(entry.GetNBT());
                     if (entry.HasItemStackComponent()) newItem.SetItemStackComponent(entry.GetItemStackComponent());
 
                     items.Add(newItem.GetItemBodyObject());
+                    lootTable.items.Add(newItem);
                 }
+
+                bgwAddItems.ReportProgress(i, (double)(finishedLootTables / Datapack.Get().GetLootTableAmount()));
+i++;
             }
 
             File.WriteAllText(lootTable.path, fileObject.ToString());
@@ -79,9 +107,11 @@ namespace RandomItemGiverUpdater.Core
         private void bgwAddItems_DoWork(object s, DoWorkEventArgs args)
         {
             //Go through each loot table and add the items
-            foreach (LootTable lootTable in RIGU.core.currentDatapack.GetLootTables())
+            //Even when only a few loot tables are selected, the adding process goes through all - items will still only be added to the correct ones
+            //This is done to ensure the loot tables are each only saved once as that takes up a lot of resources
+            foreach (LootTable lootTable in Datapack.Get().GetLootTables())
             {
-                AddItems(lootTable);
+                WriteToLootTable(lootTable);
                 finishedLootTables++;
                 finishedItems = 0;
             }
@@ -89,7 +119,7 @@ namespace RandomItemGiverUpdater.Core
 
         private void bgwAddItems_ProgressChanged(object s, ProgressChangedEventArgs progress)
         {
-            wndAddItems.UpdateProgress((double)progress.UserState, progress.ProgressPercentage, itemEntries.Count, finishedLootTables);
+            wndAddItems.UpdateProgress((double)(progress.UserState), progress.ProgressPercentage, itemEntries.Count, finishedLootTables);
         }
     }
 }

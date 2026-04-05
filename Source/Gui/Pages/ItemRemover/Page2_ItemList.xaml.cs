@@ -1,4 +1,5 @@
-﻿using RandomItemGiverUpdater.Gui.Menus;
+﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Gui.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;

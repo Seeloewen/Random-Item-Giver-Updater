@@ -2,6 +2,7 @@
 using System.Windows.Media;
 using System.Windows.Interop;
 using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Workspace;
 
 namespace RandomItemGiverUpdater
 {

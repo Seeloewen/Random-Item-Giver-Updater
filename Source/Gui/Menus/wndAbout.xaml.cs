@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using RandomItemGiverUpdater.Core;
+using System.Diagnostics;
 using System.Windows;
 
 namespace RandomItemGiverUpdater.Gui.Menus

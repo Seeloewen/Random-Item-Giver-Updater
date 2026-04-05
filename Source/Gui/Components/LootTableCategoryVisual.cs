@@ -1,4 +1,5 @@
 ﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Data;
 using RandomItemGiverUpdater.Gui.Components;
 using System.Collections.Generic;
 using System.Windows;

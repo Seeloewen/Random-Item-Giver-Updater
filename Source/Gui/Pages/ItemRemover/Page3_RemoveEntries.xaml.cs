@@ -1,6 +1,5 @@
 ﻿using RandomItemGiverUpdater.Core;
-using RandomItemGiverUpdater.Core.Entries;
-using RandomItemGiverUpdater.Entries;
+using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Menus;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,6 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
     public partial class Page3_RemoveEntries : Page, IWizardPage
     {
         private wndRemoveItems wndRemoveItems;
-        private wndSelectLootTables wndSelectLootTables;
 
         public Page3_RemoveEntries(wndRemoveItems wndRemoveItems)
         {
@@ -34,34 +32,33 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
         {
             //Get the item entry from the canvas which the button is in
             Canvas cvsParent = SeeloewenLib.Tools.FindVisualParent<Canvas>((Button)sender);
-            AddingEntry item = (AddingEntry)cvsParent.DataContext;
+            RemovalEntry item = (RemovalEntry)cvsParent.DataContext;
 
-            wndSelectLootTables = new wndSelectLootTables(item.lootTableCheckList, "Select the Loot Tables, that you want to add the item to.");
-            wndSelectLootTables.ShowDialog();
+            List<LootTableSelectionEntry> entries = wndSelectLootTables.Display(item.lootTableCheckList, "Select the Loot Tables, that you want to add the item to.");
 
             //Get whitelisted loot tables from loot table selection window
-            foreach (LootTableSelectionEntry lootTable in wndSelectLootTables.lootTables)
+            foreach (LootTableSelectionEntry entry in entries)
             {
-                if (lootTable.isSelected == true)
+                if (entry.isSelected == true)
                 {
-                    item.lootTableWhiteList.Add(lootTable);
+                    item.lootTableWhiteList.Add(entry.lootTable);
                 }
             }
         }
 
         private void tblLootTables_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (sender is TextBlock textblock && textblock.DataContext is ItemRemovalEntry item)
+            if (sender is TextBlock textblock && textblock.DataContext is RemovalEntry item)
             {
                 //Add all loot tables that the item is in to a list and display that list
-                string lootTables = "";
+                string lootTables = item.lootTableCheckListStr;
                 MessageBox.Show(lootTables, "List of loot tables", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
         private void tblItemName_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (sender is TextBlock textblock && textblock.DataContext is ItemRemovalEntry item)
+            if (sender is TextBlock textblock && textblock.DataContext is RemovalEntry item)
             {
                 //Show the full item name in case it's cut off
                 MessageBox.Show(item.name, "Full item name", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -70,7 +67,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
 
         private void btnRemove_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is ItemRemovalEntry item)
+            if (sender is Button button && button.DataContext is RemovalEntry item)
             {
                 //Remove the item from the item removal list
                 RIGU.itemRemover.removalEntries.Remove(item);
@@ -84,7 +81,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
             if (RIGU.itemRemover.removalEntries.Count <= 0) canContinue = false;
 
             //Check for each item if the selected loot table amount is valid
-            foreach (ItemRemovalEntry entry in RIGU.itemRemover.removalEntries)
+            foreach (RemovalEntry entry in RIGU.itemRemover.removalEntries)
             {
                 if (entry.lootTableWhiteList.Count <= 0)
                 {

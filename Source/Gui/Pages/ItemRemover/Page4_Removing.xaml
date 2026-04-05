@@ -9,8 +9,6 @@
       Title="Page4_Removing">
 
     <Canvas>
-        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click"/>
-        <Button x:Name="btnBack" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="480" Canvas.Top="538" Click="btnBack_Click"/>
         <Label x:Name="lblHeader" Content="Step 4 - Removing Items" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
 
         <TextBlock x:Name="tbStep4" Canvas.Left="16" TextWrapping="Wrap" Text="The items are now being removed from the selected loot tables. This may take a while, depending on the item amount." Canvas.Top="49" HorizontalAlignment="Left" VerticalAlignment="Center" Width="710" Foreground="White"/>

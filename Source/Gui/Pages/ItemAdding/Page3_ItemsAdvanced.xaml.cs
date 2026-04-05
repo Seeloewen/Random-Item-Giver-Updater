@@ -1,4 +1,6 @@
-﻿using RandomItemGiverUpdater.Gui.Menus;
+﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Workspace.Entries;
+using RandomItemGiverUpdater.Gui.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,22 +24,10 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
                                        + (RIGU.core.currentDatapack.usesLegacyNBT ? "NBT" : "Component");
         }
 
-        private void UpdateItem(TextBox textBox)
-        {
-            AddingEntry item = (AddingEntry)textBox.DataContext;
-
-            //Change the attributes of the item based on the input
-            item.id = textBox.Text;
-            item.name = $"{item.prefix}:{item.id}";
-        }
 
         private void btnBack_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowPreviousPage();
 
         private void btnContinue_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowNextPage();
-
-        private void tbItemName_TextChanged(object sender, TextChangedEventArgs e) => UpdateItem((TextBox)sender);
-
-        private void tbItemPrefix_TextChanged(object sender, TextChangedEventArgs e) => UpdateItem((TextBox)sender);
 
         private void btnAddAdditionalItem_Click(object sender, RoutedEventArgs e)
         {

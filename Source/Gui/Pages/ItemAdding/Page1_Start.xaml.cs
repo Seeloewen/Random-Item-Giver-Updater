@@ -1,4 +1,5 @@
 ﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Data;
 using RandomItemGiverUpdater.Gui.Menus;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,7 +19,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
 
         public void SetDatapack(Datapack datapack)
         {
-            tblCurrentlySelectedDatapack.Text = $"Currently selected Datapack: {datapack}\n{datapack.GetVersionString(datapack.directory)}";
+            tblCurrentlySelectedDatapack.Text = $"Currently selected Datapack:\n{datapack.directory}\n{datapack.GetVersionString(datapack.directory)}";
         }
 
         private void btnContinue_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowNextPage();

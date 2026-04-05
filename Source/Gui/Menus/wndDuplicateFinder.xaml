@@ -5,10 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RandomItemGiverUpdater.Gui.Menus"
         mc:Ignorable="d"
-        Background="#FF323232" Title="Duplicate Finder" Height="723" Width="802" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Background="#FF323232" Title="Duplicate Finder" Height="702" Width="809" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
 
-    <Grid x:Name="grdDuplicateFinder">
+    <Canvas x:Name="grdDuplicateFinder">
         <TextBlock x:Name="tblHeader" HorizontalAlignment="Left" Margin="22,12,0,0" TextWrapping="Wrap" Text="Duplicate Finder" VerticalAlignment="Top" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
-        <Frame x:Name="frWizard" Content="" Margin="21,57,23,79" Height="580" Width="742"/>
-    </Grid>
+        <Frame x:Name="frWizard" Content="" Height="580" Width="742" NavigationUIVisibility="Hidden" Canvas.Left="31" Canvas.Top="57" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+        <GroupBox Height="602" Header="" Width="751" Canvas.Left="22" Canvas.Top="46" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+    </Canvas>
 </local:Wizard>

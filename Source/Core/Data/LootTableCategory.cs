@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RandomItemGiverUpdater.Core
+namespace RandomItemGiverUpdater.Core.Data
 {
     public class LootTableCategory
     {

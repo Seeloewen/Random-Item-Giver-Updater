@@ -13,25 +13,42 @@ namespace RandomItemGiverUpdater.Gui.Menus
     public class Wizard : Window
     {
         public int currentPage = 1;
+        public int maxPages;
         public IWizardPage[] pages = new IWizardPage[6];
         public Frame frame;
 
+        public void Init(Frame frame, int maxPages)
+        {
+            this.maxPages = maxPages;
+            this.frame = frame;
+        }
+
         public void ShowNextPage()
         {
-            if (currentPage == 6) Close();
+            if (currentPage == maxPages)
+            {
+                Close();
+                return;
+            }
 
-            frame.Content = pages[++currentPage];
+            ShowPage(++currentPage);
         }
 
         public void ShowPreviousPage()
         {
-            if (currentPage == 1) Close();
+            if (currentPage == 1)
+            {
+                Close();
+                return;
+            }
 
-            frame.Content = pages[--currentPage];
+            ShowPage(--currentPage);
         }
 
         public void ShowPage(int page)
         {
+            currentPage = page;
+            pages[page - 1].Execute();
             frame.Content = pages[page - 1];
         }
 

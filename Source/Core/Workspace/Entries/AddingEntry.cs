@@ -1,40 +1,53 @@
 ﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.Windows.Media;
+using System.Xml.Linq;
 
-namespace RandomItemGiverUpdater
+namespace RandomItemGiverUpdater.Core.Workspace.Entries
 {
     public class AddingEntry : Item
     {
+        private string id;
+        private string prefix;
+
+
         //Id and prefix are stored seperately to make up the name
-        public string id;
-        public string prefix;
+        //This is a property because of WPF databinding
+        public string Prefix
+        {
+            get => prefix;
+            set
+            {
+                prefix = value;
+                SetName($"{prefix}:{id}");
+            }
+        }
+        public string Id
+        {
+            get => id;
+            set
+            {
+                id = value;
+                SetName($"{prefix}:{id}");
+            }
+        }
         public int index { get; set; }
 
-        //TODO: Possible subject for improvement
-        public List<LootTable> lootTableCheckList = new List<LootTable>();
         public List<LootTable> lootTableWhiteList = new List<LootTable>();
 
         public bool defaultLootTables = true;
         public SolidColorBrush canvasBackColor { get; set; }
 
-        //-- Constructor --//
-
-        public AddingEntry(string prefix, string name, int index) : base(prefix, name.TrimEnd('\r', '\n'))
+        public AddingEntry(string prefix, string id, int index) : base(id.TrimEnd('\r', '\n'), prefix)
         {
+            this.prefix = prefix;
+            this.id = id;
+
             //Set the backcolor
             this.index = index;
             canvasBackColor = SetBackColor();
-
-            //Set loot table checklist
-            foreach (LootTableCategory category in RIGU.core.currentDatapack.lootTableCategories)
-            {
-                foreach(LootTable lootTable in category.lootTables)
-                {
-                    lootTableCheckList.Add(new LootTable(lootTable.name, lootTable.category, lootTable.path));
-                }
-            }
         }
 
         public SolidColorBrush SetBackColor()

@@ -16,7 +16,7 @@
                 <Button x:Name="btnDelete" Height="25" Width="100" Content="Delete" Canvas.Top="12" Canvas.Right="100" Click="btnDelete_Click" Visibility="Hidden"/>
                 <Button x:Name="btnEditNBTComponent" Height="25" Width="160" Content="Edit NBT/Component" Canvas.Top="12" Canvas.Right="220" Visibility="Hidden" Click="btnEditNBTComponent_Click"/>
                 <TextBlock x:Name="tblEntryIndex" Text="{Binding index}" FontSize="20" TextAlignment="Left" FontWeight="DemiBold" Foreground="White" Canvas.Top="10" Canvas.Right="40"/>
-                <TextBlock x:Name="tblIndicator" FontWeight="Bold" FontSize="24" Visibility="Hidden" Canvas.Top="8" Canvas.Right="225"/>
+                <TextBlock x:Name="tblIndicator" Text="{Binding indicator.text}" Foreground="{Binding indicator.color}" FontWeight="Bold" FontSize="24" Visibility="Visible" Canvas.Top="8" Canvas.Right="225"/>
             </Canvas>
         </DataTemplate>
     </Window.Resources>

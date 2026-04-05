@@ -10,7 +10,7 @@
     <Page.Resources>
         <DataTemplate x:Key="DuplicateTemplate">
             <Canvas x:Name="cvsDuplicate" Height="40" >
-                <TextBlock x:Name="tblItemName" Width="220" Height="23" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="22" Text="{Binding itemName}" MouseDown="tblItemName_MouseDown"/>
+                <TextBlock x:Name="tblItemName" Width="220" Height="23" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="22" Text="{Binding name}" MouseDown="tblItemName_MouseDown"/>
                 <TextBlock x:Name="tblAmount" FontSize="16" Foreground="White" Canvas.Top="10" Canvas.Left="257" Text="{Binding amount}"/>
                 <TextBlock x:Name="tblLootTables" Width="240" Height="23" FontSize="16" Foreground="White" Canvas.Top="10" Canvas.Left="330" Text="{Binding lootTables}" FontWeight="DemiBold"/>
                 <Button x:Name="btnViewAll" Height="23" Width="100" Content="View All" FontSize="15" Canvas.Top="10" Canvas.Left="590" Click="btnViewAll_Click"/>

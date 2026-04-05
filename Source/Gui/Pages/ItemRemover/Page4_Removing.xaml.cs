@@ -1,4 +1,5 @@
-﻿using RandomItemGiverUpdater.Gui.Menus;
+﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Gui.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,9 +39,5 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
             pbItemRemoving.Value = pbValue;
             tblItemRemovingProgress.Text = $"Removing items... (Item {percentage}/{totalItems} - Loot Table {finishedLootTables}/{RIGU.core.currentDatapack.GetLootTableAmount()})";
         }
-
-        private void btnContinue_Click(object sender, RoutedEventArgs e) => wndRemoveItems.ShowNextPage();
-
-        private void btnBack_Click(object sender, RoutedEventArgs e) => wndRemoveItems.ShowPreviousPage();
     }
 }

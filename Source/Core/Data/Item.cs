@@ -3,14 +3,15 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Windows.Navigation;
 
-namespace RandomItemGiverUpdater.Core
+namespace RandomItemGiverUpdater.Core.Data
 {
     public class Item
     {
         public string name { get; set; }
         private JObject itemBody;
 
-        private readonly JObject originalItemBody; //Used for identifying if the item body was modified
+        private JObject originalItemBody; //Used for identifying if the item body was modified
+        public bool isDeleted = false; //When true, the item will not be re-added to the loot table when saving
 
         public Item(string itemBody)
         {
@@ -23,9 +24,10 @@ namespace RandomItemGiverUpdater.Core
         {
             itemBody = new JObject()
             {
-                "type", "minecraft:item",
-                "name", $"{prefix}:{name}",
+                { "type", "minecraft:item" },
+                { "name", $"{prefix}:{name}" },
             };
+            this.name = GetName();
         }
 
         public string GetItemBody() => itemBody.ToString(Formatting.Indented);
@@ -198,7 +200,7 @@ namespace RandomItemGiverUpdater.Core
 
         public string GetName() => itemBody["name"].ToString();
 
-        public bool IsModified() => itemBody != originalItemBody;
+        public bool IsModified() => itemBody.ToString() != originalItemBody.ToString() || isDeleted;
 
         public string GetTag() //Warning: This should only be used if you don't care whether it's NBT or Item Stack Component
         {
@@ -207,6 +209,12 @@ namespace RandomItemGiverUpdater.Core
             else return null;
         }
 
-        public bool HasTag() => GetNBT() != null || GetItemStackComponent != null;
+        public bool HasTag() => GetNBT() != null || GetItemStackComponent() != null;
+
+        public void Refresh() //Removes any possible modification indicators
+        {
+            originalItemBody = itemBody;
+            isDeleted = false;
+        }
     }
 }

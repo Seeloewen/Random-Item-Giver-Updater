@@ -1,4 +1,5 @@
-﻿using RandomItemGiverUpdater.Core.Entries;
+﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Menus;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
 
         public void Execute()
         {
-            foreach (ItemRemovalEntry entry in RIGU.itemRemover.removalEntries)
+            foreach (RemovalEntry entry in RIGU.itemRemover.removalEntries)
             {
                 tbRemovedItems.AppendText(entry.name + "\n");
             }
@@ -38,10 +39,8 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
 
         private void btnContinue_Click(object sender, RoutedEventArgs e)
         {
-            RIGU.core.wndMain.ReloadWorkspace();
+            RIGU.core.ReloadLootTable();
             wndRemoveItems.ShowNextPage();
         }
-
-        private void btnBack_Click(object sender, RoutedEventArgs e) => wndRemoveItems.ShowPreviousPage();
     }
 }

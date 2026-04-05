@@ -1,11 +1,11 @@
-﻿using RandomItemGiverUpdater.Core;
+﻿using RandomItemGiverUpdater.Core.Workspace;
 
-namespace RandomItemGiverUpdater
+namespace RandomItemGiverUpdater.Core
 {
     public static class RIGU
     {
         public const string VERSION_NUM = "1.0.0 Pre-Release";
-        public const string VERSION_DATE = "01.04.2026";
+        public const string VERSION_DATE = "05.04.2026";
 
         public static Main core;
         public static ItemAdding itemAdding;
@@ -16,6 +16,8 @@ namespace RandomItemGiverUpdater
             //Initializes the app and makes necessary content available across the code
             RIGU.core = core;
             itemAdding = new ItemAdding();
+            duplicateFinder = new DuplicateFinder();
+            itemRemover = new ItemRemover();
         }
     }
 
@@ -23,6 +25,6 @@ namespace RandomItemGiverUpdater
     {
         Unchanged,
         Deleted,
-        Edited,
+        Modified,
     }
 }

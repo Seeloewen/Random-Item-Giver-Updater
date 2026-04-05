@@ -1,4 +1,5 @@
 ﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Workspace;
 using RandomItemGiverUpdater.Gui.Pages.ItemRemover;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,10 @@ namespace RandomItemGiverUpdater.Gui.Menus
             itemRemover = RIGU.itemRemover;
             DataContext = itemRemover;
 
+            Init(frWizard, 5);
             InitUI();
+
+            ShowPage(1);
         }
 
         private void InitUI()
@@ -30,6 +34,8 @@ namespace RandomItemGiverUpdater.Gui.Menus
             pages[2] = new Page3_RemoveEntries(this);
             pages[3] = new Page4_Removing(this);
             pages[4] = new Page5_Finished(this);
+
+            GetPage<Page3_RemoveEntries>(3).DataContext = DataContext;
         }
 
         public void SkipWithInput(List<string> input)

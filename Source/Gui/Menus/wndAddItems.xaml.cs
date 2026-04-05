@@ -1,4 +1,5 @@
 ﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Workspace;
 using RandomItemGiverUpdater.Gui.Pages;
 using RandomItemGiverUpdater.Gui.Pages.ItemAdding;
 using System.ComponentModel;
@@ -17,8 +18,10 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
             itemAddingCore = RIGU.itemAdding;
             DataContext = itemAddingCore;
-
+            Init(frWizard, 6);
             InitUI();
+
+            ShowPage(1);
         }
 
         private void InitUI()
@@ -32,6 +35,8 @@ namespace RandomItemGiverUpdater.Gui.Menus
             pages[5] = new Page6_Finished(this);
 
             GetPage<Page1_Start>(1).SetDatapack(RIGU.core.currentDatapack);
+            GetPage<Page3_ItemsAdvanced>(3).DataContext = DataContext;
+            GetPage<Page4_LootTables>(4).DataContext = DataContext;
         }
 
         public void UpdateProgress(double pbValue, int percentage, int totalItems, int finishedLootTables)

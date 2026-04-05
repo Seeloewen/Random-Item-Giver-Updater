@@ -1,4 +1,6 @@
-﻿using RandomItemGiverUpdater.Gui.Menus;
+﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Workspace.Entries;
+using RandomItemGiverUpdater.Gui.Menus;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -39,12 +41,13 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             }
         }
 
-        private void btnBack_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowNextPage();
+        private void btnBack_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowPreviousPage();
 
         private void btnContinue_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(tbItemName.Text))
             {
+                RIGU.itemAdding.ConstructEntries(tbItemName.Text.Split('\n'), (bool)cbIncludesPrefixes.IsChecked);
                 wndAddItems.ShowNextPage();
             }
             else

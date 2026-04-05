@@ -1,4 +1,5 @@
-﻿using RandomItemGiverUpdater.Gui.Menus;
+﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Gui.Menus;
 using System.Windows.Controls;
 
 namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
@@ -15,7 +16,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
 
         public void Execute()
         {
-            RIGU.itemAdding.Run();
+            RIGU.itemAdding.AddItems();
         }
 
         public void UpdateProgress(double pbValue, int percentage, int totalItems, int finishedLootTables)

@@ -1,7 +1,9 @@
 ﻿using RandomItemGiverUpdater.Core;
-using RandomItemGiverUpdater.Entries;
+using RandomItemGiverUpdater.Core.Data;
+using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Menus;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -12,7 +14,6 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
         private const string EDIT_LOOTTABLES_BUTTON = "btnEditCertainLootTables";
 
         private wndAddItems wndAddItems;
-        private wndSelectLootTables wndSelectLootTables;
 
         public Page4_LootTables(wndAddItems wndAddItems)
         {
@@ -54,15 +55,14 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             Canvas cvsParent = SeeloewenLib.Tools.FindVisualParent<Canvas>((Button)sender);
             AddingEntry item = (AddingEntry)cvsParent.DataContext;
 
-            wndSelectLootTables = new wndSelectLootTables(item.lootTableCheckList, "Select the Loot Tables, that you want to add the item to.");
-            wndSelectLootTables.ShowDialog();
+            List<LootTableSelectionEntry> entries = wndSelectLootTables.Display(Datapack.Get().GetLootTables(), "Select the Loot Tables, that you want to add the item to.");
 
             //Get whitelisted loot tables from loot table selection window
-            foreach (LootTableSelectionEntry lootTable in wndSelectLootTables.lootTables)
+            foreach (LootTableSelectionEntry entry in entries)
             {
-                if (lootTable.isSelected == true)
+                if (entry.isSelected)
                 {
-                    item.lootTableWhiteList.Add(lootTable);
+                    item.lootTableWhiteList.Add(entry.lootTable);
                 }
             }
         }

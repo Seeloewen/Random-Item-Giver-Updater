@@ -1,5 +1,8 @@
 ﻿using Microsoft.Win32;
 using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Data;
+using RandomItemGiverUpdater.Core.Workspace;
+using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Components;
 using System;
 using System.Collections.ObjectModel;
@@ -20,8 +23,6 @@ namespace RandomItemGiverUpdater.Gui.Menus
         public wndSettings wndSettings;
         public wndNBTEditor wndNBTEditor;
 
-        public ObservableCollection<MainEntry> itemEntries { get; set; } = new ObservableCollection<MainEntry>();
-
         private ScrollViewer svLootTables = new ScrollViewer() { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalAlignment = VerticalAlignment.Stretch, HorizontalAlignment = HorizontalAlignment.Stretch, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Background = new SolidColorBrush(Color.FromArgb(100, 50, 50, 50)) };
         private StackPanel stpLootTables = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
         private OpenFolderDialog fbdDatapack = new OpenFolderDialog() { Title = "Select the datapack that you want to edit." };
@@ -39,7 +40,6 @@ namespace RandomItemGiverUpdater.Gui.Menus
             SetupControls();
             SetupButtons();
 
-            DataContext = this;
             this.core = core;
         }
 
@@ -53,16 +53,6 @@ namespace RandomItemGiverUpdater.Gui.Menus
         {
             //Toggle workplace backgroundimage
             imgWorkplace.Visibility = Datapack.Get() == null ? Visibility.Visible : Visibility.Hidden;
-            itemEntries.Clear();
-
-            if (LootTable.Get() == null) return;
-
-            int i = 0;
-            foreach (Item item in LootTable.Get().items)
-            {
-                itemEntries.Add(new MainEntry(item, i));
-                i++;
-            }
         }
 
         public void ReloadSidebar()
@@ -89,11 +79,6 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
                 stpLootTables.Children.Add(catVis);
             }
-        }
-
-        public void DisplayLootTable()
-        {
-
         }
 
         private void btnAddItem_Click(object sender, RoutedEventArgs e)
@@ -138,12 +123,17 @@ namespace RandomItemGiverUpdater.Gui.Menus
             Reload();
         }
 
-        private void btnSaveLootTable_Click(object sender, RoutedEventArgs e)
+        private async void btnSaveLootTable_Click(object sender, RoutedEventArgs e)
         {
             //Check if a loot table is loaded and save it
             if (core.DatapackIsValid(core.currentDatapack))
             {
-                core.currentLootTable.Save();
+                RIGU.core.wndMain.SetSaveButtonState(true);
+                await core.currentLootTable.Save();
+                core.ReloadLootTable();
+                RIGU.core.wndMain.SetSaveButtonState(false);
+                RIGU.core.wndMain.ReloadWorkspace();
+                MessageBox.Show("Successfully saved the loot table!", "Save Loot Table", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
@@ -160,7 +150,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
         private void wndMain_Closing(object sender, CancelEventArgs e)
         {
             //Try exiting and cancel if the core denies it
-            e.Cancel = core.Exit();
+            e.Cancel = !core.Exit();
         }
 
         public void UpdateEditProgress(double progress)
@@ -276,10 +266,10 @@ namespace RandomItemGiverUpdater.Gui.Menus
             MainEntry entry = (MainEntry)btn.DataContext;
 
             //Update delete button of entry
-            entry.isDeleted = !entry.isDeleted;
-            btn.Content = entry.isDeleted ? "Delete" : "Undo deletion";
+            entry.item.isDeleted = !entry.item.isDeleted;
+            btn.Content = entry.item.isDeleted ? "Delete" : "Undo deletion";
 
-            entry.SetIndicatorState(btn, entry.GetModificationState());
+            entry.UpdateIndicator();
         }
 
         private void btnSaveItemName_Click(object sender, RoutedEventArgs e)
@@ -298,7 +288,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             entry.item.SetName(tb.Text);
             tbl.Text = tb.Text;
 
-            entry.SetIndicatorState(btn, entry.GetModificationState());
+            entry.UpdateIndicator();
         }
 
         private void btnEditNBTComponent_Click(object sender, RoutedEventArgs e)
@@ -314,7 +304,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
                 switch (result)
                 {
-                    case ModificationState.Edited:
+                    case ModificationState.Modified:
                         entry.item.SetNBT(nbt);
                         break;
                     case ModificationState.Deleted:
@@ -330,7 +320,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
                 switch (result)
                 {
-                    case ModificationState.Edited:
+                    case ModificationState.Modified:
                         entry.item.SetItemStackComponent(component);
                         break;
                     case ModificationState.Deleted:
@@ -339,7 +329,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
                 }
             }
 
-            entry.SetIndicatorState(btn, entry.GetModificationState());
+            entry.UpdateIndicator();
         }
 
         private void tblItemName_MouseDown(object sender, MouseEventArgs e)

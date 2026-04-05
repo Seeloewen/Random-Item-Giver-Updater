@@ -1,4 +1,5 @@
-﻿using RandomItemGiverUpdater.Gui.Menus;
+﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Gui.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,10 +30,11 @@ namespace RandomItemGiverUpdater.Gui.Pages.DuplicateFinder
         private void btnContinue_Click(object sender, RoutedEventArgs e)
         {
             //Check if either the datapack or loot table is valid, depending on what's selected
-            if(rbtnAll.IsChecked == true && RIGU.core.DatapackIsValid(RIGU.core.currentDatapack) && rbtnCurrent.IsChecked == true && RIGU.core.currentLootTable != null)
+            if ((rbtnAll.IsChecked == true && RIGU.core.DatapackIsValid(RIGU.core.currentDatapack)) || (rbtnCurrent.IsChecked == true && RIGU.core.currentLootTable != null))
             {
+                if (rbtnAll.IsChecked == true) RIGU.duplicateFinder.checkEntireDatapack = true;
+                else if (rbtnCurrent.IsChecked == true) RIGU.duplicateFinder.checkEntireDatapack = false;
                 wndDuplicateFinder.ShowNextPage();
-                RIGU.duplicateFinder.checkEntireDatapack = rbtnAll.IsChecked;
             }
             else
             {

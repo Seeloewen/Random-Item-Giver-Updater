@@ -1,4 +1,5 @@
-﻿using RandomItemGiverUpdater.Core.Entries;
+﻿using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Menus;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,7 +22,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.DuplicateFinder
 
         public void Execute()
         {
-            RIGU.duplicateFinder.Run((bool)RIGU.duplicateFinder.checkEntireDatapack);
+            RIGU.duplicateFinder.Run();
         }
 
         public void UpdateDuplicateDisplay(int amount)
