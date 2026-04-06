@@ -4,8 +4,8 @@ namespace RandomItemGiverUpdater.Core
 {
     public static class RIGU
     {
-        public const string VERSION_NUM = "1.0.0 Pre-Release";
-        public const string VERSION_DATE = "05.04.2026";
+        public const string VERSION_NUM = "Public Beta 4";
+        public const string VERSION_DATE = "06.04.2026";
 
         public static Main core;
         public static ItemAdding itemAdding;
