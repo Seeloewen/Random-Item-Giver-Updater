@@ -148,7 +148,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
         private async void btnSaveLootTable_Click(object sender, RoutedEventArgs e)
         {
             //Check if a loot table is loaded and save it
-            if (core.DatapackIsValid(core.currentDatapack))
+            if (core.DatapackIsValid(Datapack.Get()) && LootTable.Get() != null)
             {
                 RIGU.core.wndMain.SetSaveButtonState(true);
                 await core.currentLootTable.Save();

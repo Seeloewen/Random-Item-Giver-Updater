@@ -9,12 +9,12 @@
       Title="Page2_ItemList">
 
     <Canvas>
-        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click"/>
-        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="480" Canvas.Top="538" Click="btnBack_Click"/>
-        <Label x:Name="lblHeader" Content="Step 2 - Item List" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
+        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click" FontSize="16"/>
+        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="480" Canvas.Top="538" Click="btnBack_Click" FontSize="16"/>
+        <Label x:Name="lblHeader" Content="Step 2 - Item List" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" FontSize="20" FontWeight="SemiBold" Canvas.Left="12" Canvas.Top="10"/>
 
-        <TextBlock x:Name="tblStep2" Canvas.Left="16" TextWrapping="Wrap" Canvas.Top="54" HorizontalAlignment="Left" VerticalAlignment="Center" Width="690" Text="Please enter the names of the items that you want to remove. The software will then search for these items and show you, where they were found." Foreground="White"/>
-        <TextBox x:Name="tbItems" Canvas.Left="17" TextWrapping="Wrap" Canvas.Top="104" Width="709" HorizontalAlignment="Left" VerticalAlignment="Center" Height="414" FontSize="15" Background="#FF636363" Foreground="White" AcceptsReturn="True"/>
-        <CheckBox x:Name="cbIncludesCustomPrefixes" Content="Includes custom prefixes (for example for modded items)" HorizontalAlignment="Left" Canvas.Left="19" Canvas.Top="543" VerticalAlignment="Center" Foreground="White" Padding="4,-2,0,0"/>
+        <TextBlock x:Name="tblStep2" Canvas.Left="17" TextWrapping="Wrap" Canvas.Top="54" HorizontalAlignment="Left" VerticalAlignment="Center" Width="690" Text="Please enter the names of the items that you want to remove. The software will then search for these items and show you, where they were found." Foreground="White" FontSize="16"/>
+        <TextBox x:Name="tbItems" Canvas.Left="17" TextWrapping="Wrap" Canvas.Top="116" Width="709" HorizontalAlignment="Center" VerticalAlignment="Top" Height="402" FontSize="15" Background="#FF636363" Foreground="White" AcceptsReturn="True"/>
+        <CheckBox x:Name="cbIncludesCustomPrefixes" Content="Includes custom prefixes (for example for modded items)" HorizontalAlignment="Center" Canvas.Left="19" Canvas.Top="541" VerticalAlignment="Top" Foreground="White" Padding="4,-5,0,0" FontSize="16"/>
     </Canvas>
 </Page>

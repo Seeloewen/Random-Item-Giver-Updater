@@ -9,11 +9,11 @@
       Title="Page5_Finished">
 
     <Canvas>
-        <Button x:Name="btnContinue" Content="Finish" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click"/>
+        <Button x:Name="btnContinue" Content="Finish" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click" FontSize="16"/>
         <Label x:Name="lblHeader" Content="Step 5 - Finishing" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
 
-        <TextBlock x:Name="tblStep5" Canvas.Left="16" TextWrapping="Wrap" Text="The Item Removing Wizard has completed! The specified items were succesfully removed from the selected loot tables. You can see a list of all removed items down below." Canvas.Top="48" HorizontalAlignment="Center" VerticalAlignment="Top" Width="702" Foreground="White"/>
-        <TextBlock x:Name="tblRemovedItemsDesc" Canvas.Left="16" TextWrapping="Wrap" Text="Removed Items:" Canvas.Top="96" FontWeight="DemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White"/>
-        <TextBox x:Name="tbRemovedItems" TextWrapping="Wrap" Width="710" HorizontalAlignment="Left" Canvas.Left="16" Canvas.Top="119"  Background="#FF636363" VerticalAlignment="Center" Height="400" Foreground="White" IsReadOnly="True"/>
+        <TextBlock x:Name="tblStep5" Canvas.Left="16" TextWrapping="Wrap" Text="The Item Removing Wizard has completed! The specified items were succesfully removed from the selected loot tables. You can see a list of all removed items down below." Canvas.Top="48" HorizontalAlignment="Center" VerticalAlignment="Top" Width="702" Foreground="White" FontSize="16"/>
+        <TextBlock x:Name="tblRemovedItemsDesc" Canvas.Left="16" TextWrapping="Wrap" Text="Removed Items:" Canvas.Top="113" FontWeight="DemiBold" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
+        <TextBox x:Name="tbRemovedItems" TextWrapping="Wrap" Width="710" HorizontalAlignment="Center" Canvas.Left="16" Canvas.Top="144"  Background="#FF636363" VerticalAlignment="Top" Height="375" Foreground="White" IsReadOnly="True" FontSize="15"/>
     </Canvas>
 </Page>

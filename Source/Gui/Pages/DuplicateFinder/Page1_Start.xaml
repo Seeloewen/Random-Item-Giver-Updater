@@ -9,8 +9,8 @@
       Title="Page1_Start">
 
     <Canvas>
-        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click"/>
-        <Button x:Name="btnBack" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="480" Canvas.Top="538" Click="btnBack_Click"/>
+        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click" FontSize="16"/>
+        <Button x:Name="btnBack" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="480" Canvas.Top="538" Click="btnBack_Click" FontSize="16"/>
         <Label x:Name="lblHeader" Content="Step 1 - Welcome" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
 
         <TextBlock x:Name="tblcvs1Header"  Canvas.Left="15" TextWrapping="Wrap" Canvas.Top="62" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" FontSize="16" Width="718"><Run Text="Welcome to the "/><Run Text="D"/><Run Text="uplicat"/><Run Text="e"/><Run Text=" Finder wizard. This wizard will help you find and remove duplicates in the Random Item Giver Datapack"/><Run Language="de-de" Text="."/><LineBreak/><Run/><LineBreak/><Run Text="Please select where the software should search for duplicates. They will be shown in a list after the process has completed."/></TextBlock>

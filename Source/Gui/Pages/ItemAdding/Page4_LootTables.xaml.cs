@@ -41,7 +41,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             {
                 if (!addItemEntry.defaultLootTables && addItemEntry.lootTableWhiteList.Count <= 0)
                 {
-                    MessageBox.Show("You have selected to only add the item to certain loot tables without actually selecting any. Please choose any loot tables before continuing.");
+                    MessageBox.Show("You have selected to only add the item to certain loot tables without actually selecting any. Please choose any loot tables before continuing.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
             }

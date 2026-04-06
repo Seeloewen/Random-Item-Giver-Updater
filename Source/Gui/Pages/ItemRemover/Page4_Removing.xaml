@@ -11,8 +11,8 @@
     <Canvas>
         <Label x:Name="lblHeader" Content="Step 4 - Removing Items" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
 
-        <TextBlock x:Name="tbStep4" Canvas.Left="16" TextWrapping="Wrap" Text="The items are now being removed from the selected loot tables. This may take a while, depending on the item amount." Canvas.Top="49" HorizontalAlignment="Left" VerticalAlignment="Center" Width="710" Foreground="White"/>
-        <ProgressBar x:Name="pbItemRemoving" Height="22" Width="701" HorizontalAlignment="Left" Canvas.Left="17" Canvas.Top="116" VerticalAlignment="Center"/>
-        <TextBlock x:Name="tblItemRemovingProgress" Canvas.Left="17" TextWrapping="Wrap" Text="Removing Item x/x (Loot Table x/x)" Canvas.Top="92" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White"/>
+        <TextBlock x:Name="tbStep4" Canvas.Left="16" TextWrapping="Wrap" Text="The items are now being removed from the selected loot tables. This may take a while, depending on the item amount." Canvas.Top="49" HorizontalAlignment="Left" VerticalAlignment="Center" Width="710" Foreground="White" FontSize="16"/>
+        <ProgressBar x:Name="pbItemRemoving" Height="22" Width="701" HorizontalAlignment="Center" Canvas.Left="17" Canvas.Top="149" VerticalAlignment="Top"/>
+        <TextBlock x:Name="tblItemRemovingProgress" Canvas.Left="17" TextWrapping="Wrap" Text="Removing Item x/x (Loot Table x/x)" Canvas.Top="118" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
     </Canvas>
 </Page>

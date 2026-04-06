@@ -8,13 +8,13 @@
       d:DesignHeight="580" d:DesignWidth="742"
       Title="Page1_Start">
     <Canvas x:Name="cvsContent">
-        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="116" Canvas.Left="604" Canvas.Top="541" Click="btnContinue_Click"/>
-        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="116" Canvas.Left="474" Canvas.Top="541" Click="btnBack_Click"/>
+        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="116" Canvas.Left="604" Canvas.Top="541" Click="btnContinue_Click" FontSize="16"/>
+        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="116" Canvas.Left="474" Canvas.Top="541" Click="btnBack_Click" FontSize="16"/>
         <Label x:Name="lblHeader" Content="Step 2 - Add Items" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
 
-        <TextBox x:Name="tbItemName" TextWrapping="Wrap" Width="703" AcceptsReturn="True" Height="373" HorizontalAlignment="Left" Canvas.Left="17" Canvas.Top="156" VerticalAlignment="Center" Foreground="White" Background="#FF636363"/>
-        <TextBlock x:Name="tblListItems" Canvas.Left="17" TextWrapping="Wrap" Text="You can now list all the items that you want to add to the datapack or import a list. If you're working with modded items, you should include the prefix and check the checkbox below." Canvas.Top="52" HorizontalAlignment="Center" VerticalAlignment="Top" Width="703" Foreground="White" FontSize="14"/>
-        <TextBlock x:Name="tblItems" Canvas.Left="17" TextWrapping="Wrap" Text="Items:" Canvas.Top="119" FontWeight="DemiBold" FontSize="18" Foreground="White"/>
-        <CheckBox x:Name="cbIncludesPrefixes" Content="List includes prefixes for modded items" Canvas.Left="17" Canvas.Top="546" Foreground="White" Padding="4,-3,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="14"/>
+        <TextBox x:Name="tbItemName" TextWrapping="Wrap" Width="703" AcceptsReturn="True" Height="373" HorizontalAlignment="Center" Canvas.Left="17" Canvas.Top="149" VerticalAlignment="Top" Foreground="White" Background="#FF636363" FontSize="15"/>
+        <TextBlock x:Name="tblListItems" Canvas.Left="17" TextWrapping="Wrap" Text="You can now list all the items that you want to add to the datapack or import a list. If you're working with modded items, you should include the prefix and check the checkbox below." Canvas.Top="52" HorizontalAlignment="Center" VerticalAlignment="Top" Width="703" Foreground="White" FontSize="16"/>
+        <TextBlock x:Name="tblItems" Canvas.Left="17" TextWrapping="Wrap" Text="Items:" Canvas.Top="119" FontWeight="DemiBold" FontSize="16" Foreground="White"/>
+        <CheckBox x:Name="cbIncludesPrefixes" Content="Includes custom prefixes (for example for modded items)" Canvas.Left="17" Canvas.Top="544" Foreground="White" Padding="4,-3,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="16"/>
     </Canvas>
 </Page>

@@ -10,16 +10,15 @@
     <Page.Resources>
         <DataTemplate x:Key="DuplicateTemplate">
             <Canvas x:Name="cvsDuplicate" Height="40" >
-                <TextBlock x:Name="tblItemName" Width="220" Height="23" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="22" Text="{Binding name}" MouseDown="tblItemName_MouseDown"/>
-                <TextBlock x:Name="tblAmount" FontSize="16" Foreground="White" Canvas.Top="10" Canvas.Left="257" Text="{Binding amount}"/>
-                <TextBlock x:Name="tblLootTables" Width="240" Height="23" FontSize="16" Foreground="White" Canvas.Top="10" Canvas.Left="330" Text="{Binding lootTables}" FontWeight="DemiBold"/>
-                <Button x:Name="btnViewAll" Height="23" Width="100" Content="View All" FontSize="15" Canvas.Top="10" Canvas.Left="590" Click="btnViewAll_Click"/>
+                <TextBlock x:Name="tblItemName" Width="220" Height="23" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="0" Text="{Binding name}" MouseDown="tblItemName_MouseDown"/>
+                <TextBlock x:Name="tblAmount" FontSize="16" Foreground="White" Canvas.Top="10" Canvas.Left="237" Text="{Binding amount}"/>
+                <TextBlock x:Name="tblLootTables" Width="240" Height="23" FontSize="16" Foreground="White" Canvas.Top="10" Canvas.Left="310" Text="{Binding lootTables}" FontWeight="DemiBold"/>
+                <Button x:Name="btnViewAll" Height="23" Width="100" Content="View All" FontSize="15" Canvas.Top="10" Canvas.Left="570" Click="btnViewAll_Click"/>
             </Canvas>
         </DataTemplate>
     </Page.Resources>
     <Canvas x:Name="cvsContent">
-        <Button x:Name="btnContinue" Content="Finish" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click"/>
-        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="480" Canvas.Top="538" Click="btnBack_Click" IsEnabled="False"/>
+        <Button x:Name="btnContinue" Content="Finish" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click" FontSize="16"/>
         <Label x:Name="lblHeader" Content="Step 2 - Duplicates" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" FontSize="20" FontWeight="SemiBold" Canvas.Left="17" Canvas.Top="10"/>
         <ListBox x:Name="lbDuplicates" ItemsSource="{Binding duplicateEntries}" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="364" Canvas.Top="156" Width="704" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Left="20">
             <ListBox.ItemsPanel>
@@ -35,9 +34,9 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <TextBlock x:Name="tblDuplicateCategories" TextWrapping="Wrap" Canvas.Top="122" FontWeight="DemiBold" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" Canvas.Left="20"><Run Language="de-de" Text=" "/><Run Text="Item name                "/><Run Text="          "/><Run Text="       "/><Run Text=" "/><Run Text=" "/><Run Text=" "/><Run Text="Amount   Loot Table(s)"/></TextBlock>
+        <TextBlock x:Name="tblDuplicateCategories" TextWrapping="Wrap" Canvas.Top="125" FontWeight="DemiBold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" Canvas.Left="23"><Run Language="de-de" Text=" "/><Run Text="Item name                "/><Run Text="          "/><Run Text="       "/><Run Text=" "/><Run Text=" "/><Run Text=" "/><Run Text="Amount   Loot Table(s)"/></TextBlock>
         <TextBlock x:Name="tblCvs2Header" Canvas.Left="21" TextWrapping="Wrap" Text="The following list contains all duplicate items. It shows their names, as well as how often and where the appear." Canvas.Top="52" FontSize="16" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" Width="705"/>
-        <Button x:Name="btnDelete" Content="Delete Duplicates" Width="144" Height="26" HorizontalAlignment="Left" Canvas.Left="151" Canvas.Top="538" VerticalAlignment="Top" Click="btnDelete_Click"/>
-        <Button x:Name="btnExportList" Content="Export List" Width="117" Height="26" HorizontalAlignment="Left" Canvas.Left="20" Canvas.Top="538" VerticalAlignment="Top" Click="btnExportList_Click"/>
+        <Button x:Name="btnDelete" Content="Delete Duplicates" Width="144" Height="26" HorizontalAlignment="Left" Canvas.Left="151" Canvas.Top="538" VerticalAlignment="Top" Click="btnDelete_Click" FontSize="16"/>
+        <Button x:Name="btnExportList" Content="Export List" Width="117" Height="26" HorizontalAlignment="Left" Canvas.Left="20" Canvas.Top="538" VerticalAlignment="Top" Click="btnExportList_Click" FontSize="16"/>
     </Canvas>
 </Page>

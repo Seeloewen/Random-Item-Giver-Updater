@@ -9,10 +9,10 @@
       Title="Page1_Start">
 
     <Canvas>
-        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click"/>
-        <Button x:Name="btnBack" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="480" Canvas.Top="538" Click="btnBack_Click"/>
+        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click" FontSize="16"/>
+        <Button x:Name="btnBack" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="480" Canvas.Top="538" Click="btnBack_Click" FontSize="16"/>
         <Label x:Name="lblHeader" Content="Step 1 - Welcome" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
 
-        <TextBlock x:Name="tblStep1" TextWrapping="Wrap" Height="172" Canvas.Left="16" Canvas.Top="52" Width="690" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="18" Foreground="White"><Run Text="Welcome to the Item Removing Wizard! This wizard will help you remove items from certain loot tables, that you don't need anymore.&#xD;&#xA;&#xD;&#xA;You'll be able to search for specific items by giving their name. If you only want to remove "/><Run Language="de-de" Text="items "/><Run Text="individually from one loot table, it is recommended to use the main window."/></TextBlock>
+        <TextBlock x:Name="tblStep1" TextWrapping="Wrap" Height="172" Canvas.Left="15" Canvas.Top="56" Width="690" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="16" Foreground="White"><Run Text="Welcome to the Item Removing Wizard! This wizard will help you remove items from certain loot tables, that you don't need anymore.&#xD;&#xA;&#xD;&#xA;You'll be able to search for specific items by giving their name. If you only want to remove "/><Run Language="de-de" Text="items "/><Run Text="individually from one loot table, it is recommended to use the main window."/></TextBlock>
     </Canvas>
 </Page>

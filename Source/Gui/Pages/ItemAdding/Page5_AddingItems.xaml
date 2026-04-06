@@ -9,8 +9,8 @@
       Title="Page1_Start">
     <Canvas x:Name="cvsContent">
         <Label x:Name="lblHeader" Content="Step 5 - Adding items" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
-        <TextBlock x:Name="tblAddingItems" Canvas.Left="16" TextWrapping="Wrap" Text="Congratulations! Your items are now being added to the datapack. You can view the progress down below." Canvas.Top="52" HorizontalAlignment="Left" VerticalAlignment="Top" Width="692" Foreground="White" FontSize="14"/>
-        <TextBlock x:Name="tblAddingItemsProgress" Canvas.Left="16" TextWrapping="Wrap" Text="Adding items... (0/0)" Canvas.Top="98" FontSize="14" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <ProgressBar x:Name="pbAddingItems" Height="19" Canvas.Left="16" Canvas.Top="128" Width="687" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock x:Name="tblAddingItems" Canvas.Left="16" TextWrapping="Wrap" Text="Your items are now being added to the datapack. You can view the progress down below." Canvas.Top="55" HorizontalAlignment="Center" VerticalAlignment="Top" Width="692" Foreground="White" FontSize="16"/>
+        <TextBlock x:Name="tblAddingItemsProgress" Canvas.Left="16" TextWrapping="Wrap" Text="Adding items... (0/0)" Canvas.Top="101" FontSize="16" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+        <ProgressBar x:Name="pbAddingItems" Height="19" Canvas.Left="16" Canvas.Top="131" Width="687" HorizontalAlignment="Center" VerticalAlignment="Top"/>
     </Canvas>
 </Page>

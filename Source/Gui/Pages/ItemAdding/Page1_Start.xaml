@@ -8,12 +8,12 @@
       d:DesignHeight="580" d:DesignWidth="742"
       Title="Page1_Start">
     <Canvas >
-        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click"/>
-        <Button x:Name="btnBack" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="480" Canvas.Top="538" Click="btnBack_Click"/>
         <Label x:Name="lblHeader" Content="Step 1 - Welcome" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
 
-        <TextBlock x:Name="tblDescriptionSelectDatapack" Canvas.Left="15" TextWrapping="Wrap" Text="The items will be added to the datapack in the main window, so make sure you have the right datapack selected there." Canvas.Top="110" HorizontalAlignment="Left" VerticalAlignment="Top" Width="681" FontSize="14" Foreground="White"/>
-        <TextBlock x:Name="tblHeaderStep1" TextWrapping="Wrap" Text="Welcome to the Item Adding Wizard. This wizard will help you add items to the datapack. It allows adding individual items or lists as well as changing prefixes, names and NBT tags." Canvas.Left="15" Canvas.Top="52" HorizontalAlignment="Left" VerticalAlignment="Top" Width="706" FontSize="14" Foreground="White"/>
-        <TextBlock x:Name="tblCurrentlySelectedDatapack" Canvas.Left="15" TextWrapping="Wrap" Canvas.Top="169" HorizontalAlignment="Left" VerticalAlignment="Top" Width="703" Height="100" FontWeight="DemiBold" Foreground="White" FontSize="14"><Run Text="Currently selected datapack: None"/><LineBreak/><Run Text="Pack version: None (Unknown)"/></TextBlock>
+        <TextBlock x:Name="tblDescriptionSelectDatapack" Canvas.Left="15" TextWrapping="Wrap" Text="The items will be added to the datapack in the main window, so make sure you have the right datapack selected there." Canvas.Top="110" HorizontalAlignment="Left" VerticalAlignment="Top" Width="681" FontSize="16" Foreground="White"/>
+        <TextBlock x:Name="tblHeaderStep1" TextWrapping="Wrap" Text="Welcome to the Item Adding Wizard. This wizard will help you add items to the datapack. It allows adding individual items or lists as well as changing prefixes, names and NBT tags." Canvas.Left="15" Canvas.Top="52" HorizontalAlignment="Left" VerticalAlignment="Top" Width="706" FontSize="16" Foreground="White"/>
+        <TextBlock x:Name="tblCurrentlySelectedDatapack" Canvas.Left="15" TextWrapping="Wrap" Canvas.Top="169" HorizontalAlignment="Left" VerticalAlignment="Top" Width="703" Height="100" FontWeight="DemiBold" Foreground="White" FontSize="16"><Run Text="Currently selected datapack: None"/><LineBreak/><Run Text="Pack version: None (Unknown)"/></TextBlock>
+        <Button x:Name="btnContinue" Content="Continue" Height="25" Width="116" Canvas.Left="604" Canvas.Top="541" Click="btnContinue_Click" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
+        <Button x:Name="btnBack" Content="Cancel" Height="25" Width="116" Canvas.Left="474" Canvas.Top="541" Click="btnBack_Click" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
     </Canvas>
 </Page>
