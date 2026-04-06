@@ -64,7 +64,7 @@ namespace RandomItemGiverUpdater.Core.Workspace
                 //If custom prefixes is checked but no custom prefix is found OR if custom prefixes is not checked, add the default prefix
                 if ((customPrefixes && !items[i].Contains(':')) || !customPrefixes)
                 {
-                    items[i] = $"minecraft:{items[i]}";
+                    items[i] = $"minecraft:{items[i].TrimEnd("\r")}";
                 }
             }
 
