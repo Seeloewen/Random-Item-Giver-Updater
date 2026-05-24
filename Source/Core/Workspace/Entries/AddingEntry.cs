@@ -1,9 +1,7 @@
-﻿using RandomItemGiverUpdater.Core;
-using RandomItemGiverUpdater.Core.Data;
+﻿using RandomItemGiverUpdater.Core.Data;
 using System;
 using System.Collections.Generic;
-using System.Windows.Media;
-using System.Xml.Linq;
+using Avalonia.Media;
 
 namespace RandomItemGiverUpdater.Core.Workspace.Entries
 {

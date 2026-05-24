@@ -43,7 +43,7 @@ namespace RandomItemGiverUpdater.Core.Workspace
                 wndRemoveItems.SkipWithInput(predefinedInput);
             }
 
-            wndRemoveItems.ShowDialog();
+            wndRemoveItems.ShowDialog(RIGU.core.wndMain);
         }
 
         public void Run()

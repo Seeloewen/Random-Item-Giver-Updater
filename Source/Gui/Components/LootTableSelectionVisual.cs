@@ -1,8 +1,8 @@
 ﻿using RandomItemGiverUpdater.Core.Workspace.Entries;
-using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Media;
 
 namespace RandomItemGiverUpdater.Gui.Components
 {
@@ -22,13 +22,12 @@ namespace RandomItemGiverUpdater.Gui.Components
             cbAddToLootTable.Margin = new Thickness(20, 15, 0, 0);
             cbAddToLootTable.FontSize = 15;
             cbAddToLootTable.IsChecked = true;
-            cbAddToLootTable.Checked += cbAddToLootTable_CheckedChanged;
-            cbAddToLootTable.Unchecked += cbAddToLootTable_CheckedChanged;
+            cbAddToLootTable.IsCheckedChanged += cbAddToLootTable_CheckedChanged;
 
             Children.Add(cbAddToLootTable);
         }
 
-        public void cbAddToLootTable_CheckedChanged(object sender, RoutedEventArgs e)
+        public void cbAddToLootTable_CheckedChanged(object? sender, RoutedEventArgs e)
         {
             entry.isSelected = (bool)cbAddToLootTable.IsChecked;
         }

@@ -1,10 +1,10 @@
-﻿using RandomItemGiverUpdater.Core;
+﻿using System;
+using RandomItemGiverUpdater.Core;
 using RandomItemGiverUpdater.Core.Data;
 using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media;
 
 namespace RandomItemGiverUpdater.Gui.Components
 {
@@ -35,10 +35,10 @@ namespace RandomItemGiverUpdater.Gui.Components
             Children.Add(tblLootTable);
 
             //Add mouse down event to load the loot table
-            MouseDown += new MouseButtonEventHandler(cvsLootTable_MouseDown);
+            PointerPressed += cvsLootTable_MouseDown;
         }
 
-        private void cvsLootTable_MouseDown(object sender, MouseEventArgs e)
+        private void cvsLootTable_MouseDown(object sender, EventArgs e)
         {
             RIGU.core.SetLootTable(lootTable);
         }

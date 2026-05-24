@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Media;
 
 namespace RandomItemGiverUpdater
 {
@@ -14,7 +15,7 @@ namespace RandomItemGiverUpdater
 
         private Canvas cvsCategoryHeader = new Canvas();
         private TextBlock tblCategoryHeader = new TextBlock();
-        public List<UIElement> entries = new List<UIElement>();
+        public List<Control> entries = new List<Control>();
 
         private bool isCollapsed = true;
         private string category;
@@ -25,7 +26,7 @@ namespace RandomItemGiverUpdater
 
             //Category header canvas
             cvsCategoryHeader.Height = 35;
-            cvsCategoryHeader.MouseDown += new MouseButtonEventHandler(cvsCategoryHeader_MouseDown);
+            cvsCategoryHeader.PointerPressed += new EventHandler<PointerPressedEventArgs>(cvsCategoryHeader_MouseDown);
             cvsCategoryHeader.Background = new SolidColorBrush(Color.FromArgb(100, 16, 28, 28));
             cvsCategoryHeader.Children.Add(tblCategoryHeader);
 
@@ -39,19 +40,20 @@ namespace RandomItemGiverUpdater
 
             tblCategoryHeader.Text = sb.ToString();
             tblCategoryHeader.FontSize = 15;
-            tblCategoryHeader.FontWeight = FontWeights.SemiBold;
+            tblCategoryHeader.FontWeight = FontWeight.SemiBold;
             tblCategoryHeader.Foreground = new SolidColorBrush(Colors.White);
             tblCategoryHeader.Margin = new Thickness(10, 10, 0, 0);
 
             Children.Add(cvsCategoryHeader);
         }
 
-        private void cvsCategoryHeader_MouseDown(object sender, MouseEventArgs e)
+        private void cvsCategoryHeader_MouseDown(object sender, EventArgs e)
+        
         {
             if (isCollapsed)
             {
                 //Show the different loot tables
-                foreach (UIElement lootTable in entries)
+                foreach (Control lootTable in entries)
                 {
                     Children.Add(lootTable);
                 }

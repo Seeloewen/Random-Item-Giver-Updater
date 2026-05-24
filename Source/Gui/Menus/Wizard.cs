@@ -1,12 +1,5 @@
-﻿using RandomItemGiverUpdater.Gui.Pages;
-using SeeloewenLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
+﻿using Avalonia.Controls;
+using RandomItemGiverUpdater.Gui.Pages;
 
 namespace RandomItemGiverUpdater.Gui.Menus
 {
@@ -15,12 +8,12 @@ namespace RandomItemGiverUpdater.Gui.Menus
         public int currentPage = 1;
         public int maxPages;
         public IWizardPage[] pages = new IWizardPage[6];
-        public Frame frame;
+        public ContentControl control;
 
-        public void Init(Frame frame, int maxPages)
+        public void Init(ContentControl control, int maxPages)
         {
             this.maxPages = maxPages;
-            this.frame = frame;
+            this.control = control;
         }
 
         public void ShowNextPage()
@@ -49,7 +42,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
         {
             currentPage = page;
             pages[page - 1].Execute();
-            frame.Content = pages[page - 1];
+            control.Content = pages[page - 1];
         }
 
 

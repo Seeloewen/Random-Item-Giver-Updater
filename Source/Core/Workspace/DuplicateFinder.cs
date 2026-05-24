@@ -16,8 +16,7 @@ namespace RandomItemGiverUpdater.Core.Workspace
         private int nextIndex = 1; //Used for counting the duplicate entries
 
         private wndDuplicateFinder wndDuplicateFinder;
-        private SaveFileDialog sfdDuplicateList = new SaveFileDialog() { Title = "Export duplicate list...", Filter = "Text (*.txt)|*.txt|All (*.*)|*.*" };
-
+        
         public ObservableCollection<DuplicateEntry> duplicateEntries { get; set; } = new ObservableCollection<DuplicateEntry>();
 
         public bool checkEntireDatapack = false;
@@ -38,7 +37,7 @@ namespace RandomItemGiverUpdater.Core.Workspace
         {
             //Creates links for the current session
             wndDuplicateFinder = new wndDuplicateFinder();
-            wndDuplicateFinder.ShowDialog();
+            wndDuplicateFinder.ShowDialog(RIGU.core.wndMain);
         }
 
         public void Run()
@@ -60,7 +59,8 @@ namespace RandomItemGiverUpdater.Core.Workspace
 
             }
 
-            MessageBox.Show($"Successfully searched for duplicates. Found {duplicateEntries.Count()} results.", "Search completed", MessageBoxButton.OK, MessageBoxImage.Information);
+            //TODO: Avalonia Rework
+            //MessageBox.Show($"Successfully searched for duplicates. Found {duplicateEntries.Count()} results.", "Search completed", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void CheckLootTable(LootTable lootTable)
@@ -108,13 +108,14 @@ namespace RandomItemGiverUpdater.Core.Workspace
                 fileConstruct.Add($"{duplicate.name} - {duplicate.amount} - {duplicate.lootTables}");
             }
 
-            sfdDuplicateList.FileName = "Random_Item_Giver_Updater_Duplicate_List.txt";
+            //TODO: Avalonia Rework
+            /*sfdDuplicateList.FileName = "Random_Item_Giver_Updater_Duplicate_List.txt";
             if (sfdDuplicateList.ShowDialog() == true)
             {
                 //Save the duplicate list as file
                 File.WriteAllLines(sfdDuplicateList.FileName, fileConstruct);
                 MessageBox.Show($"Successfully saved the duplicate list to {sfdDuplicateList.FileName}", "Saved duplicate list", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+            }*/
         }
     }
 }

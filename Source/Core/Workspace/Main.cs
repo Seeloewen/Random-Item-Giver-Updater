@@ -18,7 +18,7 @@ namespace RandomItemGiverUpdater.Core.Workspace
 
         public Main()
         {
-            wndMain = new wndMain(this) { DataContext = this };
+            wndMain = new wndMain() { DataContext = this, core = this };
         }
 
         public bool DatapackIsValid(Datapack datapack) => datapack != null && datapack.IsValid();
@@ -28,32 +28,36 @@ namespace RandomItemGiverUpdater.Core.Workspace
             if ((!string.IsNullOrEmpty(path) && Directory.Exists(path)))
             {
                 //If a datapack is currently loaded and has pending modifications, ask the user whether to overwrite them
-                if (RIGU.core.currentLootTable != null
+                //TODO: Avalonia Rework
+                /*if (RIGU.core.currentLootTable != null
                     && RIGU.core.currentLootTable.IsModified()
                     && PromptUnsavedChanges() == MessageBoxResult.No)
-                    return;
+                    return;*/
 
                 currentLootTable = null;
                 currentDatapack = new Datapack(path);
             }
             else
             {
-                MessageBox.Show("Could not load datapack. Please select a valid datapack folder!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                //TODO: Avalonia Rework
+                //MessageBox.Show("Could not load datapack. Please select a valid datapack folder!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         public bool Exit() //Returns whether to actually close the software
         {
             //Show warning if there are unsaved changes to the loot table
-            if (RIGU.core.currentLootTable != null
+            //TODO: Avalonia Rework
+            /*if (RIGU.core.currentLootTable != null
                 && RIGU.core.currentLootTable.IsModified()
                 && PromptUnsavedChanges() == MessageBoxResult.No)
-                return false;
+                return false;*/
 
             return true;
         }
 
-        public MessageBoxResult PromptUnsavedChanges()
+        //TODO: Avalonia Rework
+        /*public MessageBoxResult PromptUnsavedChanges()
         {
             //Prompt the user that the currently loaded loot table has unsaved changes
             MessageBoxResult result =
@@ -63,15 +67,16 @@ namespace RandomItemGiverUpdater.Core.Workspace
                 MessageBoxImage.Question);
 
             return result;
-        }
+        }*/
 
         public void SetLootTable(LootTable lootTable)
         {
             //Show warning if there are unsaved changes to the loot table
-            if (RIGU.core.currentLootTable != null
+            //TODO: Avalonia Rework
+            /*if (RIGU.core.currentLootTable != null
                 && RIGU.core.currentLootTable.IsModified()
                 && PromptUnsavedChanges() == MessageBoxResult.No)
-                return;
+                return;*/
 
             currentLootTable = lootTable;
 

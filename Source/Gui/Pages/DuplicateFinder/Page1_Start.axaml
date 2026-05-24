@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignHeight="580" d:DesignWidth="742"
+             x:Class="RandomItemGiverUpdater.Gui.Pages.DuplicateFinder.Page1_Start">
+
+    <Canvas>
+        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click" FontSize="16"/>
+        <Button x:Name="btnBack" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="480" Canvas.Top="538" Click="btnBack_Click" FontSize="16"/>
+        <Label x:Name="lblHeader" Content="Step 1 - Welcome" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
+
+        <TextBlock x:Name="tblcvs1Header"  Canvas.Left="15" TextWrapping="Wrap" Canvas.Top="62" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" FontSize="16" Width="718">Text="Welcome to the Duplicate Finder wizard. This wizard will help you find and remove duplicates in the Random Item Giver Datapack. Please select where the software should search for duplicates. They will be shown in a list after the process has completed."/></TextBlock>
+        <RadioButton x:Name="rbtnCurrent" Content="Only the currently selected Loot Table" Canvas.Left="15" Canvas.Top="194" Foreground="White" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="True" Padding="4,-4,0,0"/>
+        <RadioButton x:Name="rbtnAll" Content="All Loot Tables in the currently selected Datapack" Canvas.Left="15" Canvas.Top="218" Foreground="White" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="4,-4,0,0"/>
+    </Canvas>
+</UserControl>

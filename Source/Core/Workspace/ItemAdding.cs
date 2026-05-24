@@ -3,7 +3,6 @@ using RandomItemGiverUpdater.Core.Data;
 using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Menus;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -33,7 +32,7 @@ namespace RandomItemGiverUpdater.Core.Workspace
         public void BeginSession()
         {
             wndAddItems = new wndAddItems();
-            wndAddItems.ShowDialog();
+            wndAddItems.ShowDialog(RIGU.core.wndMain);
         }
 
         public void ConstructEntries(string[] items, bool customPrefixes = false)

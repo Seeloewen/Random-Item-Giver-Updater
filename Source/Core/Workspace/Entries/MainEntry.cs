@@ -1,10 +1,6 @@
-﻿using RandomItemGiverUpdater.Core;
+﻿using Avalonia.Media;
 using RandomItemGiverUpdater.Core.Data;
 using RandomItemGiverUpdater.Core.Util;
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace RandomItemGiverUpdater.Core.Workspace.Entries
 {
