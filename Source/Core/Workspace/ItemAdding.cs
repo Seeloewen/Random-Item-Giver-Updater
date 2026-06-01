@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace RandomItemGiverUpdater.Core.Workspace
 {
@@ -36,7 +37,7 @@ namespace RandomItemGiverUpdater.Core.Workspace
             wndAddItems.ShowDialog();
         }
 
-        public void ConstructEntries(string[] items, bool customPrefixes = false)
+        public void ConstructEntries(string[] items, bool customPrefixes = false, bool customComponent = false)
         {
             //Clear previous content
             itemEntries.Clear();
@@ -44,15 +45,27 @@ namespace RandomItemGiverUpdater.Core.Workspace
             //Go through all items to check if a prefix needs to be added
             for (int i = 0; i < items.Length; i++)
             {
+                items[i] = items[i].TrimEnd('\r', '\n');
+
                 //If custom prefixes is checked but no custom prefix is found OR if custom prefixes is not checked, add the default prefix
                 if ((customPrefixes && !items[i].Contains(':')) || !customPrefixes)
                 {
                     items[i] = $"minecraft:{items[i]}";
                 }
 
-                string[] split = items[i].Split(':');
+                string[] split = items[i].Split(':', 2); //prefix + item_id (and possibly tag)
 
-                itemEntries.Add(new AddingEntry(split[0], split[1].TrimEnd('\r', '\n'), i));
+                if (customComponent && split[1].Contains("{")) 
+                {
+                    //If the item has custom component, split again
+                    string[] split2 = split[1].Split('{', 2); //item_id + component
+                    split2[1] = "{" + split2[1];
+                    itemEntries.Add(new AddingEntry(split[0], split2[0], i, split2[1]));
+                }
+                else
+                {
+                    itemEntries.Add(new AddingEntry(split[0], split[1], i));
+                }
             }
         }
 
@@ -96,7 +109,7 @@ namespace RandomItemGiverUpdater.Core.Workspace
                 }
 
                 bgwAddItems.ReportProgress(i, (double)(finishedLootTables / Datapack.Get().GetLootTableAmount()));
-i++;
+                i++;
             }
 
             File.WriteAllText(lootTable.path, fileObject.ToString());

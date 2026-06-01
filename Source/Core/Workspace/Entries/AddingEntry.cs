@@ -50,6 +50,25 @@ namespace RandomItemGiverUpdater.Core.Workspace.Entries
             canvasBackColor = SetBackColor();
         }
 
+        public AddingEntry(string prefix, string id, int index, string component) : base(id.TrimEnd('\r', '\n'), prefix)
+        {
+            this.prefix = prefix;
+            this.id = id;
+
+            if (RIGU.core.currentDatapack.usesLegacyNBT)
+            {
+                SetNBT(component);
+            }
+            else
+            {
+                SetItemStackComponent(component);
+            }
+
+            //Set the backcolor
+            this.index = index;
+            canvasBackColor = SetBackColor();
+        }
+
         public SolidColorBrush SetBackColor()
         {
             //Set the backcolor depending on the item index

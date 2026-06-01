@@ -19,7 +19,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
 
         public void Execute()
         {
-            string[] items = tbItemName.Text.Split('\n');
+            /*string[] items = tbItemName.Text.Split('\n');
 
             //Create an entry for every item
             RIGU.itemAdding.itemEntries.Clear();
@@ -38,7 +38,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
                 {
                     RIGU.itemAdding.itemEntries.Add(new AddingEntry("minecraft", items[i], index));
                 }
-            }
+            }*/
         }
 
         private void btnBack_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowPreviousPage();
@@ -47,7 +47,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
         {
             if (!string.IsNullOrEmpty(tbItemName.Text))
             {
-                RIGU.itemAdding.ConstructEntries(tbItemName.Text.Split('\n'), (bool)cbIncludesPrefixes.IsChecked);
+                RIGU.itemAdding.ConstructEntries(tbItemName.Text.Split('\n'), (bool)cbIncludesPrefixes.IsChecked, (bool)cbIncludesComponents.IsChecked);
                 wndAddItems.ShowNextPage();
             }
             else
