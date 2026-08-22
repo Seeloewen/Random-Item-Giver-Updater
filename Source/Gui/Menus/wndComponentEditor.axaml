@@ -2,9 +2,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="400"
         x:Class="RandomItemGiverUpdater.Gui.Menus.wndComponentEditor"
-        Title="wndComponentEditor">
+        Title="Edit Item Stack Component" Width="650" Height="400" Background="#FF323232" CanResize="False">
       <Grid>
         <TextBlock x:Name="tblHeader" HorizontalAlignment="Left" Margin="18,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" FontWeight="SemiBold" Foreground="White"><Run Text="Editing Component of item {0}"/><Run Text=" "/></TextBlock>
         <TextBlock x:Name="tblDescription" HorizontalAlignment="Left" Margin="18,48,0,0" TextWrapping="Wrap" Text="When editing the Component of an item, make sure to use a valid format. Any syntax error will cause the loot table to no longer function." VerticalAlignment="Top" FontSize="16" Foreground="White" Width="613"/>

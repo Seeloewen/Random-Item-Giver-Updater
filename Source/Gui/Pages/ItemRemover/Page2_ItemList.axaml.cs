@@ -14,6 +14,11 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
             InitializeComponent();
         }
 
+        public void SetWindow(Wizard wnd)
+        {
+            wndRemoveItems = (wndRemoveItems)wnd;
+        }
+
         private void btnContinue_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(tbItems.Text))

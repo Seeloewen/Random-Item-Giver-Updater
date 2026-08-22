@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Util;
 using System.Diagnostics;
 using System.Windows;
 
@@ -15,8 +16,6 @@ namespace RandomItemGiverUpdater.Gui.Menus
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e) => Close();
-
-        private void hlGithub_Click(object sender, RoutedEventArgs e) => Process.Start("https://github.com/seeloewen/random-item-giver-updater");
 
         private void btnThirdPartyLicenses_Click(object sender, RoutedEventArgs e)
         {
@@ -33,6 +32,11 @@ namespace RandomItemGiverUpdater.Gui.Menus
         {
             //Setup header
             tblHeader.Text = $"Random Item Giver Updater\nVersion {RIGU.VERSION_NUM} ({RIGU.VERSION_DATE})\nMade by Seeloewen";
+        }
+
+        private void tblGithub_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            Crossplatform.OpenUrl("https://github.com/Seeloewen/Random-Item-Giver-Updater");
         }
     }
 }

@@ -19,8 +19,11 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
         public Page5_Finished()
         {
             InitializeComponent();
+        }
 
-            this.wndRemoveItems = wndRemoveItems;
+        public void SetWindow(Wizard wnd)
+        {
+            wndRemoveItems = (wndRemoveItems)wnd;
         }
 
         public void Execute()

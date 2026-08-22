@@ -21,6 +21,11 @@ namespace RandomItemGiverUpdater.Gui.Pages.DuplicateFinder
             InitializeComponent();
         }
 
+        public void SetWindow(Wizard wnd)
+        {
+            wndDuplicateFinder = (wndDuplicateFinder)wnd;
+        }
+
         private void btnContinue_Click(object sender, RoutedEventArgs e)
         {
             //Check if either the datapack or loot table is valid, depending on what's selected

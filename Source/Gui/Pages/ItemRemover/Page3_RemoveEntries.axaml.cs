@@ -1,4 +1,3 @@
-using System;
 using RandomItemGiverUpdater.Core;
 using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Menus;
@@ -17,6 +16,11 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
         public Page3_RemoveEntries()
         {
             InitializeComponent();
+        }
+
+        public void SetWindow(Wizard wnd)
+        {
+            wndRemoveItems = (wndRemoveItems)wnd;
         }
 
         private void btnEditLootTables_Click(object sender, RoutedEventArgs e)

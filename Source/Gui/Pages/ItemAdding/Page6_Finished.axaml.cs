@@ -16,6 +16,11 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             InitializeComponent();
         }
 
+        public void SetWindow(Wizard wnd)
+        {
+            wndAddItems = (wndAddItems)wnd;
+        }
+
         public void Execute()
         {
             //Add all items to the added items list

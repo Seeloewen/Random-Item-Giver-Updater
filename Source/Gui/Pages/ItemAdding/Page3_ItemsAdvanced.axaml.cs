@@ -21,11 +21,13 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             DataContext = this;
 
             //Setup based on whether datapack uses legacy nbt or not
-            tblEditCategories.Text = "  Prefix                                  " +
-                                       "Name                                                   "
-                                       + (RIGU.core.currentDatapack.usesLegacyNBT ? "NBT" : "Component");
+            tblListHeaderNBT.Text = RIGU.core.currentDatapack.usesLegacyNBT ? "NBT" : "Component";
         }
 
+        public void SetWindow(Wizard wnd)
+        {
+            wndAddItems = (wndAddItems)wnd;
+        }
 
         private void btnBack_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowPreviousPage();
 

@@ -10,7 +10,6 @@ using RandomItemGiverUpdater.Core.Workspace;
 using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Components;
 using System;
-using System.ComponentModel;
 using System.IO;
 using Avalonia.Input;
 using Avalonia.Media.Imaging;
@@ -139,7 +138,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            //tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/Random Item Giver 1.21 Dev 2.0"; //Debug
+            tbDatapack.Text = "C:/Users/Louis/OneDrive/Desktop/rigu_test_pack"; //Debug
             core.LoadDatapack(tbDatapack.Text);
             Reload();
         }
@@ -205,9 +204,9 @@ namespace RandomItemGiverUpdater.Gui.Menus
         private void SetupButtons() //Adds Canvas with image and textblock to button
         {
             //btnAbout
-            Image imgBtnAbout = new Image() { Width = 20, Height = 20, Stretch = Stretch.UniformToFill, Margin = new Thickness(5, -10, 0, 0) };
+            Image imgBtnAbout = new Image() { Width = 20, Height = 20, Stretch = Stretch.UniformToFill };
             imgBtnAbout.Source = new Bitmap(AssetLoader.Open(new Uri("avares://Random Item Giver Updater/Resources/imgAbout.png")));
-            TextBlock tblBtnAbout = new TextBlock() { Text = "About", FontSize = 17, Margin = new Thickness(35, -12, 0, 0) };
+            TextBlock tblBtnAbout = new TextBlock() { Text = "About", FontSize = 17, Margin = new Thickness(27, 0, 0, 0) };
 
             Canvas cvsBtnAbout = new Canvas();
             cvsBtnAbout.Children.Add(imgBtnAbout);
@@ -215,9 +214,9 @@ namespace RandomItemGiverUpdater.Gui.Menus
             btnAbout.Content = cvsBtnAbout;
 
             //btnSave
-            Image imgBtnSave = new Image() { Width = 20, Height = 20, Stretch = Stretch.UniformToFill, Margin = new Thickness(5, -10, 0, 0) };
+            Image imgBtnSave = new Image() { Width = 20, Height = 20, Stretch = Stretch.UniformToFill };
             imgBtnSave.Source = new Bitmap(AssetLoader.Open(new Uri("avares://Random Item Giver Updater/Resources/imgSave.png")));
-            tblBtnSave = new TextBlock() { Text = "Save Loot Table", FontSize = 17, Margin = new Thickness(35, -12, 0, 0) };
+            tblBtnSave = new TextBlock() { Text = "Save Loot Table", FontSize = 17, Margin = new Thickness(27, 0, 0, 0) };
 
             Canvas cvsBtnSave = new Canvas();
             cvsBtnSave.Children.Add(imgBtnSave);
@@ -225,9 +224,9 @@ namespace RandomItemGiverUpdater.Gui.Menus
             btnSave.Content = cvsBtnSave;
 
             //btnDuplicateFinder
-            Image imgBtnDuplicateFinder = new Image() { Width = 20, Height = 20, Stretch = Stretch.UniformToFill, Margin = new Thickness(5, -10, 0, 0) };
+            Image imgBtnDuplicateFinder = new Image() { Width = 20, Height = 20, Stretch = Stretch.UniformToFill };
             imgBtnDuplicateFinder.Source = new Bitmap(AssetLoader.Open(new Uri("avares://Random Item Giver Updater/Resources/imgDuplicateFinder.png")));
-            TextBlock tblBtnDuplicateFinder = new TextBlock() { Text = "Duplicate Finder", FontSize = 17, Margin = new Thickness(35, -12, 0, 0) };
+            TextBlock tblBtnDuplicateFinder = new TextBlock() { Text = "Duplicate Finder", FontSize = 17, Margin = new Thickness(27, 0, 0, 0) };
 
             Canvas cvsBtnDuplicateFinder = new Canvas();
             cvsBtnDuplicateFinder.Children.Add(imgBtnDuplicateFinder);
@@ -235,9 +234,9 @@ namespace RandomItemGiverUpdater.Gui.Menus
             btnDuplicateFinder.Content = cvsBtnDuplicateFinder;
 
             //btnAddItems
-            Image imgBtnAddItems = new Image() { Width = 20, Height = 20, Stretch = Stretch.UniformToFill, Margin = new Thickness(5, -10, 0, 0) };
+            Image imgBtnAddItems = new Image() { Width = 20, Height = 20, Stretch = Stretch.UniformToFill };
             imgBtnAddItems.Source = new Bitmap(AssetLoader.Open(new Uri("avares://Random Item Giver Updater/Resources/imgAddItems.png")));
-            TextBlock tblBtnAddItems = new TextBlock() { Text = "Add Items", FontSize = 17, Margin = new Thickness(35, -12, 0, 0) };
+            TextBlock tblBtnAddItems = new TextBlock() { Text = "Add Items", FontSize = 17, Margin = new Thickness(27, 0, 0, 0) };
 
             Canvas cvsBtnAddItems = new Canvas();
             cvsBtnAddItems.Children.Add(imgBtnAddItems);
@@ -245,9 +244,9 @@ namespace RandomItemGiverUpdater.Gui.Menus
             btnAddItems.Content = cvsBtnAddItems;
 
             //btnRemove
-            Image imgBtnRemoveItems = new Image() { Width = 20, Height = 20, Stretch = Stretch.UniformToFill, Margin = new Thickness(5, -10, 0, 0) };
+            Image imgBtnRemoveItems = new Image() { Width = 20, Height = 20, Stretch = Stretch.UniformToFill };
             imgBtnRemoveItems.Source = new Bitmap(AssetLoader.Open(new Uri("avares://Random Item Giver Updater/Resources/imgRemoveItems.png")));
-            TextBlock tblBtnRemoveItems = new TextBlock() { Text = "Remove Items", FontSize = 17, Margin = new Thickness(35, -12, 0, 0) };
+            TextBlock tblBtnRemoveItems = new TextBlock() { Text = "Remove Items", FontSize = 17, Margin = new Thickness(27, 0, 0, 0) };
 
             Canvas cvsBtnRemoveItems = new Canvas();
             cvsBtnRemoveItems.Children.Add(imgBtnRemoveItems);
@@ -295,8 +294,8 @@ namespace RandomItemGiverUpdater.Gui.Menus
             Button btn = (Button)sender;
             MainEntry entry = (MainEntry)btn.DataContext;
             Canvas cvs = btn.FindAncestorOfType<Canvas>();
-            TextBlock tbl = cvs.Find<TextBlock>("tblItemName");
-            TextBox tb = cvs.Find<TextBox>("tbItemName");
+            TextBlock tbl = (TextBlock)cvs.FindChild("tblItemName");
+            TextBox tb = (TextBox)cvs.FindChild("tbItemName");
 
             //Hide the controls for editing and show/update the item name
             tb.IsVisible = false;
@@ -354,8 +353,8 @@ namespace RandomItemGiverUpdater.Gui.Menus
         {
             TextBlock tbl = (TextBlock)sender;
             Canvas cvs = tbl.FindAncestorOfType<Canvas>();
-            TextBox tb = cvs.Find<TextBox>("tbItemName");
-            Button btn = cvs.Find<Button>("btnSaveItemName");
+            TextBox tb = (TextBox)cvs.FindChild("tbItemName");
+            Button btn = (Button)cvs.FindChild("btnSaveItemName");
 
             //Show the textbox for editing the item name
             tb.IsVisible = true;
@@ -369,9 +368,9 @@ namespace RandomItemGiverUpdater.Gui.Menus
         private void cvsItem_MouseEnter(object sender, PointerEventArgs e)
         {
             Canvas cvs = (Canvas)sender;
-            Button btn = cvs.Find<Button>("btnDelete");
-            Button btn2 = cvs.Find<Button>("btnEditNBTComponent");
-            TextBlock tbl = cvs.Find<TextBlock>("tblIndicator");
+            Button btn = (Button)cvs.FindChild("btnDelete");
+            Button btn2 = (Button)cvs.FindChild("btnEditNBTComponent");
+            TextBlock tbl = (TextBlock)cvs.FindChild("tblIndicator");
 
             //Show the button and move the indicator accordingly
             btn.IsVisible = true;
@@ -382,9 +381,9 @@ namespace RandomItemGiverUpdater.Gui.Menus
         private void cvsItem_MouseLeave(object sender, PointerEventArgs e)
         {
             Canvas cvs = (Canvas)sender;
-            Button btn = cvs.Find<Button>("btnDelete");
-            Button btn2 = cvs.Find<Button>("btnEditNBTComponent");
-            TextBlock tbl = cvs.Find<TextBlock>("tblIndicator");
+            Button btn = (Button)cvs.FindChild("btnDelete");
+            Button btn2 = (Button)cvs.FindChild("btnEditNBTComponent");
+            TextBlock tbl = (TextBlock)cvs.FindChild("tblIndicator");
 
             //Hide the button and move the indicator accordingly
             btn.IsVisible = false;

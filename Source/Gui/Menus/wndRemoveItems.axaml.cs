@@ -25,12 +25,17 @@ namespace RandomItemGiverUpdater.Gui.Menus
         private void InitUI()
         {
             //Setup pages
-            //TODO: Add wndRemoveItems reference to Pages
             pages[0] = new Page1_Start();
             pages[1] = new Page2_ItemList();
             pages[2] = new Page3_RemoveEntries();
             pages[3] = new Page4_Removing();
             pages[4] = new Page5_Finished();
+
+            for (int i = 0; i < 5; i++)
+            {
+                pages[i].SetWindow(this);
+            }
+
 
             GetPage<Page3_RemoveEntries>(3).DataContext = DataContext;
         }

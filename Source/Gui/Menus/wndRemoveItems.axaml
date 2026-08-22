@@ -2,12 +2,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="785" d:DesignHeight="660"
         x:Class="RandomItemGiverUpdater.Gui.Menus.wndRemoveItems"
-        Title="Remove Items" Height="695" Width="812" Background="#FF323232" WindowStartupLocation="CenterScreen">
+        Title="Remove Items" Height="660" Width="785" Background="#FF323232" WindowStartupLocation="CenterScreen" CanResize="False">
     <Canvas x:Name="grdRemoveItems">
         <TextBlock x:Name="tblHeader" HorizontalAlignment="Left" Margin="22,12,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" FontWeight="SemiBold" Text="Remove Items" Foreground="White"/>
-        <ContentControl x:Name="frWizard" Content="" Height="555" Width="732" Canvas.Left="36" Canvas.Top="60" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-        <GroupBox Height="590" Header="" Width="758" Canvas.Left="22" Canvas.Top="50" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-    </Canvas>
+        <GroupBox Width="753" Height="591" Canvas.Left="16" Canvas.Top="50" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+        <ContentControl x:Name="frWizard" Content="" Height="600" Canvas.Left="28" Canvas.Top="52" Width="729" HorizontalAlignment="Center" VerticalAlignment="Top"/>    
+</Canvas>
 </Window>

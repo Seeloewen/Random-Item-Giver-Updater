@@ -23,6 +23,11 @@ namespace RandomItemGiverUpdater.Gui.Pages.DuplicateFinder
             cvsContent.Children.Add(tblNoDuplicatesFound);
         }
 
+        public void SetWindow(Wizard wnd)
+        {
+            wndDuplicateFinder = (wndDuplicateFinder)wnd;
+        }
+
         public void Execute()
         {
             RIGU.duplicateFinder.Run();

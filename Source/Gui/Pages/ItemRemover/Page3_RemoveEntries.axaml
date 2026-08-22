@@ -8,20 +8,20 @@
 
     <UserControl.Resources>
         <DataTemplate x:Key="ItemTemplate">
-            <Canvas x:Name="cvsItem" Height="40" Background="Black" >
-                <TextBlock x:Name="tblItemName" Width="200" Height="24" FontSize="15" Foreground="White" Canvas.Top="6" Canvas.Left="0" Text="{Binding name}" PointerPressed="tblItemName_MouseDown"/>
-                <TextBlock x:Name="tblLootTables" Width="300" Height="24" FontSize="15" Foreground="White" Canvas.Top="6" Canvas.Left="220" Text="{Binding lootTableCheckListStr}" PointerPressed="tblLootTables_MouseDown"/>
-                <Button x:Name="btnEditLootTables" Height="25" Width="150" Content="Select loot tables" FontSize="15" Canvas.Top="6" Canvas.Left="490" IsEnabled="True" Click="btnEditLootTables_Click"/>
-                <Button x:Name="btnRemove" Height="25" Width="25" Content="X" FontSize="15" Canvas.Top="6" Canvas.Left="660" IsEnabled="True" Click="btnRemove_Click"/>
+            <Canvas x:Name="cvsItem" Height="40" Background="{Binding canvasBackColor}" >
+                <TextBlock x:Name="tblItemName" Width="200" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="10" Text="{Binding name}" PointerPressed="tblItemName_MouseDown"/>
+                <TextBlock x:Name="tblLootTables" Width="300" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="220" Text="{Binding lootTableCheckListStr}" PointerPressed="tblLootTables_MouseDown"/>
+                <Button x:Name="btnEditLootTables" Height="30" Width="150" Content="Select loot tables" FontSize="15" Canvas.Top="5" Canvas.Left="490" IsEnabled="True" Click="btnEditLootTables_Click"/>
+                <Button x:Name="btnRemove" Height="30" Width="30" Content="X" FontSize="15" Canvas.Top="5" Canvas.Left="660" IsEnabled="True" Click="btnRemove_Click"/>
             </Canvas>
         </DataTemplate>
     </UserControl.Resources>
     <Canvas>
-        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click" FontSize="16"/>
-        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="480" Canvas.Top="538" Click="btnBack_Click" FontSize="16"/>
-        <TextBlock x:Name="lblHeader" Text="Step 3 - Removal Entries" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
+        <Button x:Name="btnContinue" Content="Continue" Height="30" Width="116" Canvas.Left="604" Canvas.Top="535" Click="btnContinue_Click" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
+        <Button x:Name="btnBack" Content="Back" Height="30" Width="116" Canvas.Left="474" Canvas.Top="535" Click="btnBack_Click" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
+        <TextBlock x:Name="lblHeader" Text="Step 3 - Removal Entries" HorizontalAlignment="Left" Margin="15,12,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
 
-        <TextBlock x:Name="tblStep3" Canvas.Left="16" TextWrapping="Wrap" Canvas.Top="50" Width="710" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontSize="16"><Run Text="In the following list, please select which loot tables you want to remove the items from."/><LineBreak/><Run Text="Please note that every item selected will only be removed from a loot table once."/><Run Text=" If i"/><Run Text="you wa"/><Run Text="n"/><Run Text="t to remove it multiple times you'll have to run the wizard again."/></TextBlock>
+        <TextBlock x:Name="tblStep3" Canvas.Left="16" TextWrapping="Wrap" Canvas.Top="50" Width="710" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontSize="16">In the following list, please select which loot tables you want to remove the items from. Please note that every item selected will only be removed from a loot table once. If you want to remove it multiple times you'll have to run the wizard again.</TextBlock>
         <ListBox x:Name="lbItemsLootTables" ItemsSource="{Binding removalEntries}" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="362" Canvas.Top="159" Width="710" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Left="16">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -36,6 +36,8 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <TextBlock x:Name="tblItemsFoundDesc" Canvas.Left="23" TextWrapping="Wrap" Canvas.Top="130" FontWeight="DemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" FontSize="16">Text="Item                                          Loot Table(s)                                         Remove from..."/></TextBlock>
-    </Canvas>
+        <TextBlock x:Name="tblListHeaderItem" Canvas.Left="20" TextWrapping="Wrap" Canvas.Top="130" FontWeight="DemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" FontSize="16">Item</TextBlock>
+        <TextBlock x:Name="tblListHeaderLootTables" Canvas.Left="232" TextWrapping="Wrap" Canvas.Top="130" FontWeight="DemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" FontSize="16">Loot Table(s)</TextBlock>
+        <TextBlock x:Name="tblListHeaderRemoveFrom" Canvas.Left="502" TextWrapping="Wrap" Canvas.Top="130" FontWeight="DemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" FontSize="16">Remove from...</TextBlock>    
+</Canvas>
 </UserControl>

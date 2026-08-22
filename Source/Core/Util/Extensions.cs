@@ -20,5 +20,21 @@ namespace RandomItemGiverUpdater.Core.Util
 
             return result.FirstOrDefault()?.Path.LocalPath;
         }
+
+        public static Control FindChild(this Panel panel, string name)
+        {
+            foreach (var child in panel.Children)
+            {
+                if (child.Name == name) return child;
+
+                if (child is Panel p)
+                {
+                    Control c = p.FindChild(name);
+                    if (c != null) return c;
+                }
+            }
+
+            return null;
+        }
     }
 }

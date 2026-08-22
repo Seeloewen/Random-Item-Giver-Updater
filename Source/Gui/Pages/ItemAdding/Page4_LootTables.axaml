@@ -8,20 +8,20 @@
     <UserControl.Resources>
         <DataTemplate x:Key="LootTableTemplate">
             <Canvas x:Name="cvsItem" Height="40" Background="{Binding canvasBackColor}" >
-                <TextBlock x:Name="tbItemName" Width="140" Height="24" FontSize="15" Foreground="White" Canvas.Top="6" Canvas.Left="0" Text="{Binding name}"/>
-                <RadioButton x:Name="rbtnAllLootTables" Width="255" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="155" Padding="5,-3.5,0,0" Content="Default loot tables" IsChecked="True" IsCheckedChanged="rbtnAllLootTables_Checked"/>
-                <RadioButton x:Name="rbtnCertainLootTables" Width="255" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="330" Content="Only certain loot tables:" Padding="5,-3.5,0,0" IsCheckedChanged="rbtnCertainLootTables_Checked"/>
-                <Button x:Name="btnEditCertainLootTables" Height="25" Width="150" Content="Select loot tables" FontSize="15" Canvas.Top="6" Canvas.Left="530" Click="btnEditCertainLootTables_Click" IsEnabled="False"/>
+                <TextBlock x:Name="tbItemName" Width="160" Height="24" FontSize="15" Foreground="White" Canvas.Top="10" Canvas.Left="10" Text="{Binding name}"/>
+                <RadioButton x:Name="rbtnAllLootTables" Width="255" Height="30" FontSize="15" Foreground="White" Canvas.Top="5" Canvas.Left="185" Padding="10,0,0,0" Content="Default loot tables" IsChecked="True" IsCheckedChanged="rbtnAllLootTables_Checked"/>
+                <RadioButton x:Name="rbtnCertainLootTables" Width="255" Height="30" FontSize="15" Foreground="White" Canvas.Top="5" Canvas.Left="360" Content="Only certain loot tables:" Padding="10,0,0,0"/>
+                <Button x:Name="btnEditCertainLootTables" Height="30" Width="150" Content="Select loot tables" FontSize="15" Canvas.Top="6" Canvas.Left="570" Click="btnEditCertainLootTables_Click" IsEnabled="False"/>
             </Canvas>
         </DataTemplate>
     </UserControl.Resources>
     <Canvas x:Name="cvsContent">
-        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Center" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="609" Canvas.Top="542" Click="btnContinue_Click" FontSize="16"/>
-        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Center" VerticalAlignment="Top" Height="25" Width="116" Canvas.Left="479" Canvas.Top="542" Click="btnBack_Click" FontSize="16"/>
+        <Button x:Name="btnContinue" Content="Continue" HorizontalAlignment="Center" VerticalAlignment="Top" Height="30" Width="116" Canvas.Left="606" Canvas.Top="535" Click="btnContinue_Click" FontSize="16"/>
+        <Button x:Name="btnBack" Content="Back" HorizontalAlignment="Center" VerticalAlignment="Top" Height="30" Width="116" Canvas.Left="476" Canvas.Top="535" Click="btnBack_Click" FontSize="16"/>
         <Label x:Name="lblHeader" Content="Step 4 - Configure Loot Tables" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
 
         <TextBlock x:Name="tblSelectLootTables" Canvas.Left="15" TextWrapping="Wrap" Text="Now it's time to select the loot tables you want to add your items too. You can either add it to all normal loot tables or only certain ones" Canvas.Top="52" HorizontalAlignment="Left" VerticalAlignment="Center" Width="702" Foreground="White" FontSize="16"/>
-        <ListBox x:Name="lbItemsLootTables" ItemsSource="{Binding itemEntries}" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="385" Canvas.Top="145" Width="703" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Left="22">
+        <ListBox x:Name="lbItemsLootTables" ItemsSource="{Binding itemEntries}" Background="#FF323232" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="375" Canvas.Top="145" Width="742" HorizontalAlignment="Center" VerticalAlignment="Top">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel/>
@@ -35,6 +35,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <TextBlock x:Name="tblLootTableCategories" Canvas.Left="25" TextWrapping="Wrap" Text=" Item                            Add to..." Canvas.Top="118" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="DemiBold" FontSize="16" Foreground="White"/>
-    </Canvas>
+        <TextBlock x:Name="tblListHeaderItem" Canvas.Left="5" TextWrapping="Wrap" Text="Item" Canvas.Top="118" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="DemiBold" FontSize="16" Foreground="White"/>
+        <TextBlock x:Name="tblListHeaderAddTo" Canvas.Left="185" TextWrapping="Wrap" Text="Add to..." Canvas.Top="118" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="DemiBold" FontSize="16" Foreground="White"/>    
+</Canvas>
 </UserControl>

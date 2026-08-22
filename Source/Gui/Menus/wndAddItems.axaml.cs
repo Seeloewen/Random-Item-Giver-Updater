@@ -25,13 +25,17 @@ namespace RandomItemGiverUpdater.Gui.Menus
         private void InitUI()
         {
             //Setup pages
-            //TODO: Set wndAddItems for Pages
             pages[0] = new Page1_Start();
             pages[1] = new Page2_ItemList();
             pages[2] = new Page3_ItemsAdvanced();
             pages[3] = new Page4_LootTables();
             pages[4] = new Page5_AddingItems();
             pages[5] = new Page6_Finished();
+
+            for (int i = 0; i < 6; i++)
+            {
+                pages[i].SetWindow(this);
+            }
 
             GetPage<Page1_Start>(1).SetDatapack(RIGU.core.currentDatapack);
             GetPage<Page3_ItemsAdvanced>(3).DataContext = DataContext;

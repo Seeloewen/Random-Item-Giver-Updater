@@ -16,6 +16,11 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             InitializeComponent();
         }
 
+        public void SetWindow(Wizard wnd)
+        {
+            wndAddItems = (wndAddItems)wnd;
+        }
+
         public void SetDatapack(Datapack datapack)
         {
             tblCurrentlySelectedDatapack.Text = $"Currently selected Datapack:\n{datapack.rootDirectory}\n{datapack.GetVersionString(datapack.rootDirectory)}";

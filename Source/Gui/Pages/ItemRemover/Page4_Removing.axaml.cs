@@ -13,6 +13,11 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
             InitializeComponent();
         }
 
+        public void SetWindow(Wizard wnd)
+        {
+            wndRemoveItems = (wndRemoveItems)wnd;
+        }
+
         public void Execute()
         {
             RIGU.itemRemover.Run();

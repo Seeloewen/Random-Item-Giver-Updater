@@ -7,6 +7,7 @@ using RandomItemGiverUpdater.Gui.Menus;
 using System.Collections.Generic;
 using Avalonia.VisualTree;
 using SkiaSharp;
+using RandomItemGiverUpdater.Core.Util;
 
 namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
 {
@@ -21,13 +22,18 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             InitializeComponent();
         }
 
+        public void SetWindow(Wizard wnd)
+        {
+            wndAddItems = (wndAddItems)wnd;
+        }
+
         private void ToggleLootTableSelection(RadioButton rbtn)
         {
             var cvs = rbtn.FindAncestorOfType<Canvas>();
             AddingEntry item = (AddingEntry)cvs.DataContext;
 
             //Toggle edit button
-            Button button = cvs.Find<Button>(EDIT_LOOTTABLES_BUTTON);
+            Button button = (Button)cvs.FindChild(EDIT_LOOTTABLES_BUTTON);
             button.IsEnabled = !button.IsEnabled;
             item.defaultLootTables = !item.defaultLootTables;
         }
@@ -69,11 +75,6 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
         }
 
         private void rbtnAllLootTables_Checked(object sender, RoutedEventArgs e)
-        {
-            ToggleLootTableSelection((RadioButton)sender);
-        }
-
-        private void rbtnCertainLootTables_Checked(object sender, RoutedEventArgs e)
         {
             ToggleLootTableSelection((RadioButton)sender);
         }

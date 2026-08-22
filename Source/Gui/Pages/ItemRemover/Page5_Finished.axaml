@@ -6,7 +6,7 @@
              x:Class="RandomItemGiverUpdater.Gui.Pages.ItemRemover.Page5_Finished">
 
     <Canvas>
-        <Button x:Name="btnContinue" Content="Finish" HorizontalAlignment="Left" VerticalAlignment="Center" Height="26" Width="116" Canvas.Left="610" Canvas.Top="537" Click="btnContinue_Click" FontSize="16"/>
+       <Button x:Name="btnContinue" Content="Finish" Height="30" Width="116" Canvas.Left="604" Canvas.Top="535" Click="btnContinue_Click" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
         <Label x:Name="lblHeader" Content="Step 5 - Finishing" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
 
         <TextBlock x:Name="tblStep5" Canvas.Left="16" TextWrapping="Wrap" Text="The Item Removing Wizard has completed! The specified items were succesfully removed from the selected loot tables. You can see a list of all removed items down below." Canvas.Top="48" HorizontalAlignment="Center" VerticalAlignment="Top" Width="702" Foreground="White" FontSize="16"/>

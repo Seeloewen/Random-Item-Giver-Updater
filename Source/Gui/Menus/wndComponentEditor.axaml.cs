@@ -21,7 +21,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             tblHeader.Text = $"Editing Component of item {itemName}";
             tbComponent.Text = currentComponent;
             oldComponent = currentComponent;
-            ShowDialog(this);
+            ShowDialog(RIGU.core.wndMain);
 
             return (result, newComponent);
         }

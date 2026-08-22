@@ -24,9 +24,14 @@ namespace RandomItemGiverUpdater.Gui.Menus
         private void InitUI()
         {
             //Setup pages
-            //TODO: pass wndDuplicateFinder to everyone
             pages[0] = new Page1_Start();
             pages[1] = new Page2_Finished();
+
+            for (int i = 0; i < 2; i++)
+            {
+                pages[i].SetWindow(this);
+            }
+
 
             GetPage<Page2_Finished>(2).DataContext = DataContext;
         }
