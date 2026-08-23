@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using RandomItemGiverUpdater.Core;
+using System.Threading.Tasks;
 
 namespace RandomItemGiverUpdater.Gui.Menus
 {
@@ -15,13 +16,13 @@ namespace RandomItemGiverUpdater.Gui.Menus
             InitializeComponent();
         }
 
-        public (ModificationState, string) GetFromDialog(string itemName, string currentNbt)
+        public async Task<(ModificationState, string)> GetFromDialog(string itemName, string currentNbt)
         {
             //Show the dialog and wait for the result and new nbt
             tblHeader.Text = $"Editing NBT of item {itemName}";
             tbNBT.Text = currentNbt;
             oldNbt = currentNbt;
-            ShowDialog(this);
+            await ShowDialog(this);
 
             return (result, newNbt);
         }

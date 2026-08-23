@@ -308,7 +308,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             entry.UpdateIndicator();
         }
 
-        private void btnEditNBTComponent_Click(object sender, RoutedEventArgs e)
+        private async void btnEditNBTComponent_Click(object sender, RoutedEventArgs e)
         {
             Button btn = (Button)sender;
             MainEntry entry = (MainEntry)btn.DataContext;
@@ -317,7 +317,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             {
                 //If the datapack still uses legacy nbt, open the nbt editor and set the tag
                 wndNBTEditor editor = new wndNBTEditor();
-                (ModificationState result, string nbt) = editor.GetFromDialog(entry.item.name, entry.item.GetNBT());
+                (ModificationState result, string nbt) = await editor.GetFromDialog(entry.item.name, entry.item.GetNBT());
 
                 switch (result)
                 {
@@ -333,7 +333,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             {
                 //If it uses the item stack component, open the editor and set the component
                 wndComponentEditor editor = new wndComponentEditor();
-                (ModificationState result, string component) = editor.GetFromDialog(entry.item.name, entry.item.GetItemStackComponent());
+                (ModificationState result, string component) = await editor.GetFromDialog(entry.item.name, entry.item.GetItemStackComponent());
 
                 switch (result)
                 {

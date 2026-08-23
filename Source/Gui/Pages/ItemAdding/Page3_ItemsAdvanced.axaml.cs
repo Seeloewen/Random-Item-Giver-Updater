@@ -38,7 +38,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             RIGU.itemAdding.itemEntries.Add(new AddingEntry("minecraft", "", RIGU.itemAdding.itemEntries.Count));
         }
 
-        private void btnNbtComponentEditor_Click(object sender, RoutedEventArgs e)
+        private async void btnNbtComponentEditor_Click(object sender, RoutedEventArgs e)
         {
             AddingEntry item = (AddingEntry)((Button)sender).DataContext;
 
@@ -46,14 +46,14 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             {
                 //Open the legacy nbt editor
                 wndNBTEditor editor = new wndNBTEditor();
-                (ModificationState result, string nbt) = editor.GetFromDialog(item.name, item.GetNBT());
+                (ModificationState result, string nbt) = await editor.GetFromDialog(item.name, item.GetNBT());
                 item.SetNBT(nbt);
             }
             else
             {
                 //Open the item stack component editor
                 wndComponentEditor editor = new wndComponentEditor();
-                (ModificationState result, string component) = editor.GetFromDialog(item.name, item.GetItemStackComponent());
+                (ModificationState result, string component) = await editor.GetFromDialog(item.name, item.GetItemStackComponent());
                 item.SetItemStackComponent(component);
             }
         }

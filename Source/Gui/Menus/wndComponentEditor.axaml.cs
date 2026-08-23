@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using RandomItemGiverUpdater.Core;
+using System.Threading.Tasks;
 
 namespace RandomItemGiverUpdater.Gui.Menus
 {
@@ -15,13 +16,13 @@ namespace RandomItemGiverUpdater.Gui.Menus
             InitializeComponent();
         }
 
-        public (ModificationState, string) GetFromDialog(string itemName, string currentComponent)
+        public async Task<(ModificationState, string)> GetFromDialog(string itemName, string currentComponent)
         {
             //Show the dialog and wait for the result and new nbt
             tblHeader.Text = $"Editing Component of item {itemName}";
             tbComponent.Text = currentComponent;
             oldComponent = currentComponent;
-            ShowDialog(RIGU.core.wndMain);
+            await ShowDialog(RIGU.core.wndMain);
 
             return (result, newComponent);
         }
