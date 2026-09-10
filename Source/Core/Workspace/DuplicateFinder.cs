@@ -1,5 +1,7 @@
 ﻿using Microsoft.Win32;
+using MsBox.Avalonia.Enums;
 using RandomItemGiverUpdater.Core.Data;
+using RandomItemGiverUpdater.Core.Util;
 using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Menus;
 using System;
@@ -58,9 +60,8 @@ namespace RandomItemGiverUpdater.Core.Workspace
                 }
 
             }
-
-            //TODO: Avalonia Rework
-            //MessageBox.Show($"Successfully searched for duplicates. Found {duplicateEntries.Count()} results.", "Search completed", MessageBoxButton.OK, MessageBoxImage.Information);
+     
+            Crossplatform.Dialog(wndDuplicateFinder, $"Successfully searched for duplicates. Found {duplicateEntries.Count()} results.", "Search completed", ButtonEnum.Ok, Icon.Info);
         }
 
         private void CheckLootTable(LootTable lootTable)
@@ -114,7 +115,7 @@ namespace RandomItemGiverUpdater.Core.Workspace
             {
                 //Save the duplicate list as file
                 File.WriteAllLines(sfdDuplicateList.FileName, fileConstruct);
-                MessageBox.Show($"Successfully saved the duplicate list to {sfdDuplicateList.FileName}", "Saved duplicate list", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Successfully saved the duplicate list to {sfdDuplicateList.FileName}", "Saved duplicate list", ButtonEnum.Ok, Icon.Info);
             }*/
         }
     }

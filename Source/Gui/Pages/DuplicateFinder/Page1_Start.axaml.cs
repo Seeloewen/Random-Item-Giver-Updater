@@ -1,6 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using MsBox.Avalonia.Enums;
 using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Util;
 using RandomItemGiverUpdater.Gui.Menus;
 using System;
 using System.Collections.Generic;
@@ -26,7 +28,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.DuplicateFinder
             wndDuplicateFinder = (wndDuplicateFinder)wnd;
         }
 
-        private void btnContinue_Click(object sender, RoutedEventArgs e)
+        private async void btnContinue_Click(object sender, RoutedEventArgs e)
         {
             //Check if either the datapack or loot table is valid, depending on what's selected
             if ((rbtnAll.IsChecked == true && RIGU.core.DatapackIsValid(RIGU.core.currentDatapack)) || (rbtnCurrent.IsChecked == true && RIGU.core.currentLootTable != null))
@@ -37,8 +39,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.DuplicateFinder
             }
             else
             {
-                //TODO: Avalonia Rework
-                //MessageBox.Show("Cannot search for duplicates. Please make sure that a datapack or loot table is loaded.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                await Crossplatform.Dialog(wndDuplicateFinder, "Cannot search for duplicates. Please make sure that a datapack or loot table is loaded.", "Error", ButtonEnum.Ok, Icon.Error);
             }
         }
 

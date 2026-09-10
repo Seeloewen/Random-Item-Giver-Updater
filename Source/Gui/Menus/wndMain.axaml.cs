@@ -16,6 +16,8 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.VisualTree;
 using RandomItemGiverUpdater.Core.Util;
+using MsBox.Avalonia.Enums;
+using System.Threading.Tasks;
 
 namespace RandomItemGiverUpdater.Gui.Menus
 {
@@ -101,7 +103,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             }
         }
 
-        private void btnAddItem_Click(object sender, RoutedEventArgs e)
+        private async void btnAddItem_Click(object sender, RoutedEventArgs e)
         {
             //Check if the datapack path exists before opening the window
             if (core.DatapackIsValid(core.currentDatapack))
@@ -110,12 +112,11 @@ namespace RandomItemGiverUpdater.Gui.Menus
             }
             else
             {
-                //TODO: Avalonia Rework
-                //MessageBox.Show("Error: Could not detect datapack. Please make sure the currently selected datapack exists and is valid.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                await this.MsgBox("Error: Could not detect datapack. Please make sure the currently selected datapack exists and is valid.", "Error", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
             }
         }
 
-        private void btnRemoveItems_Click(object sender, RoutedEventArgs e)
+        private async void btnRemoveItems_Click(object sender, RoutedEventArgs e)
         {
             //Check if the datapack path exists before opening the window
             if (core.DatapackIsValid(core.currentDatapack))
@@ -124,8 +125,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             }
             else
             {
-                //TODO: Avalonia Rework
-                //MessageBox.Show("Error: Could not detect datapack. Please make sure the currently selected datapack exists and is valid.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                await this.MsgBox("Error: Could not detect datapack. Please make sure the currently selected datapack exists and is valid.", "Error", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
             }
         }
 
@@ -153,20 +153,18 @@ namespace RandomItemGiverUpdater.Gui.Menus
                 core.ReloadLootTable();
                 RIGU.core.wndMain.SetSaveButtonState(false);
                 RIGU.core.wndMain.ReloadWorkspace();
-                //TODO: Avalonia Rework
-                //MessageBox.Show("Successfully saved the loot table!", "Save Loot Table", MessageBoxButton.OK, MessageBoxImage.Information);
+                await this.MsgBox("Successfully saved the loot table!", "Save Loot Table", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info);
             }
             else
             {
-                //TODO: Avalonia Rework
-                //MessageBox.Show("Please load a loot table before saving!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                await this.MsgBox("Please load a loot table before saving!", "Error", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
             }
         }
 
-        private void wndMain_Closing(object sender, WindowClosingEventArgs e)
+        private async void wndMain_Closing(object sender, WindowClosingEventArgs e)
         {
             //Try exiting and cancel if the core denies it
-            e.Cancel = !core.Exit();
+            e.Cancel = !await core.Exit();
         }
 
         public void UpdateEditProgress(double progress)
@@ -181,7 +179,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             tblBtnSave.Text = saving ? "Saving..." : "Save Loot Table";
         }
 
-        private void btnDuplicateFinder_Click(object sender, RoutedEventArgs e)
+        private async void btnDuplicateFinder_Click(object sender, RoutedEventArgs e)
         {
             //Show duplicate finder window if a datapack is loaded
             if (core.DatapackIsValid(core.currentDatapack))
@@ -190,8 +188,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             }
             else
             {
-                //TODO: Avalonia Rework
-                //MessageBox.Show("Error: Could not detect datapack. Please make sure the currently selected datapack exists and is valid.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                await this.MsgBox("Error: Could not detect datapack. Please make sure the currently selected datapack exists and is valid.", "Error", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
             }
         }
 

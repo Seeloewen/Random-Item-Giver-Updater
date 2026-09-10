@@ -1,6 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using MsBox.Avalonia.Enums;
 using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Util;
 using System.Threading.Tasks;
 
 namespace RandomItemGiverUpdater.Gui.Menus
@@ -28,7 +30,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
         }
 
 
-        private void btnSave_Click(object sender, RoutedEventArgs e)
+        private async void btnSave_Click(object sender, RoutedEventArgs e)
         {
             newComponent = tbComponent.Text;
 
@@ -36,32 +38,29 @@ namespace RandomItemGiverUpdater.Gui.Menus
             {
                 //If the nbt is unchanged
                 result = ModificationState.Unchanged;
-                //TODO: Avalonia Rework
-                //MessageBox.Show("The changes were saved successfully", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                await this.MsgBox("The changes were saved successfully", "Saved", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info);
             }
             else if (newComponent == "")
             {
-                //TODO: Avalonia Rework
-                /*
                 //If the user entered no nbt tag but did not delete it, ask if they want to delete it since having an empty tag is pretty much useless
-                MessageBoxResult msgResult = MessageBox.Show("You did not enter any Item Stack Component. Do you want to delete it?", "Empty Component", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                ButtonResult msgResult = await this.MsgBox("You did not enter any Item Stack Component. Do you want to delete it?", "Empty Component", ButtonEnum.YesNo, MsBox.Avalonia.Enums.Icon.Question);
                 switch (msgResult)
                 {
-                    case MessageBoxResult.Yes:
+                    case ButtonResult.Yes:
                         result = ModificationState.Deleted;
-                        MessageBox.Show("The Item Stack Component was successfully deleted!", "Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
+                        await this.MsgBox("The Item Stack Component was successfully deleted!", "Deleted", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info);
                         newComponent = "";
                         break;
-                    case MessageBoxResult.No:
+                    case ButtonResult.No:
                         result = ModificationState.Modified;
                         break;
-                }*/
+                }
             }
             else
             {
                 result = ModificationState.Modified;
-                //TODO: Avalonia Rework
-                //MessageBox.Show("The changes were saved successfully", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+                await this.MsgBox("The changes were saved successfully", "Saved", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info);
             }
 
             Close();
@@ -75,20 +74,19 @@ namespace RandomItemGiverUpdater.Gui.Menus
             Close();
         }
 
-        private void btnDeleteComponent_Click(object sender, RoutedEventArgs e)
+        private async void btnDeleteComponent_Click(object sender, RoutedEventArgs e)
         {
             //Ask the user whether they really want to delete the tag
-            //TODO: Avalonia Rework
-            /*MessageBoxResult msgResult = MessageBox.Show("Are you sure that you want to delete the Item Stack Component?", "Delete Component", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            ButtonResult msgResult = await this.MsgBox("Are you sure that you want to delete the Item Stack Component?", "Delete Component", ButtonEnum.YesNo, MsBox.Avalonia.Enums.Icon.Question);
             switch (msgResult)
             {
-                case MessageBoxResult.Yes:
+                case ButtonResult.Yes:
                     result = ModificationState.Deleted;
-                    MessageBox.Show("The Item Stack Component was successfully deleted!", "Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
+                    await this.MsgBox("The Item Stack Component was successfully deleted!", "Deleted", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info);
                     newComponent = "";
                     Close();
                     break;
-            }*/
+            }
         }
     }
 }

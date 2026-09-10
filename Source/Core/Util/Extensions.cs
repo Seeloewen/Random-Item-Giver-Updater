@@ -1,10 +1,9 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
-using System;
-using System.Collections.Generic;
+using MsBox.Avalonia;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using MsBox.Avalonia.Enums;
 
 namespace RandomItemGiverUpdater.Core.Util
 {
@@ -35,6 +34,14 @@ namespace RandomItemGiverUpdater.Core.Util
             }
 
             return null;
+        }
+
+        public static async Task<ButtonResult> MsgBox(this Window wnd, string text, string header = "Notification", ButtonEnum btn = ButtonEnum.Ok, Icon icon = Icon.Info)
+        {
+            var box = MessageBoxManager.GetMessageBoxStandard(header, text, btn, icon);
+            ButtonResult result = await box.ShowWindowDialogAsync(wnd);
+
+            return result;
         }
     }
 }

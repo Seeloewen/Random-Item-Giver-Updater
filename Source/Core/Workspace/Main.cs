@@ -1,9 +1,11 @@
-﻿using RandomItemGiverUpdater.Core.Data;
+﻿using MsBox.Avalonia.Enums;
+using RandomItemGiverUpdater.Core.Data;
+using RandomItemGiverUpdater.Core.Util;
 using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Menus;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Windows;
+using System.Threading.Tasks;
 
 namespace RandomItemGiverUpdater.Core.Workspace
 {
@@ -23,60 +25,55 @@ namespace RandomItemGiverUpdater.Core.Workspace
 
         public bool DatapackIsValid(Datapack datapack) => datapack != null && datapack.IsValid();
 
-        public void LoadDatapack(string path)
+        public async void LoadDatapack(string path)
         {
             if ((!string.IsNullOrEmpty(path) && Directory.Exists(path)))
             {
                 //If a datapack is currently loaded and has pending modifications, ask the user whether to overwrite them
-                //TODO: Avalonia Rework
-                /*if (RIGU.core.currentLootTable != null
+                if (RIGU.core.currentLootTable != null
                     && RIGU.core.currentLootTable.IsModified()
-                    && PromptUnsavedChanges() == MessageBoxResult.No)
-                    return;*/
+                    && await PromptUnsavedChanges() == ButtonResult.No)
+                    return;
 
                 currentLootTable = null;
                 currentDatapack = new Datapack(path);
             }
             else
             {
-                //TODO: Avalonia Rework
-                //MessageBox.Show("Could not load datapack. Please select a valid datapack folder!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                await Crossplatform.Dialog(wndMain, "Could not load datapack. Please select a valid datapack folder!", "Error", ButtonEnum.Ok, Icon.Error);
             }
         }
 
-        public bool Exit() //Returns whether to actually close the software
+        public async Task<bool> Exit() //Returns whether to actually close the software
         {
             //Show warning if there are unsaved changes to the loot table
-            //TODO: Avalonia Rework
-            /*if (RIGU.core.currentLootTable != null
+            if (RIGU.core.currentLootTable != null
                 && RIGU.core.currentLootTable.IsModified()
-                && PromptUnsavedChanges() == MessageBoxResult.No)
-                return false;*/
+                && await PromptUnsavedChanges() == ButtonResult.No)
+                return false;
 
             return true;
         }
 
-        //TODO: Avalonia Rework
-        /*public MessageBoxResult PromptUnsavedChanges()
+        public async Task<ButtonResult> PromptUnsavedChanges()
         {
             //Prompt the user that the currently loaded loot table has unsaved changes
-            MessageBoxResult result =
-                MessageBox.Show("You have changes in your current loot table, that have not been saved yet. Exiting this loot table now will discard all unsaved changes. Do you really wish to continue?",
+            ButtonResult result =
+                await Crossplatform.Dialog(wndMain, "You have changes in your current loot table, that have not been saved yet. Exiting this loot table now will discard all unsaved changes. Do you really wish to continue?",
                 "Unsaved changes",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
+                ButtonEnum.YesNo,
+                Icon.Question);
 
             return result;
-        }*/
+        }
 
-        public void SetLootTable(LootTable lootTable)
+        public async void SetLootTable(LootTable lootTable)
         {
             //Show warning if there are unsaved changes to the loot table
-            //TODO: Avalonia Rework
-            /*if (RIGU.core.currentLootTable != null
+            if (RIGU.core.currentLootTable != null
                 && RIGU.core.currentLootTable.IsModified()
-                && PromptUnsavedChanges() == MessageBoxResult.No)
-                return;*/
+                && await PromptUnsavedChanges() == ButtonResult.No)
+                return;
 
             currentLootTable = lootTable;
 

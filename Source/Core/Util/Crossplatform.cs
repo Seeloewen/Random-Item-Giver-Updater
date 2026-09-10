@@ -1,5 +1,8 @@
-﻿using System.Diagnostics;
+﻿using Avalonia.Controls;
+using MsBox.Avalonia.Enums;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace RandomItemGiverUpdater.Core.Util
 {
@@ -19,6 +22,11 @@ namespace RandomItemGiverUpdater.Core.Util
             {
                 Process.Start("xdg-open", url);
             }
+        }
+
+        public static async Task<ButtonResult> Dialog(Window wnd, string message, string header = "Notification", ButtonEnum btn = ButtonEnum.Ok, Icon icon = Icon.Info)
+        {
+            return await wnd.MsgBox(message, header, btn, icon);
         }
     }
 }

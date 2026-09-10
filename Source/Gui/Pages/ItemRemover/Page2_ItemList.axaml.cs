@@ -1,6 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using MsBox.Avalonia.Enums;
 using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Util;
 using RandomItemGiverUpdater.Gui.Menus;
 
 namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
@@ -19,7 +21,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
             wndRemoveItems = (wndRemoveItems)wnd;
         }
 
-        private void btnContinue_Click(object sender, RoutedEventArgs e)
+        private async void btnContinue_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(tbItems.Text))
             {
@@ -28,8 +30,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
             }
             else
             {
-                //TODO: Avalonia Rework
-                //MessageBox.Show("Please enter items you want to remove from the datapack to continue!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                await Crossplatform.Dialog(wndRemoveItems, "Please enter items you want to remove from the datapack to continue!", "Error", ButtonEnum.Ok, Icon.Error);
             }
         }
        

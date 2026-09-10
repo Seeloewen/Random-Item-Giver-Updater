@@ -1,6 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using MsBox.Avalonia.Enums;
 using RandomItemGiverUpdater.Core.Data;
+using RandomItemGiverUpdater.Core.Util;
 using RandomItemGiverUpdater.Core.Workspace.Entries;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -44,7 +46,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
 
         private void btnSave_Click(object sender, RoutedEventArgs e) => Close();
 
-        private void wndSelectLootTables1_Closing(object sender, WindowClosingEventArgs e)
+        private async void wndSelectLootTables1_Closing(object sender, WindowClosingEventArgs e)
         {
             bool lootTableSelected = false;
 
@@ -62,8 +64,7 @@ namespace RandomItemGiverUpdater.Gui.Menus
             {
                 //Stop quitting and show error if no loot table is selected
                 e.Cancel = true;
-                //TODO: Avalonia Rework
-                //MessageBox.Show("Please select at least one loot table!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                await this.MsgBox("Please select at least one loot table!", "Error", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
             }
         }
 

@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using Avalonia.VisualTree;
 using SkiaSharp;
 using RandomItemGiverUpdater.Core.Util;
+using System.Threading.Tasks;
+using MsBox.Avalonia.Enums;
 
 namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
 {
@@ -40,15 +42,14 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
 
         private void btnBack_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowPreviousPage();
 
-        private void btnContinue_Click(object sender, RoutedEventArgs e)
+        private async void btnContinue_Click(object sender, RoutedEventArgs e)
         {
             //Check for each item entry if the selection is invalid
             foreach (AddingEntry addItemEntry in RIGU.itemAdding.itemEntries)
             {
                 if (!addItemEntry.defaultLootTables && addItemEntry.lootTableWhiteList.Count <= 0)
                 {
-                    //Avalonia Rework
-                    //MessageBox.Show("You have selected to only add the item to certain loot tables without actually selecting any. Please choose any loot tables before continuing.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    await Crossplatform.Dialog(wndAddItems, "You have selected to only add the item to certain loot tables without actually selecting any. Please choose any loot tables before continuing.", "Error", ButtonEnum.Ok, Icon.Error);
                     return;
                 }
             }

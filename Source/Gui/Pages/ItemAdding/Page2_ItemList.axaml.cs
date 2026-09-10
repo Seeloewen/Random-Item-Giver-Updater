@@ -1,6 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using MsBox.Avalonia.Enums;
 using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Util;
 using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Menus;
 
@@ -22,7 +24,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
 
         private void btnBack_Click(object sender, RoutedEventArgs e) => wndAddItems.ShowPreviousPage();
 
-        private void btnContinue_Click(object sender, RoutedEventArgs e)
+        private async void btnContinue_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(tbItemName.Text))
             {
@@ -31,8 +33,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemAdding
             }
             else
             {
-                //Avalonia Rework here
-                //MessageBox.Show("Please enter some items before continuing.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                await Crossplatform.Dialog(wndAddItems, "Please enter some items before continuing.", "Error", ButtonEnum.Ok, Icon.Error);
             }
         }
     }

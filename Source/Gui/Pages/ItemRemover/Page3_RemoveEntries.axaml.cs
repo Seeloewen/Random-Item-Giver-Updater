@@ -6,6 +6,8 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
+using RandomItemGiverUpdater.Core.Util;
+using MsBox.Avalonia.Enums;
 
 namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
 {
@@ -48,7 +50,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
                 //Add all loot tables that the item is in to a list and display that list
                 string lootTables = item.lootTableCheckListStr;
                 //TODO: Avalonia UI
-                //MessageBox.Show(lootTables, "List of loot tables", MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show(lootTables, "List of loot tables", ButtonEnum.Ok, Icon.Info);
             }
         }
 
@@ -58,7 +60,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
             {
                 //Show the full item name in case it's cut off
                 //TODO: Avalonia UI
-                //MessageBox.Show(item.name, "Full item name", MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show(item.name, "Full item name", ButtonEnum.Ok, Icon.Info);
             }
         }
 
@@ -71,7 +73,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
             }
         }
 
-        private void btnContinue_Click(object sender, RoutedEventArgs e)
+        private async void btnContinue_Click(object sender, RoutedEventArgs e)
         {
             bool canContinue = !(RIGU.itemRemover.removalEntries.Count <= 0);
 
@@ -90,8 +92,7 @@ namespace RandomItemGiverUpdater.Gui.Pages.ItemRemover
             }
             else
             {
-                //TODO: Avalonia Rework
-                //MessageBox.Show("No items to remove were found or you have not selected loot tables to remove from!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                await Crossplatform.Dialog(wndRemoveItems, "No items to remove were found or you have not selected loot tables to remove from!", "Error", ButtonEnum.Ok, Icon.Error);
             }
         }
 

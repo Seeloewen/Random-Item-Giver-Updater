@@ -6,7 +6,9 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.VisualTree;
+using MsBox.Avalonia.Enums;
 using RandomItemGiverUpdater.Core;
+using RandomItemGiverUpdater.Core.Util;
 using RandomItemGiverUpdater.Core.Workspace.Entries;
 using RandomItemGiverUpdater.Gui.Menus;
 
@@ -58,25 +60,23 @@ namespace RandomItemGiverUpdater.Gui.Pages.DuplicateFinder
 
         private void btnExportList_Click(object sender, RoutedEventArgs e) => RIGU.duplicateFinder.Export();
 
-        private void btnViewAll_Click(object sender, RoutedEventArgs e)
+        private async void btnViewAll_Click(object sender, RoutedEventArgs e)
         {
             Canvas cvs = ((Button)sender).FindAncestorOfType<Canvas>();
             DuplicateEntry entry = (DuplicateEntry)cvs.DataContext;
 
             //Show a message in which loot tables the duplicate occurs
-            //TODO: Avalonia Rework
-            //MessageBox.Show($"The duplicate occurs in the following loot tables:\n{entry.lootTables.Replace(", ", "\n")}", "View all Loot Tables", MessageBoxButton.OK, MessageBoxImage.Information);
+            await Crossplatform.Dialog(wndDuplicateFinder, $"The duplicate occurs in the following loot tables:\n{entry.lootTables.Replace(", ", "\n")}", "View all Loot Tables", ButtonEnum.Ok, Icon.Info);
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e) => RIGU.duplicateFinder.DisplayItemRemover();
 
-        private void tblItemName_MouseDown(object sender, PointerPressedEventArgs e)
+        private async void tblItemName_MouseDown(object sender, PointerPressedEventArgs e)
         {
             TextBlock tb = (TextBlock)sender;
 
             //Show the controls for editing and hide the original name
-            //TODO: Avalonia Rework
-            //MessageBox.Show($"Full name of the item:\n{tb.Text}", "Full item name", MessageBoxButton.OK, MessageBoxImage.Information);
+            await Crossplatform.Dialog(wndDuplicateFinder, $"Full name of the item:\n{tb.Text}", "Full item name", ButtonEnum.Ok, Icon.Info);
         }
     }
 }
