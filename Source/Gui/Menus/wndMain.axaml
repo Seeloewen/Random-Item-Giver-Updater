@@ -9,7 +9,7 @@
         x:CompileBindings="False">
     <Window.Resources>
         <DataTemplate x:Key="ItemTemplate">
-            <Canvas x:Name="cvsItem" Height="50" Background="{Binding canvasBackColor}" Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" PointerEntered="cvsItem_MouseEnter" PointerExited="cvsItem_MouseLeave">
+            <Canvas x:Name="cvsItem" Height="50" Background="{Binding canvasBackColor}" PointerEntered="cvsItem_MouseEnter" PointerExited="cvsItem_MouseLeave">
                 <TextBlock x:Name ="tblItemName" Text="{Binding item.name}" Canvas.Left="15" Canvas.Top="10" FontSize="20" Foreground="White" PointerPressed="tblItemName_MouseDown"/>
                 <TextBox x:Name="tbItemName" Width="350" Height="25" FontSize="18" Canvas.Top="8" Canvas.Left="10" IsVisible="False"/>
                 <Button x:Name="btnSaveItemName" Height="30" Width="100" Content="Confirm" Canvas.Top="9" Canvas.Left="370" IsVisible="False" Click="btnSaveItemName_Click"/>
